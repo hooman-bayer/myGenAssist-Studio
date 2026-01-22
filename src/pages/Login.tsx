@@ -2,6 +2,7 @@ import { useAuthStore } from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import loginGif from '@/assets/login.gif';
+import myGenAssistLogo from '@/assets/mygenassist_logo.svg';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import WindowControls from '@/components/WindowControls';
@@ -85,19 +86,13 @@ export default function Login() {
         ref={titlebarRef}
         style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
       >
-        {/* Left spacer for macOS */}
+        {/* Left spacer for macOS window controls */}
         <div
           className={`${
             platform === 'darwin' ? 'w-[70px]' : 'w-0'
-          } flex items-center justify-center`}
+          }`}
           style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
-        >
-          {platform === 'darwin' && (
-            <span className="text-label-md text-text-heading font-bold">
-              myGenAssist Studio
-            </span>
-          )}
-        </div>
+        />
 
         {/* Center drag region */}
         <div
@@ -129,13 +124,26 @@ export default function Login() {
         </div>
         <div className="h-full flex-1 flex flex-col items-center justify-center pt-11">
           <div className="flex-1 flex flex-col w-80 items-center justify-center">
-            <div className="flex self-stretch items-center justify-center mb-4">
-              <div className="text-text-heading text-heading-lg font-bold text-center">
+            {/* Logo and Branding */}
+            <div className="flex flex-col items-center mb-10">
+              <img
+                src={myGenAssistLogo}
+                alt="myGenAssist"
+                className="h-12 w-auto mb-3"
+              />
+              <span className="text-lg font-medium text-text-secondary tracking-wide">
+                myGenAssist Studio
+              </span>
+            </div>
+
+            {/* Welcome Heading */}
+            <div className="flex self-stretch items-center justify-center mb-8">
+              <h1 className="text-text-heading text-2xl font-semibold text-center">
                 {t('layout.login')}
-              </div>
+              </h1>
             </div>
             {/* Bayer SSO Login - Only Option */}
-            <div className="w-full pt-6 flex flex-col items-center">
+            <div className="w-full flex flex-col items-center">
               {ssoErrorMessage && (
                 <p className="text-text-cuation text-label-md mb-4 text-center">
                   {ssoErrorMessage}

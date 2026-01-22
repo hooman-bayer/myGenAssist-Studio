@@ -16,7 +16,7 @@ import {
 	Share,
 } from "lucide-react";
 import "./index.css";
-import folderIcon from "@/assets/Folder.svg";
+import myGenAssistLogo from "@/assets/mygenassist_logo.svg";
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSidebarStore } from "@/store/sidebarStore";
@@ -230,7 +230,7 @@ function HeaderWin() {
 						size="icon"
 						className="no-drag p-0 h-6 w-6"
 					>
-						<img className="w-6 h-6" src={folderIcon} alt="folder-icon" />
+						<img className="w-6 h-6" src={myGenAssistLogo} alt="mygenassist-logo" />
 					</Button>
 					</div>
 					{location.pathname === "/history" && (

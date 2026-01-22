@@ -1,5 +1,5 @@
 {
-	"welcome-to-eigent": "歡迎使用 myGenAssist Studio",
+	"welcome-message": "歡迎使用 myGenAssist Studio",
 	"how-can-i-help-you": "今天有什麼可以幫你的嗎？",
 	"ask-placeholder": "今天你需要完成什麼任務？",
 	"select-file": "選擇文件",
@@ -8,7 +8,7 @@
 	"start": "開始",
 	"pause": "暫停",
 	"replay": "回放",
-	"by-messaging-eigent": "通過使用 myGenAssist Studio，您同意我們的",
+	"terms-agreement": "通過使用 myGenAssist Studio，您同意我們的",
 	"terms-of-use": "使用條款",
 	"and": "和",
 	"privacy-policy": "隱私政策",

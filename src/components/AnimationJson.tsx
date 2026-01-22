@@ -50,7 +50,7 @@ export function AnimationJson({
 		};
 	}, [animationData, onComplete]);
 
-	// Show slogan after logo appears (around 30% progress for better timing with Eigent animation)
+	// Show slogan after logo appears (around 30% progress for better timing with myGenAssist animation)
 	const showSloganText = showSlogan && animationProgress > 0.3;
 
 	return (

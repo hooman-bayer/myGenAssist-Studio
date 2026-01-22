@@ -1,5 +1,5 @@
 {
-	"welcome-to-eigent": "myGenAssist Studioへようこそ",
+	"welcome-message": "myGenAssist Studioへようこそ",
 	"how-can-i-help-you": "本日はどのようなご用件でしょうか？",
 	"ask-placeholder": "本日は何を達成したいですか？",
 	"select-file": "ファイルを選択",
@@ -8,7 +8,7 @@
 	"start": "開始",
 	"pause": "一時停止",
 	"replay": "リプレイ",
-	"by-messaging-eigent": "myGenAssist Studioにメッセージを送信することで、当社の",
+	"terms-agreement": "myGenAssist Studioにメッセージを送信することで、当社の",
 	"terms-of-use": "利用規約",
 	"and": "および",
 	"privacy-policy": "プライバシーポリシー",

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import VerticalNavigation, { type VerticalNavItem } from "@/components/Navigation";
 import { useTranslation } from "react-i18next";
 import useAppVersion from "@/hooks/use-app-version";
-import vsersionLogo from "@/assets/version-logo.png";
+import versionLogo from "@/assets/mygenassist_text_logo.svg";
 import General from "@/pages/Setting/General";
 import Privacy from "@/pages/Setting/Privacy";
 import Models from "@/pages/Setting/Models";
@@ -83,7 +83,7 @@ export default function Setting() {
 						/>
 						<div className="w-full mt-8 pt-4 pb-2 flex items-center justify-center border-[0px] border-t border-solid border-white-80% flex-shrink-0 flex-grow-0">
 						<div className="flex items-center gap-1 leading-9">
-							<img src={vsersionLogo} alt="version-logo" className="h-6" />
+							<img src={versionLogo} alt="version-logo" className="h-6" />
 						</div>
 						<div className="px-sm py-0.5 bg-bg-surface-tertiary rounded-full gap-1 flex items-center justify-center">
 							<CircleCheck className="w-4 h-4 text-bg-fill-success-primary" />

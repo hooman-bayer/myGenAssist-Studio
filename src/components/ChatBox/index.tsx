@@ -1012,7 +1012,7 @@ export default function ChatBox(): JSX.Element {
           <div className=" w-full flex flex-col relative z-10">
             <div className="flex flex-col items-center gap-1 h-[210px] justify-end">
               <div className="text-body-lg text-text-heading text-center font-bold">
-                {t('layout.welcome-to-mygenassist-studio')}
+                {t('layout.welcome-message')}
               </div>
               <div className="text-body-lg leading-7 text-text-label text-center mb-5">
                 {t('layout.how-can-i-help-you')}
@@ -1115,7 +1115,7 @@ export default function ChatBox(): JSX.Element {
                       )}
                     </div>
                     <span className="flex-1 text-text-information text-label-xs font-medium leading-normal cursor-pointer">
-                      {t('layout.by-messaging-mygenassist-studio')}{' '}
+                      {t('layout.terms-agreement')}{' '}
                       <a
                         href="https://docs.int.bayer.com/baychatgpt/terms-of-use"
                         target="_blank"

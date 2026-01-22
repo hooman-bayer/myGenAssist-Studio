@@ -227,9 +227,7 @@ export default function SettingModels() {
 			if (res.is_tool_calls && res.is_valid) {
 				console.log("success");
 				toast(t("setting.validate-success"), {
-					description: t(
-						"setting.the-model-has-been-verified-to-support-function-calling-which-is-required-to-use-mygenassist-studio"
-					),
+					description: t("setting.model-function-calling-verified"),
 					closeButton: true,
 				});
 			} else {
@@ -374,9 +372,7 @@ export default function SettingModels() {
 				if (res.is_tool_calls && res.is_valid) {
 					console.log("success");
 					toast(t("setting.validate-success"), {
-						description: t(
-							"setting.the-model-has-been-verified-to-support-function-calling-which-is-required-to-use-mygenassist-studio"
-						),
+						description: t("setting.model-function-calling-verified"),
 						closeButton: true,
 					});
 				} else {
@@ -628,7 +624,7 @@ export default function SettingModels() {
 					<div className="self-stretch flex flex-col justify-start items-start gap-1">
 						<div className="self-stretch inline-flex justify-start items-center gap-2">
 							<div className="flex-1 justify-center text-body-lg text-text-heading font-bold">
-								{t("setting.mygenassist-studio-cloud-version")}
+								{t("setting.cloud-version")}
 							</div>
 							{cloudPrefer ? (
 								<Button
