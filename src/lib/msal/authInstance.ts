@@ -38,6 +38,34 @@ import {
 } from '@azure/msal-browser';
 import { msalConfig, authScopes } from './config';
 
+// Constants for sessionStorage keys
+const AUTH_STORAGE_KEYS = {
+  POPUP_STATE: 'msal.state',
+  POPUP_NONCE: 'msal.nonce',
+  SYSTEM_BROWSER_STATE: 'msal.state.system_browser',
+  SYSTEM_BROWSER_NONCE: 'msal.nonce.system_browser',
+  SYSTEM_BROWSER_REDIRECT_URI: 'msal.redirect_uri.system_browser',
+} as const;
+
+const POPUP_BLOCKED_ERROR_CODES = [
+  'popup_window_error',
+  'popup_closed_in_browser',
+  'monitor_window_timeout',
+] as const;
+
+function isPopupBlockedError(error: BrowserAuthError): boolean {
+  return POPUP_BLOCKED_ERROR_CODES.includes(
+    error.errorCode as typeof POPUP_BLOCKED_ERROR_CODES[number]
+  );
+}
+
+// Authentication timeout constants
+const AUTH_TIMEOUTS = {
+  ELECTRON_POPUP: 2 * 60 * 1000,      // 2 minutes
+  SYSTEM_BROWSER: 5 * 60 * 1000,      // 5 minutes
+  FALLBACK: 30 * 1000,                // 30 seconds
+} as const;
+
 // NOTE: ElectronAPI types are defined in src/types/electron.d.ts
 // The onAuthPopupResponse callback is used for Electron-native SSO popup handling
 
@@ -122,12 +150,12 @@ export const loginSilent = async (): Promise<AuthenticationResult | null> => {
 
   // ALWAYS use popup - NO ssoSilent attempts whatsoever
   // ssoSilent has been completely removed due to persistent iframe issues
-  console.log('[MSAL] loginSilent called - using popup directly (ssoSilent removed)');
+  console.log('[Auth] loginSilent called - using popup directly (ssoSilent removed)');
   try {
     const popupResult = await loginPopup();
     return popupResult;
   } catch (popupError) {
-    console.error('[MSAL] Popup login failed:', popupError);
+    console.error('[Auth] Popup login failed:', popupError);
     return null;
   }
 };
@@ -152,34 +180,32 @@ export const loginPopup = async (): Promise<AuthenticationResult | null> => {
 
   // Check if we're in Electron with native popup support
   if (hasElectronAuthPopup()) {
-    console.log('[MSAL] Using Electron-native popup flow');
+    console.log('[Auth] Using Electron-native popup flow');
     return loginPopupElectron();
   }
 
   // Standard browser popup flow
   try {
-    console.log('[MSAL] Attempting standard popup login...');
+    console.log('[Auth] Attempting standard popup login...');
     const result = await msalInstance.loginPopup({ scopes: authScopes });
     if (result?.account) {
       msalInstance.setActiveAccount(result.account);
-      console.log('[MSAL] Popup login successful');
+      console.log('[Auth] Popup login successful');
     }
     return result;
   } catch (error: unknown) {
     const browserError = error as BrowserAuthError;
-    console.error('[MSAL] Popup login failed:', browserError.errorCode, browserError.message);
+    console.error('[Auth] Popup login failed:', browserError.errorCode, browserError.message);
 
     // Check if this is a popup_window_error - fall back to redirect
-    if (browserError.errorCode === 'popup_window_error' ||
-        browserError.errorCode === 'popup_closed_in_browser' ||
-        browserError.errorCode === 'monitor_window_timeout') {
-      console.log('[MSAL] Popup blocked or closed, falling back to redirect authentication');
+    if (isPopupBlockedError(browserError)) {
+      console.log('[Auth] Popup blocked or closed, falling back to redirect authentication');
       try {
         await loginRedirect();
         // Note: loginRedirect will redirect the page, so we won't return here
         return null;
       } catch (redirectError) {
-        console.error('[MSAL] Redirect login also failed:', redirectError);
+        console.error('[Auth] Redirect login also failed:', redirectError);
         throw redirectError;
       }
     }
@@ -210,17 +236,17 @@ export const loginPopup = async (): Promise<AuthenticationResult | null> => {
 const loginPopupElectron = async (): Promise<AuthenticationResult | null> => {
   // First, try system browser authentication for better SSO support
   if (hasSystemBrowserAuth()) {
-    console.log('[MSAL Electron] Trying system browser authentication first...');
+    console.log('[Auth:Popup] Trying system browser authentication first...');
     try {
       const result = await loginSystemBrowser();
       if (result) {
-        console.log('[MSAL Electron] System browser authentication successful');
+        console.log('[Auth:Popup] System browser authentication successful');
         return result;
       }
     } catch (error: any) {
       // Log the error but continue to fallback
-      console.log('[MSAL Electron] System browser auth failed:', error.message);
-      console.log('[MSAL Electron] Falling back to Electron popup...');
+      console.log('[Auth:Popup] System browser auth failed:', error.message);
+      console.log('[Auth:Popup] Falling back to Electron popup...');
       // Continue to popup fallback
     }
   }
@@ -253,21 +279,21 @@ const loginPopupElectronInternal = async (): Promise<AuthenticationResult | null
         cleanup();
       }
 
-      console.log('[MSAL Electron] Received auth popup response:', data.success);
+      console.log('[Auth:Popup] Received auth popup response:', data.success);
 
       if (!data.success) {
         if (data.cancelled) {
-          console.log('[MSAL Electron] User cancelled authentication');
+          console.log('[Auth:Popup] User cancelled authentication');
           reject(new Error('user_cancelled'));
         } else {
-          console.error('[MSAL Electron] Auth popup error:', data.error);
+          console.error('[Auth:Popup] Auth popup error:', data.error);
           reject(new Error(data.error || 'Authentication failed'));
         }
         return;
       }
 
       if (!data.url) {
-        console.error('[MSAL Electron] No URL in auth response');
+        console.error('[Auth:Popup] No URL in auth response');
         reject(new Error('No authentication response URL'));
         return;
       }
@@ -278,9 +304,9 @@ const loginPopupElectronInternal = async (): Promise<AuthenticationResult | null
         const hash = urlObj.hash;
         const search = urlObj.search;
 
-        console.log('[MSAL Electron] Processing redirect URL');
-        console.log('[MSAL Electron] Hash:', hash ? 'present' : 'none');
-        console.log('[MSAL Electron] Query:', search ? 'present' : 'none');
+        console.log('[Auth:Popup] Processing redirect URL');
+        console.log('[Auth:Popup] Hash:', hash ? 'present' : 'none');
+        console.log('[Auth:Popup] Query:', search ? 'present' : 'none');
 
         // The auth response can be in hash (implicit/hybrid flow) or query (auth code flow)
         if (hash && hash.length > 1) {
@@ -292,13 +318,13 @@ const loginPopupElectronInternal = async (): Promise<AuthenticationResult | null
             const result = await msalInstance.handleRedirectPromise();
             if (result?.account) {
               msalInstance.setActiveAccount(result.account);
-              console.log('[MSAL Electron] Authentication successful');
+              console.log('[Auth:Popup] Authentication successful');
               resolve(result);
             } else {
               window.location.hash = originalHash;
               const code = urlObj.searchParams.get('code');
               if (code) {
-                console.warn('[MSAL Electron] Auth code flow detected in hash, trying query params');
+                console.warn('[Auth:Popup] Auth code flow detected in hash, trying query params');
               }
               reject(new Error('No authentication tokens in response'));
             }
@@ -314,13 +340,13 @@ const loginPopupElectronInternal = async (): Promise<AuthenticationResult | null
           const errorDescription = urlObj.searchParams.get('error_description');
 
           if (error) {
-            console.error('[MSAL Electron] Auth error:', error, errorDescription);
+            console.error('[Auth:Popup] Auth error:', error, errorDescription);
             reject(new Error(`${error}: ${errorDescription}`));
             return;
           }
 
           if (code) {
-            console.log('[MSAL Electron] Auth code received, handling redirect...');
+            console.log('[Auth:Popup] Auth code received, handling redirect...');
 
             // For MSAL browser auth code flow, simulate a redirect
             const originalSearch = window.location.search;
@@ -335,7 +361,7 @@ const loginPopupElectronInternal = async (): Promise<AuthenticationResult | null
               const result = await msalInstance.handleRedirectPromise();
               if (result?.account) {
                 msalInstance.setActiveAccount(result.account);
-                console.log('[MSAL Electron] Authentication successful via auth code');
+                console.log('[Auth:Popup] Authentication successful via auth code');
                 resolve(result);
               } else {
                 const restoreUrl = new URL(window.location.href);
@@ -358,7 +384,7 @@ const loginPopupElectronInternal = async (): Promise<AuthenticationResult | null
           reject(new Error('No authentication data in redirect URL'));
         }
       } catch (error) {
-        console.error('[MSAL Electron] Error processing auth response:', error);
+        console.error('[Auth:Popup] Error processing auth response:', error);
         reject(error);
       }
     };
@@ -371,14 +397,14 @@ const loginPopupElectronInternal = async (): Promise<AuthenticationResult | null
     // Build the Azure AD authorization URL ourselves
     // This avoids using loginPopup which tries window.open and fails
     const authUrl = buildAzureAuthUrl();
-    console.log('[MSAL Electron] Built auth URL, requesting Electron to open popup...');
+    console.log('[Auth:Popup] Built auth URL, requesting Electron to open popup...');
 
     // Send IPC message to Electron main process to open the auth popup
     if (window.ipcRenderer?.send) {
       window.ipcRenderer.send('open-auth-popup', authUrl);
     } else {
       // Fallback: If IPC for opening popup isn't available, try loginPopup anyway
-      console.log('[MSAL Electron] No IPC send available, trying loginPopup fallback...');
+      console.log('[Auth:Popup] No IPC send available, trying loginPopup fallback...');
       msalInstance.loginPopup({ scopes: authScopes })
         .then((result) => {
           if (resolved) return;
@@ -391,7 +417,7 @@ const loginPopupElectronInternal = async (): Promise<AuthenticationResult | null
           resolve(result);
         })
         .catch((error) => {
-          console.log('[MSAL Electron] loginPopup threw:', error.message);
+          console.log('[Auth:Popup] loginPopup threw:', error.message);
           // Wait for IPC response
           setTimeout(() => {
             if (!resolved) {
@@ -399,7 +425,7 @@ const loginPopupElectronInternal = async (): Promise<AuthenticationResult | null
               if (cleanup) cleanup();
               reject(error);
             }
-          }, 30000);
+          }, AUTH_TIMEOUTS.FALLBACK);
         });
     }
 
@@ -410,18 +436,20 @@ const loginPopupElectronInternal = async (): Promise<AuthenticationResult | null
         if (cleanup) cleanup();
         reject(new Error('Authentication timeout - popup may have been closed'));
       }
-    }, 120000); // 2 minute timeout
+    }, AUTH_TIMEOUTS.ELECTRON_POPUP);
   });
 };
 
 /**
  * Build Azure AD authorization URL manually
  * This is used in Electron to avoid MSAL's popup mechanism which doesn't work
+ * @param customRedirectUri Optional custom redirect URI (e.g., for system browser auth with loopback server)
+ *                          If not provided, uses window.location.origin
  */
-function buildAzureAuthUrl(): string {
+function buildAzureAuthUrl(customRedirectUri?: string): string {
   const clientId = import.meta.env.VITE_AZURE_CLIENT_ID || '';
   const authority = import.meta.env.VITE_AZURE_AUTHORITY || '';
-  const redirectUri = encodeURIComponent(window.location.origin);
+  const redirectUri = customRedirectUri || window.location.origin;
   const scopes = encodeURIComponent(authScopes.join(' '));
 
   // Generate a random state and nonce for security
@@ -429,8 +457,14 @@ function buildAzureAuthUrl(): string {
   const nonce = generateRandomString(32);
 
   // Store state for validation on callback
-  sessionStorage.setItem('msal.state', state);
-  sessionStorage.setItem('msal.nonce', nonce);
+  // Use 'system_browser' keys when custom redirect URI is provided (for system browser auth)
+  if (customRedirectUri) {
+    sessionStorage.setItem(AUTH_STORAGE_KEYS.SYSTEM_BROWSER_STATE, state);
+    sessionStorage.setItem(AUTH_STORAGE_KEYS.SYSTEM_BROWSER_NONCE, nonce);
+  } else {
+    sessionStorage.setItem(AUTH_STORAGE_KEYS.POPUP_STATE, state);
+    sessionStorage.setItem(AUTH_STORAGE_KEYS.POPUP_NONCE, nonce);
+  }
 
   // Build authorization URL
   // Using response_type=code for auth code flow (more secure than implicit)
@@ -439,7 +473,7 @@ function buildAzureAuthUrl(): string {
   const authUrl = `${authority}/oauth2/v2.0/authorize?` +
     `client_id=${clientId}` +
     `&response_type=code` +
-    `&redirect_uri=${redirectUri}` +
+    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
     `&scope=${scopes}` +
     `&state=${state}` +
     `&nonce=${nonce}` +
@@ -462,38 +496,6 @@ function generateRandomString(length: number): string {
     result += chars[randomValues[i] % chars.length];
   }
   return result;
-}
-
-/**
- * Build Azure AD authorization URL with a custom redirect URI
- * Used for system browser authentication where we need to redirect to a loopback server
- */
-function buildAzureAuthUrlWithRedirect(redirectUri: string): string {
-  const clientId = import.meta.env.VITE_AZURE_CLIENT_ID || '';
-  const authority = import.meta.env.VITE_AZURE_AUTHORITY || '';
-  const scopes = encodeURIComponent(authScopes.join(' '));
-
-  // Generate a random state and nonce for security
-  const state = generateRandomString(32);
-  const nonce = generateRandomString(32);
-
-  // Store state for validation on callback
-  sessionStorage.setItem('msal.state.system_browser', state);
-  sessionStorage.setItem('msal.nonce.system_browser', nonce);
-
-  // Build authorization URL with the custom redirect URI
-  const authUrl = `${authority}/oauth2/v2.0/authorize?` +
-    `client_id=${clientId}` +
-    `&response_type=code` +
-    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-    `&scope=${scopes}` +
-    `&state=${state}` +
-    `&nonce=${nonce}` +
-    `&prompt=select_account` +
-    `&login_hint=` +
-    `&domain_hint=organizations`;
-
-  return authUrl;
 }
 
 /**
@@ -527,7 +529,7 @@ async function exchangeCodeForTokens(code: string, redirectUri: string): Promise
     scope: authScopes.join(' '),
   });
 
-  console.log('[MSAL System Browser] Exchanging auth code for tokens at:', tokenEndpoint);
+  console.log('[Auth:Browser] Exchanging auth code for tokens at:', tokenEndpoint);
 
   const response = await fetch(tokenEndpoint, {
     method: 'POST',
@@ -539,12 +541,12 @@ async function exchangeCodeForTokens(code: string, redirectUri: string): Promise
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    console.error('[MSAL System Browser] Token exchange failed:', errorData);
+    console.error('[Auth:Browser] Token exchange failed:', errorData);
     throw new Error(errorData.error_description || errorData.error || 'Token exchange failed');
   }
 
   const tokenData = await response.json();
-  console.log('[MSAL System Browser] Token exchange successful');
+  console.log('[Auth:Browser] Token exchange successful');
   return tokenData;
 }
 
@@ -638,7 +640,7 @@ const loginSystemBrowser = async (): Promise<AuthenticationResult | null> => {
     let cleanup: (() => void) | null = null;
     let resolved = false;
 
-    console.log('[MSAL] Starting system browser authentication flow');
+    console.log('[Auth] Starting system browser authentication flow');
 
     const handleResult = async (data: {
       success: boolean;
@@ -655,30 +657,30 @@ const loginSystemBrowser = async (): Promise<AuthenticationResult | null> => {
         cleanup();
       }
 
-      console.log('[MSAL System Browser] Received auth result:', data.success);
+      console.log('[Auth:Browser] Received auth result:', data.success);
 
       if (!data.success) {
-        console.error('[MSAL System Browser] Auth error:', data.error, data.errorDescription);
+        console.error('[Auth:Browser] Auth error:', data.error, data.errorDescription);
         reject(new Error(data.errorDescription || data.error || 'Authentication failed'));
         return;
       }
 
       if (!data.code) {
-        console.error('[MSAL System Browser] No auth code in response');
+        console.error('[Auth:Browser] No auth code in response');
         reject(new Error('No authentication code received'));
         return;
       }
 
       // Validate state if we stored one
-      const storedState = sessionStorage.getItem('msal.state.system_browser');
+      const storedState = sessionStorage.getItem(AUTH_STORAGE_KEYS.SYSTEM_BROWSER_STATE);
       if (storedState && data.state && storedState !== data.state) {
-        console.error('[MSAL System Browser] State mismatch - possible CSRF attack');
+        console.error('[Auth:Browser] State mismatch - possible CSRF attack');
         reject(new Error('State validation failed'));
         return;
       }
 
       try {
-        console.log('[MSAL System Browser] Auth code received, exchanging for tokens...');
+        console.log('[Auth:Browser] Auth code received, exchanging for tokens...');
 
         if (!loopbackRedirectUri) {
           throw new Error('Loopback redirect URI not available');
@@ -695,18 +697,18 @@ const loginSystemBrowser = async (): Promise<AuthenticationResult | null> => {
         // Note: This won't persist the tokens in MSAL's cache, but the account will be recognized
         msalInstance.setActiveAccount(authResult.account);
 
-        console.log('[MSAL System Browser] Authentication successful via direct token exchange');
-        console.log('[MSAL System Browser] Account:', authResult.account.username);
+        console.log('[Auth:Browser] Authentication successful via direct token exchange');
+        console.log('[Auth:Browser] Account:', authResult.account.username);
 
         resolve(authResult);
       } catch (error) {
-        console.error('[MSAL System Browser] Error exchanging auth code for tokens:', error);
+        console.error('[Auth:Browser] Error exchanging auth code for tokens:', error);
         reject(error);
       }
 
       // Clean up stored state
-      sessionStorage.removeItem('msal.state.system_browser');
-      sessionStorage.removeItem('msal.nonce.system_browser');
+      sessionStorage.removeItem(AUTH_STORAGE_KEYS.SYSTEM_BROWSER_STATE);
+      sessionStorage.removeItem(AUTH_STORAGE_KEYS.SYSTEM_BROWSER_NONCE);
     };
 
     // Register the result listener first
@@ -721,7 +723,7 @@ const loginSystemBrowser = async (): Promise<AuthenticationResult | null> => {
     const startAuth = async () => {
       try {
         // Step 1: Start the loopback server and get the redirect URI
-        console.log('[MSAL System Browser] Creating loopback server...');
+        console.log('[Auth:Browser] Creating loopback server...');
         const serverResult = await window.electronAPI?.startSystemBrowserAuth();
 
         if (!serverResult?.success || !serverResult?.redirectUri) {
@@ -730,27 +732,27 @@ const loginSystemBrowser = async (): Promise<AuthenticationResult | null> => {
 
         // Store the redirect URI for token exchange
         loopbackRedirectUri = serverResult.redirectUri;
-        console.log('[MSAL System Browser] Loopback server ready at:', serverResult.redirectUri);
+        console.log('[Auth:Browser] Loopback server ready at:', serverResult.redirectUri);
 
         // Step 2: Build the auth URL with the loopback redirect URI
-        const authUrl = buildAzureAuthUrlWithRedirect(serverResult.redirectUri);
-        console.log('[MSAL System Browser] Auth URL built');
+        const authUrl = buildAzureAuthUrl(serverResult.redirectUri);
+        console.log('[Auth:Browser] Auth URL built');
 
         // Step 3: Open the auth URL in the system browser
-        console.log('[MSAL System Browser] Opening system browser...');
+        console.log('[Auth:Browser] Opening system browser...');
         const openResult = await window.electronAPI?.openUrlInSystemBrowser(authUrl);
 
         if (!openResult?.success) {
           throw new Error(openResult?.error || 'Failed to open system browser');
         }
 
-        console.log('[MSAL System Browser] System browser opened, waiting for auth response...');
+        console.log('[Auth:Browser] System browser opened, waiting for auth response...');
         // Now we wait for the handleResult callback to be triggered
 
       } catch (error) {
         if (cleanup) cleanup();
-        sessionStorage.removeItem('msal.state.system_browser');
-        sessionStorage.removeItem('msal.nonce.system_browser');
+        sessionStorage.removeItem(AUTH_STORAGE_KEYS.SYSTEM_BROWSER_STATE);
+        sessionStorage.removeItem(AUTH_STORAGE_KEYS.SYSTEM_BROWSER_NONCE);
         reject(error);
       }
     };
@@ -762,11 +764,11 @@ const loginSystemBrowser = async (): Promise<AuthenticationResult | null> => {
       if (!resolved) {
         resolved = true;
         if (cleanup) cleanup();
-        sessionStorage.removeItem('msal.state.system_browser');
-        sessionStorage.removeItem('msal.nonce.system_browser');
+        sessionStorage.removeItem(AUTH_STORAGE_KEYS.SYSTEM_BROWSER_STATE);
+        sessionStorage.removeItem(AUTH_STORAGE_KEYS.SYSTEM_BROWSER_NONCE);
         reject(new Error('Authentication timeout'));
       }
-    }, 300000); // 5 minute timeout to match server timeout
+    }, AUTH_TIMEOUTS.SYSTEM_BROWSER);
   });
 };
 
@@ -808,21 +810,19 @@ export const logout = async (postLogoutRedirectUri?: string): Promise<void> => {
   const redirectUri = postLogoutRedirectUri || window.location.origin;
 
   try {
-    console.log('[MSAL] Attempting popup logout...');
+    console.log('[Auth] Attempting popup logout...');
     await msalInstance.logoutPopup({
       account: activeAccount,
       postLogoutRedirectUri: redirectUri,
     });
-    console.log('[MSAL] Popup logout successful');
+    console.log('[Auth] Popup logout successful');
   } catch (error: unknown) {
     const browserError = error as BrowserAuthError;
-    console.error('[MSAL] Popup logout failed:', browserError.errorCode, browserError.message);
+    console.error('[Auth] Popup logout failed:', browserError.errorCode, browserError.message);
 
     // If popup fails, fall back to redirect logout
-    if (browserError.errorCode === 'popup_window_error' ||
-        browserError.errorCode === 'popup_closed_in_browser' ||
-        browserError.errorCode === 'monitor_window_timeout') {
-      console.log('[MSAL] Popup failed, falling back to redirect logout');
+    if (isPopupBlockedError(browserError)) {
+      console.log('[Auth] Popup failed, falling back to redirect logout');
       await msalInstance.logoutRedirect({
         account: activeAccount,
         postLogoutRedirectUri: redirectUri,
@@ -844,7 +844,7 @@ export const acquireTokenSilent = async (): Promise<string | null> => {
 
   const activeAccount = msalInstance.getActiveAccount();
   if (!activeAccount) {
-    console.log('[MSAL] No active account for token acquisition');
+    console.log('[Auth] No active account for token acquisition');
     return null;
   }
 
@@ -855,7 +855,7 @@ export const acquireTokenSilent = async (): Promise<string | null> => {
     });
     return result.accessToken;
   } catch (error) {
-    console.log('[MSAL] Silent token acquisition failed:', (error as Error).message);
+    console.log('[Auth] Silent token acquisition failed:', (error as Error).message);
 
     // Check if we should try popup (iframe issues or interaction required)
     const shouldTryPopup =
@@ -866,7 +866,7 @@ export const acquireTokenSilent = async (): Promise<string | null> => {
       error instanceof InteractionRequiredAuthError;
 
     if (shouldTryPopup) {
-      console.log('[MSAL] Attempting popup for token acquisition');
+      console.log('[Auth] Attempting popup for token acquisition');
       try {
         const result = await msalInstance.acquireTokenPopup({
           scopes: authScopes,
@@ -875,13 +875,11 @@ export const acquireTokenSilent = async (): Promise<string | null> => {
         return result.accessToken;
       } catch (popupError: unknown) {
         const browserError = popupError as BrowserAuthError;
-        console.error('[MSAL] Popup token acquisition failed:', browserError.errorCode, browserError.message);
+        console.error('[Auth] Popup token acquisition failed:', browserError.errorCode, browserError.message);
 
         // If popup also fails, try redirect
-        if (browserError.errorCode === 'popup_window_error' ||
-            browserError.errorCode === 'popup_closed_in_browser' ||
-            browserError.errorCode === 'monitor_window_timeout') {
-          console.log('[MSAL] Popup failed, attempting redirect for token acquisition');
+        if (isPopupBlockedError(browserError)) {
+          console.log('[Auth] Popup failed, attempting redirect for token acquisition');
           try {
             await msalInstance.acquireTokenRedirect({
               scopes: authScopes,
@@ -890,7 +888,7 @@ export const acquireTokenSilent = async (): Promise<string | null> => {
             // Redirect will navigate away, return null
             return null;
           } catch (redirectError) {
-            console.error('[MSAL] Redirect token acquisition failed:', redirectError);
+            console.error('[Auth] Redirect token acquisition failed:', redirectError);
             return null;
           }
         }
@@ -907,13 +905,11 @@ export const acquireTokenSilent = async (): Promise<string | null> => {
       return result.accessToken;
     } catch (interactiveError: unknown) {
       const browserError = interactiveError as BrowserAuthError;
-      console.error('[MSAL] Interactive token acquisition failed:', browserError.errorCode, browserError.message);
+      console.error('[Auth] Interactive token acquisition failed:', browserError.errorCode, browserError.message);
 
       // If popup fails, try redirect
-      if (browserError.errorCode === 'popup_window_error' ||
-          browserError.errorCode === 'popup_closed_in_browser' ||
-          browserError.errorCode === 'monitor_window_timeout') {
-        console.log('[MSAL] Popup failed, attempting redirect for token acquisition');
+      if (isPopupBlockedError(browserError)) {
+        console.log('[Auth] Popup failed, attempting redirect for token acquisition');
         try {
           await msalInstance.acquireTokenRedirect({
             scopes: authScopes,
@@ -921,7 +917,7 @@ export const acquireTokenSilent = async (): Promise<string | null> => {
           });
           return null;
         } catch (redirectError) {
-          console.error('[MSAL] Redirect token acquisition failed:', redirectError);
+          console.error('[Auth] Redirect token acquisition failed:', redirectError);
           return null;
         }
       }

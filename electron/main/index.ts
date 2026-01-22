@@ -751,11 +751,11 @@ function registerIpcHandlers() {
   // This allows the renderer to directly request opening an auth popup
   // instead of relying on MSAL's window.open() which fails in Electron
   ipcMain.on('open-auth-popup', (_, authUrl: string) => {
-    log.info('[AUTH IPC] Received request to open auth popup:', authUrl);
+    log.info('[Auth:IPC] Received request to open auth popup:', authUrl);
     if (authUrl && authUrl.includes('login.microsoftonline.com')) {
       createAuthPopup(authUrl);
     } else {
-      log.warn('[AUTH IPC] Invalid auth URL, not opening popup');
+      log.warn('[Auth:IPC] Invalid auth URL, not opening popup');
       if (win && !win.isDestroyed()) {
         win.webContents.send('auth-popup-response', {
           success: false,
@@ -770,19 +770,19 @@ function registerIpcHandlers() {
   // instead of an Electron BrowserWindow. The system browser has access to SSO cookies and
   // can properly integrate with device management solutions like Microsoft Intune.
   ipcMain.handle('start-system-browser-auth', async () => {
-    log.info('[AUTH IPC] Received request to start system browser auth');
+    log.info('[Auth:IPC] Received request to start system browser auth');
     return await startSystemBrowserAuth();
   });
 
   // Handler to open a URL in the system browser (Safari/Chrome)
   // Used for system browser authentication flow
   ipcMain.handle('open-url-in-system-browser', async (_, url: string) => {
-    log.info('[AUTH IPC] Opening URL in system browser:', url);
+    log.info('[Auth:IPC] Opening URL in system browser:', url);
     try {
       await shell.openExternal(url);
       return { success: true };
     } catch (error: any) {
-      log.error('[AUTH IPC] Failed to open URL in system browser:', error);
+      log.error('[Auth:IPC] Failed to open URL in system browser:', error);
       return { success: false, error: error.message || String(error) };
     }
   });
@@ -1810,6 +1810,13 @@ const setupExternalLinkHandling = () => {
 };
 
 // ==================== System Browser Authentication (SSO with Company Portal) ====================
+
+// Auth server timeout constants
+const AUTH_SERVER_TIMEOUTS = {
+  SERVER_TIMEOUT: 5 * 60 * 1000,      // 5 minutes
+  SERVER_CLOSE_DELAY: 1000,           // 1 second
+} as const;
+
 /**
  * Active loopback server for system browser authentication.
  * Used to receive the OAuth redirect from the system browser.
@@ -1837,7 +1844,7 @@ const createSystemBrowserAuthServer = (): Promise<{ port: number; server: http.S
       try {
         systemBrowserAuthServer.close();
       } catch (e) {
-        log.warn('[SYSTEM BROWSER AUTH] Error closing existing server:', e);
+        log.warn('[Auth:Server] Error closing existing server:', e);
       }
       systemBrowserAuthServer = null;
     }
@@ -1845,7 +1852,7 @@ const createSystemBrowserAuthServer = (): Promise<{ port: number; server: http.S
     const server = http.createServer((req, res) => {
       const url = new URL(req.url || '/', `http://localhost`);
 
-      log.info('[SYSTEM BROWSER AUTH] Received request:', url.pathname);
+      log.info('[Auth:Server] Received request:', url.pathname);
 
       // Check if this is the OAuth callback
       if (url.pathname === '/' || url.pathname === '/auth/callback') {
@@ -1855,7 +1862,7 @@ const createSystemBrowserAuthServer = (): Promise<{ port: number; server: http.S
         const state = url.searchParams.get('state');
 
         if (error) {
-          log.error('[SYSTEM BROWSER AUTH] OAuth error:', error, errorDescription);
+          log.error('[Auth:Server] OAuth error:', error, errorDescription);
 
           // Send error page to browser
           res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -1895,7 +1902,7 @@ const createSystemBrowserAuthServer = (): Promise<{ port: number; server: http.S
             });
           }
         } else if (code) {
-          log.info('[SYSTEM BROWSER AUTH] Received auth code, state:', state);
+          log.info('[Auth:Server] Received auth code, state:', state);
 
           // Send success page to browser
           res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -1946,14 +1953,14 @@ const createSystemBrowserAuthServer = (): Promise<{ port: number; server: http.S
 
         // Close the server after a short delay
         setTimeout(() => {
-          log.info('[SYSTEM BROWSER AUTH] Closing loopback server');
+          log.info('[Auth:Server] Closing loopback server');
           try {
             server.close();
             systemBrowserAuthServer = null;
           } catch (e) {
-            log.warn('[SYSTEM BROWSER AUTH] Error closing server:', e);
+            log.warn('[Auth:Server] Error closing server:', e);
           }
-        }, 1000);
+        }, AUTH_SERVER_TIMEOUTS.SERVER_CLOSE_DELAY);
       } else {
         // Handle other requests (favicon, etc.)
         res.writeHead(404);
@@ -1964,20 +1971,20 @@ const createSystemBrowserAuthServer = (): Promise<{ port: number; server: http.S
     // Listen on a random available port on localhost
     server.listen(0, '127.0.0.1', () => {
       const address = server.address() as AddressInfo;
-      log.info('[SYSTEM BROWSER AUTH] Loopback server started on port:', address.port);
+      log.info('[Auth:Server] Loopback server started on port:', address.port);
       systemBrowserAuthServer = server;
       resolve({ port: address.port, server });
     });
 
     server.on('error', (error) => {
-      log.error('[SYSTEM BROWSER AUTH] Server error:', error);
+      log.error('[Auth:Server] Server error:', error);
       reject(error);
     });
 
     // Set a timeout to close the server if no response is received
     setTimeout(() => {
       if (systemBrowserAuthServer === server) {
-        log.warn('[SYSTEM BROWSER AUTH] Server timeout - closing');
+        log.warn('[Auth:Server] Server timeout - closing');
         try {
           server.close();
           systemBrowserAuthServer = null;
@@ -1989,10 +1996,10 @@ const createSystemBrowserAuthServer = (): Promise<{ port: number; server: http.S
             });
           }
         } catch (e) {
-          log.warn('[SYSTEM BROWSER AUTH] Error closing server on timeout:', e);
+          log.warn('[Auth:Server] Error closing server on timeout:', e);
         }
       }
-    }, 300000); // 5 minute timeout
+    }, AUTH_SERVER_TIMEOUTS.SERVER_TIMEOUT);
   });
 };
 
@@ -2008,18 +2015,18 @@ const createSystemBrowserAuthServer = (): Promise<{ port: number; server: http.S
  */
 const startSystemBrowserAuth = async (): Promise<{ success: boolean; redirectUri?: string; error?: string }> => {
   try {
-    log.info('[SYSTEM BROWSER AUTH] Starting system browser auth flow - creating loopback server');
+    log.info('[Auth:Server] Starting system browser auth flow - creating loopback server');
 
     // Create the loopback server
     const { port } = await createSystemBrowserAuthServer();
     const redirectUri = `http://127.0.0.1:${port}`;
 
-    log.info('[SYSTEM BROWSER AUTH] Loopback server ready at:', redirectUri);
+    log.info('[Auth:Server] Loopback server ready at:', redirectUri);
 
     // Return the redirect URI - renderer will build the auth URL and open it
     return { success: true, redirectUri };
   } catch (error: any) {
-    log.error('[SYSTEM BROWSER AUTH] Error starting auth flow:', error);
+    log.error('[Auth:Server] Error starting auth flow:', error);
     return { success: false, error: error.message || String(error) };
   }
 };
@@ -2040,7 +2047,7 @@ const startSystemBrowserAuth = async (): Promise<{ success: boolean; redirectUri
  * @param authUrl The Azure AD login URL to open
  */
 const createAuthPopup = (authUrl: string) => {
-  log.info('[AUTH POPUP] Creating authentication popup window');
+  log.info('[Auth:Popup] Creating authentication popup window');
 
   const authPopup = new BrowserWindow({
     width: 500,
@@ -2083,21 +2090,21 @@ const createAuthPopup = (authUrl: string) => {
   const handleAuthRedirect = (url: string) => {
     if (authCompleted) return;
 
-    log.info('[AUTH POPUP] Handling auth redirect:', url);
+    log.info('[Auth:Popup] Handling auth redirect:', url);
     authCompleted = true;
 
     try {
       // Send the entire redirect URL to the renderer
       // The renderer (MSAL) will parse it and extract the auth code/tokens
       if (win && !win.isDestroyed()) {
-        log.info('[AUTH POPUP] Sending auth-popup-response to main window');
+        log.info('[Auth:Popup] Sending auth-popup-response to main window');
         win.webContents.send('auth-popup-response', {
           success: true,
           url: url
         });
       }
     } catch (error) {
-      log.error('[AUTH POPUP] Error handling auth redirect:', error);
+      log.error('[Auth:Popup] Error handling auth redirect:', error);
       if (win && !win.isDestroyed()) {
         win.webContents.send('auth-popup-response', {
           success: false,
@@ -2116,10 +2123,10 @@ const createAuthPopup = (authUrl: string) => {
 
   // Listen for navigation events to intercept the redirect
   authPopup.webContents.on('will-navigate', (event, url) => {
-    log.info('[AUTH POPUP] will-navigate:', url);
+    log.info('[Auth:Popup] will-navigate:', url);
 
     if (isRedirectUri(url)) {
-      log.info('[AUTH POPUP] Intercepting redirect to:', url);
+      log.info('[Auth:Popup] Intercepting redirect to:', url);
       event.preventDefault();
       handleAuthRedirect(url);
     }
@@ -2127,10 +2134,10 @@ const createAuthPopup = (authUrl: string) => {
 
   // Also listen for will-redirect (handles 302 redirects)
   authPopup.webContents.on('will-redirect', (event, url) => {
-    log.info('[AUTH POPUP] will-redirect:', url);
+    log.info('[Auth:Popup] will-redirect:', url);
 
     if (isRedirectUri(url)) {
-      log.info('[AUTH POPUP] Intercepting redirect (302) to:', url);
+      log.info('[Auth:Popup] Intercepting redirect (302) to:', url);
       event.preventDefault();
       handleAuthRedirect(url);
     }
@@ -2138,19 +2145,19 @@ const createAuthPopup = (authUrl: string) => {
 
   // Handle did-navigate for cases where navigation already happened
   authPopup.webContents.on('did-navigate', (event, url) => {
-    log.info('[AUTH POPUP] did-navigate:', url);
+    log.info('[Auth:Popup] did-navigate:', url);
 
     if (isRedirectUri(url)) {
-      log.info('[AUTH POPUP] Page navigated to redirect URI:', url);
+      log.info('[Auth:Popup] Page navigated to redirect URI:', url);
       handleAuthRedirect(url);
     }
   });
 
   // Handle popup being closed by user (auth cancelled)
   authPopup.on('closed', () => {
-    log.info('[AUTH POPUP] Popup closed');
+    log.info('[Auth:Popup] Popup closed');
     if (!authCompleted && win && !win.isDestroyed()) {
-      log.info('[AUTH POPUP] Auth cancelled by user');
+      log.info('[Auth:Popup] Auth cancelled by user');
       win.webContents.send('auth-popup-response', {
         success: false,
         error: 'user_cancelled',
@@ -2161,7 +2168,7 @@ const createAuthPopup = (authUrl: string) => {
 
   // Load the auth URL
   authPopup.loadURL(authUrl).catch((error) => {
-    log.error('[AUTH POPUP] Failed to load auth URL:', error);
+    log.error('[Auth:Popup] Failed to load auth URL:', error);
     if (win && !win.isDestroyed()) {
       win.webContents.send('auth-popup-response', {
         success: false,
@@ -2173,7 +2180,7 @@ const createAuthPopup = (authUrl: string) => {
     }
   });
 
-  log.info('[AUTH POPUP] Auth popup created and loading:', authUrl);
+  log.info('[Auth:Popup] Auth popup created and loading:', authUrl);
 };
 
 // ==================== check and start backend ====================
