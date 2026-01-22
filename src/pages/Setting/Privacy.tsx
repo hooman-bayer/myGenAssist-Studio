@@ -121,7 +121,7 @@ export default function SettingPrivacy() {
 				{" "}
 				<a
 					className="text-blue-500 no-underline"
-					href="https://www.eigent.ai/privacy-policy"
+					href="https://chat.int.bayer.com/"
 					target="_blank"
 				>
 					{t("setting.privacy-policy")}

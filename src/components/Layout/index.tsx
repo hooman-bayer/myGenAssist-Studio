@@ -70,6 +70,7 @@ const Layout = () => {
 					<AnimationJson
 						onComplete={() => setIsFirstLaunch(false)}
 						animationData={animationData}
+						showSlogan={false}
 					/>
 				)}
 

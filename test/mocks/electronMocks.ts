@@ -171,7 +171,7 @@ export function createElectronAPIMock(): MockedElectronAPI {
     // EnvUtil mock functions
     getEnvPath: vi.fn().mockImplementation((email: string) => {
       const sanitizedEmail = email.split("@")[0].replace(/[\\/*?:"<>|\s]/g, "_").replace(".", "_")
-      return `/mock/home/.eigent/.env.${sanitizedEmail}`
+      return `/mock/home/.mygenassist-studio/.env.${sanitizedEmail}`
     }),
 
     updateEnvBlock: vi.fn().mockImplementation((lines: string[], kv: Record<string, string>) => {
@@ -224,8 +224,8 @@ export function createElectronAPIMock(): MockedElectronAPI {
     getEmailFolderPath: vi.fn().mockImplementation((email: string) => {
       const sanitizedEmail = email.split("@")[0].replace(/[\\/*?:"<>|\s]/g, "_").replace(".", "_")
       return {
-        MCP_REMOTE_CONFIG_DIR: `/mock/home/.eigent/${sanitizedEmail}`,
-        MCP_CONFIG_DIR: '/mock/home/.eigent',
+        MCP_REMOTE_CONFIG_DIR: `/mock/home/.mygenassist-studio/${sanitizedEmail}`,
+        MCP_CONFIG_DIR: '/mock/home/.mygenassist-studio',
         tempEmail: sanitizedEmail,
         hasToken: mockState.hasToken
       }

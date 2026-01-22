@@ -163,7 +163,7 @@ export async function startBackend(setPort?: (port: number) => void): Promise<an
     const env = {
         ...process.env,
         ...uvEnv,
-        SERVER_URL: "https://dev.eigent.ai/api",
+        SERVER_URL: "https://dev.chat.int.bayer.com/api/v3",
         PYTHONIOENCODING: 'utf-8',
         PYTHONUNBUFFERED: '1',
         npm_config_cache: npmCacheDir,

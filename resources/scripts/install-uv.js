@@ -59,7 +59,7 @@ async function downloadUvBinary(
 	}
 
 	// Create output directory structure
-	const binDir = path.join(os.homedir(), ".eigent", "bin");
+	const binDir = path.join(os.homedir(), ".mygenassist", "bin");
 	// Ensure directories exist
 	fs.mkdirSync(binDir, { recursive: true });
 

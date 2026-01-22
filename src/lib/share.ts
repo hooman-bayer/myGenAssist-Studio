@@ -6,7 +6,7 @@ export const share = async (taskId: string) => {
 		const res = await proxyFetchPost(`/api/chat/share`, {
 			task_id: taskId,
 		});
-		const shareLink = `${import.meta.env.VITE_USE_LOCAL_PROXY === "true" ? 'eigent://callback' : 'https://www.eigent.ai/download'}?share_token=${res.share_token}__${taskId}`;
+		const shareLink = `${import.meta.env.VITE_USE_LOCAL_PROXY === "true" ? 'mygenassist://callback' : 'https://chat.int.bayer.com/download'}?share_token=${res.share_token}__${taskId}`;
 		navigator.clipboard
 			.writeText(shareLink)
 			.then(() => {

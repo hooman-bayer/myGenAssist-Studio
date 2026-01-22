@@ -1,6 +1,6 @@
 ---
 title: "Gemini"
-description: "This guide walks you through setting up your Google Gemini API key within Eigent to enable the Gemini model for your AI workforce."
+description: "This guide walks you through setting up your Google Gemini API key within myGenAssist Studio to enable the Gemini model for your AI workforce."
 ---
 
 ### Prerequisites
@@ -13,7 +13,7 @@ description: "This guide walks you through setting up your Google Gemini API key
 
 #### 1. Access Application Settings
 
-- Launch Eigent and navigate to the **Home Page**.
+- Launch myGenAssist Studio and navigate to the **Home Page**.
 - Click on the **Settings** tab (usually located in the sidebar or top
   navigation).
 
@@ -44,7 +44,7 @@ Click on the Gemini Config card and fill in the following fields:
 
 - Once saved, the **"Set as Default"** button on the Gemini Config card will be
   selected/active.
-- **You are ready to go.** Your Eigent agents can now utilize the Gemini model.
+- **You are ready to go.** Your myGenAssist Studio agents can now utilize the Gemini model.
 
 ![Gemini 4 Pn](/docs/images/gemini_3.png)
 

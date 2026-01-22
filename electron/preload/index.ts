@@ -105,6 +105,45 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   getEmailFolderPath: (email: string) => ipcRenderer.invoke('get-email-folder-path', email),
   restartApp: () => ipcRenderer.invoke('restart-app'),
+  // Azure AD SSO auth popup response listener
+  onAuthPopupResponse: (callback: (data: { success: boolean, url?: string, error?: string, cancelled?: boolean }) => void) => {
+    const channel = 'auth-popup-response';
+    const listener = (event: any, data: { success: boolean, url?: string, error?: string, cancelled?: boolean }) => callback(data);
+    ipcRenderer.on(channel, listener);
+    // Return cleanup function to remove listener
+    return () => {
+      ipcRenderer.off(channel, listener);
+    };
+  },
+  // System Browser Auth for SSO with Company Portal/Enterprise authentication
+  // This method starts a loopback server and returns the redirect URI (does NOT open browser)
+  startSystemBrowserAuth: () => ipcRenderer.invoke('start-system-browser-auth'),
+  // Opens a URL in the system browser (Safari/Chrome) for authentication
+  openUrlInSystemBrowser: (url: string) => ipcRenderer.invoke('open-url-in-system-browser', url),
+  // Listener for system browser auth results (receives auth code from loopback server)
+  onSystemBrowserAuthResult: (callback: (data: {
+    success: boolean;
+    code?: string;
+    state?: string;
+    fullUrl?: string;
+    error?: string;
+    errorDescription?: string;
+  }) => void) => {
+    const channel = 'system-browser-auth-result';
+    const listener = (event: any, data: {
+      success: boolean;
+      code?: string;
+      state?: string;
+      fullUrl?: string;
+      error?: string;
+      errorDescription?: string;
+    }) => callback(data);
+    ipcRenderer.on(channel, listener);
+    // Return cleanup function to remove listener
+    return () => {
+      ipcRenderer.off(channel, listener);
+    };
+  },
 });
 
 

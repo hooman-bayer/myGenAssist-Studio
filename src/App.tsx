@@ -8,6 +8,7 @@ import animationData from "@/assets/animation/openning_animaiton.json";
 import { useAuthStore } from "./store/authStore";
 import { Toaster } from "sonner";
 import { hasStackKeys } from "./lib";
+import { useTranslation } from "react-i18next";
 
 const HAS_STACK_KEYS = hasStackKeys();
 
@@ -16,6 +17,7 @@ function App() {
 	const { setInitState } = useAuthStore();
 	const [animationFinished, setAnimationFinished] = useState(false);
 	const { isFirstLaunch } = useAuthStore();
+	const { t } = useTranslation();
 
 	useEffect(() => {
 		const handleShareCode = (event: any, share_token: string) => {
@@ -60,6 +62,7 @@ function App() {
 				<AnimationJson
 					onComplete={() => setAnimationFinished(true)}
 					animationData={animationData}
+					slogan={t("layout.splash-slogan")}
 				/>
 			);
 		}

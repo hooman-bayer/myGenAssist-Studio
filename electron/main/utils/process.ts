@@ -97,9 +97,9 @@ export async function getBinaryPath(name?: string): Promise<string> {
     }
   }
 
-  const binariesDir = path.join(os.homedir(), '.eigent', 'bin');
+  const binariesDir = path.join(os.homedir(), '.mygenassist', 'bin');
 
-  // Ensure .eigent/bin directory exists
+  // Ensure .mygenassist/bin directory exists
   if (!fs.existsSync(binariesDir)) {
     fs.mkdirSync(binariesDir, { recursive: true });
   }
@@ -127,7 +127,7 @@ export function getCachePath(folder: string): string {
     }
   }
 
-  const cacheDir = path.join(os.homedir(), '.eigent', 'cache', folder);
+  const cacheDir = path.join(os.homedir(), '.mygenassist', 'cache', folder);
 
   // Ensure cache directory exists
   if (!fs.existsSync(cacheDir)) {
@@ -212,7 +212,7 @@ export function getVenvPath(version: string): string {
 
   const venvDir = path.join(
     os.homedir(),
-    '.eigent',
+    '.mygenassist',
     'venvs',
     `backend-${version}`
   );
@@ -227,7 +227,7 @@ export function getVenvPath(version: string): string {
 }
 
 export function getVenvsBaseDir(): string {
-  return path.join(os.homedir(), '.eigent', 'venvs');
+  return path.join(os.homedir(), '.mygenassist', 'venvs');
 }
 
 /**
@@ -261,7 +261,7 @@ export function getTerminalVenvPath(version: string): string {
 
   const venvDir = path.join(
     os.homedir(),
-    '.eigent',
+    '.mygenassist',
     'venvs',
     `terminal_base-${version}`
   );

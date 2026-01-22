@@ -3,8 +3,8 @@ const EnvOauthInfoMap = {
 };
 
 export class OAuth {
-	public client_name: string = 'Eigent';
-	public client_uri: string = 'https://eigent.ai/';
+	public client_name: string = 'myGenAssist Studio';
+	public client_uri: string = 'https://chat.int.bayer.com/';
 	public redirect_uris: string[] = [];
 
 	public url: string = '';
@@ -29,7 +29,7 @@ export class OAuth {
 
 		this.url = mcp.url;
 		this.provider = mcp.provider;
-		this.redirect_uris = [`https://dev.eigent.ai/api/oauth/${this.provider}/callback`];
+		this.redirect_uris = [`https://chat.int.bayer.com/api/oauth/${this.provider}/callback`];
 		this.authServerUrl = new URL(mcp.url).origin;
 		this.resourcePath = mcp?.resourcePath || this.resourcePath;
 		this.authorizationServerPath = mcp?.authorizationServerPath || this.authorizationServerPath;

@@ -40,7 +40,7 @@ export default function TerminalComponent({
 	const cursorPosRef = useRef<number>(0); // cursor position ref, for event handling
 
 	// terminal configuration
-	const promptText = "Eigent:~$ "; // prompt text
+	const promptText = "myGenAssist:~$ "; // prompt text
 	const isInitialized = useRef<boolean>(false); // initialization identifier, prevent duplicate initialization
 
 	// synchronize state to ref, for event handling
@@ -157,7 +157,7 @@ export default function TerminalComponent({
 
 			// only show welcome information when needed
 			if (showWelcome) {
-				terminal.writeln("\x1b[32m=== Eigent Terminal ===\x1b[0m");
+				terminal.writeln("\x1b[32m=== myGenAssist Studio Terminal ===\x1b[0m");
 				terminal.writeln(`\x1b[32mInstance: ${instanceId}\x1b[0m`);
 				terminal.writeln("\x1b[32mReady for commands...\x1b[0m");
 				terminal.writeln("");
@@ -250,7 +250,7 @@ export default function TerminalComponent({
 					.replace(/\r/g, ""); // remove carriage return
 
 				if (formattedOutput.trim()) {
-					xtermRef.current.writeln(`\x1b[36m[Eigent]\x1b[0m ${formattedOutput}`);
+					xtermRef.current.writeln(`\x1b[36m[myGenAssist]\x1b[0m ${formattedOutput}`);
 				} else {
 					xtermRef.current.writeln("");
 				}
@@ -298,7 +298,7 @@ export default function TerminalComponent({
 
 			// only show switch information on main instance
 			if (showWelcome) {
-				xtermRef.current.writeln("\x1b[32m=== Eigent Terminal ===\x1b[0m");
+				xtermRef.current.writeln("\x1b[32m=== myGenAssist Studio Terminal ===\x1b[0m");
 				xtermRef.current.writeln(`\x1b[32mInstance: ${instanceId}\x1b[0m`);
 				xtermRef.current.writeln("\x1b[32mTask switched...\x1b[0m");
 				xtermRef.current.writeln("");
@@ -317,7 +317,7 @@ export default function TerminalComponent({
 
 						if (formattedOutput.trim()) {
 							xtermRef.current?.writeln(
-								`\x1b[36m[Eigent]\x1b[0m ${formattedOutput}`
+								`\x1b[36m[myGenAssist]\x1b[0m ${formattedOutput}`
 							);
 						}
 					});

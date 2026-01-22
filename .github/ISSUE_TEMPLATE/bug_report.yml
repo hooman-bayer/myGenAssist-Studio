@@ -11,7 +11,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: What version of eigent are you using?
+      label: What version of myGenAssist Studio are you using?
       placeholder: E.g., 0.0.80
     validations:
       required: true
@@ -31,7 +31,7 @@ body:
       label: Problem description
       description: >-
         Provide a short description, state the expected behavior and what actually happens. Include
-        relevant information like what version of eigent you are using, what system you are on,
+        relevant information like what version of myGenAssist Studio you are using, what system you are on,
         and any useful commands / output.
     validations:
       required: true

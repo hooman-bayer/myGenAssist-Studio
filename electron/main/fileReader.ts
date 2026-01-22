@@ -596,17 +596,17 @@ export class FileReader {
 		
 		// Check if projectId is provided for new project-based structure
 		if (projectId) {
-			dirPath = path.join(userHome, "eigent", safeEmail, `project_${projectId}`, `task_${taskId}`);
+			dirPath = path.join(userHome, "mygenassist", safeEmail, `project_${projectId}`, `task_${taskId}`);
 		} else {
 			// First try project-based structure (scan for existing projects)
-			const userDir = path.join(userHome, "eigent", safeEmail);
+			const userDir = path.join(userHome, "mygenassist", safeEmail);
 			const projectBasedPath = this.findTaskInProjects(userDir, taskId);
 			
 			if (projectBasedPath) {
 				dirPath = projectBasedPath;
 			} else {
 				// Fallback to legacy direct task structure
-				dirPath = path.join(userHome, "eigent", safeEmail, `task_${taskId}`);
+				dirPath = path.join(userHome, "mygenassist", safeEmail, `task_${taskId}`);
 			}
 		}
 
@@ -635,11 +635,11 @@ export class FileReader {
 		
 		// Check if projectId is provided for new project-based structure
 		if (projectId) {
-			dirPath = path.join(userHome, "eigent", safeEmail, `project_${projectId}`, `task_${taskId}`);
-			logPath = path.join(userHome, ".eigent", safeEmail, `project_${projectId}`, `task_${taskId}`);
+			dirPath = path.join(userHome, "mygenassist", safeEmail, `project_${projectId}`, `task_${taskId}`);
+			logPath = path.join(userHome, ".mygenassist", safeEmail, `project_${projectId}`, `task_${taskId}`);
 		} else {
 			// First try project-based structure
-			const userDir = path.join(userHome, "eigent", safeEmail);
+			const userDir = path.join(userHome, "mygenassist", safeEmail);
 			const projectBasedPath = this.findTaskInProjects(userDir, taskId);
 			
 			if (projectBasedPath) {
@@ -647,14 +647,14 @@ export class FileReader {
 				// Extract project from path to construct log path
 				const projectMatch = projectBasedPath.match(/project_([^\\\/]+)/);
 				if (projectMatch) {
-					logPath = path.join(userHome, ".eigent", safeEmail, projectMatch[0], `task_${taskId}`);
+					logPath = path.join(userHome, ".mygenassist", safeEmail, projectMatch[0], `task_${taskId}`);
 				} else {
-					logPath = path.join(userHome, ".eigent", safeEmail, `task_${taskId}`);
+					logPath = path.join(userHome, ".mygenassist", safeEmail, `task_${taskId}`);
 				}
 			} else {
 				// Fallback to legacy direct task structure
-				dirPath = path.join(userHome, "eigent", safeEmail, `task_${taskId}`);
-				logPath = path.join(userHome, ".eigent", safeEmail, `task_${taskId}`);
+				dirPath = path.join(userHome, "mygenassist", safeEmail, `task_${taskId}`);
+				logPath = path.join(userHome, ".mygenassist", safeEmail, `task_${taskId}`);
 			}
 		}
 
@@ -678,7 +678,7 @@ export class FileReader {
 	public getLogFolder(email: string): string {
 		const safeEmail = email.split('@')[0].replace(/[\\/*?:"<>|\s]/g, "_").replace(/^\.+|\.+$/g, "");
 		const userHome = app.getPath('home');
-		const dirPath = path.join(userHome, "eigent", safeEmail);
+		const dirPath = path.join(userHome, "mygenassist", safeEmail);
 
 		try {
 			if (!fs.existsSync(dirPath)) {
@@ -695,7 +695,7 @@ export class FileReader {
 	public createProjectStructure(email: string, projectId: string): { success: boolean; path: string } {
 		const safeEmail = email.split('@')[0].replace(/[\\/*?:"<>|\s]/g, "_").replace(/^\.+|\.+$/g, "");
 		const userHome = app.getPath('home');
-		const projectPath = path.join(userHome, "eigent", safeEmail, `project_${projectId}`);
+		const projectPath = path.join(userHome, "mygenassist", safeEmail, `project_${projectId}`);
 
 		try {
 			if (!fs.existsSync(projectPath)) {
@@ -711,7 +711,7 @@ export class FileReader {
 	public getProjectList(email: string): Array<{ id: string; name: string; path: string; taskCount: number; createdAt: Date }> {
 		const safeEmail = email.split('@')[0].replace(/[\\/*?:"<>|\s]/g, "_").replace(/^\.+|\.+$/g, "");
 		const userHome = app.getPath('home');
-		const userDir = path.join(userHome, "eigent", safeEmail);
+		const userDir = path.join(userHome, "mygenassist", safeEmail);
 
 		try {
 			if (!fs.existsSync(userDir)) {
@@ -753,7 +753,7 @@ export class FileReader {
 	public getTasksInProject(email: string, projectId: string): Array<{ id: string; name: string; path: string; createdAt: Date }> {
 		const safeEmail = email.split('@')[0].replace(/[\\/*?:"<>|\s]/g, "_").replace(/^\.+|\.+$/g, "");
 		const userHome = app.getPath('home');
-		const projectPath = path.join(userHome, "eigent", safeEmail, `project_${projectId}`);
+		const projectPath = path.join(userHome, "mygenassist", safeEmail, `project_${projectId}`);
 
 		try {
 			if (!fs.existsSync(projectPath)) {
@@ -791,15 +791,15 @@ export class FileReader {
 	public moveTaskToProject(email: string, taskId: string, projectId: string): { success: boolean; message: string } {
 		const safeEmail = email.split('@')[0].replace(/[\\/*?:"<>|\s]/g, "_").replace(/^\.+|\.+$/g, "");
 		const userHome = app.getPath('home');
-		
+
 		// Source path (legacy structure)
-		const sourcePath = path.join(userHome, "eigent", safeEmail, `task_${taskId}`);
-		const sourceLogPath = path.join(userHome, ".eigent", safeEmail, `task_${taskId}`);
-		
+		const sourcePath = path.join(userHome, "mygenassist", safeEmail, `task_${taskId}`);
+		const sourceLogPath = path.join(userHome, ".mygenassist", safeEmail, `task_${taskId}`);
+
 		// Destination paths (project structure)
-		const projectPath = path.join(userHome, "eigent", safeEmail, `project_${projectId}`);
+		const projectPath = path.join(userHome, "mygenassist", safeEmail, `project_${projectId}`);
 		const destPath = path.join(projectPath, `task_${taskId}`);
-		const destLogPath = path.join(userHome, ".eigent", safeEmail, `project_${projectId}`, `task_${taskId}`);
+		const destLogPath = path.join(userHome, ".mygenassist", safeEmail, `project_${projectId}`, `task_${taskId}`);
 
 		try {
 			// Create project structure if it doesn't exist
@@ -833,7 +833,7 @@ export class FileReader {
 	public getProjectFileList(email: string, projectId: string): FileInfo[] {
 		const safeEmail = email.split('@')[0].replace(/[\\/*?:"<>|\s]/g, "_").replace(/^\.+|\.+$/g, "");
 		const userHome = app.getPath('home');
-		const projectPath = path.join(userHome, "eigent", safeEmail, `project_${projectId}`);
+		const projectPath = path.join(userHome, "mygenassist", safeEmail, `project_${projectId}`);
 
 		try {
 			if (!fs.existsSync(projectPath)) {

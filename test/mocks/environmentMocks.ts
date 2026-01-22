@@ -103,11 +103,11 @@ export function createFileSystemMock() {
       if (path.includes('.venv')) return mockState.filesystem.venvExists
       if (path.includes('backend')) return mockState.filesystem.backendPathExists
       if (path.includes('pyproject.toml')) return mockState.filesystem.pyprojectExists
-      if (path.includes('.eigent/bin') || path.includes('.eigent\\bin')) return mockState.filesystem.eigentBinDirExists
-      if (path.includes('.eigent/cache') || path.includes('.eigent\\cache')) return mockState.filesystem.eigentCacheDirExists
-      if (path.includes('.eigent/venvs') || path.includes('.eigent\\venvs')) return mockState.filesystem.eigentVenvsDirExists
-      if (path.includes('.eigent/runtime') || path.includes('.eigent\\runtime')) return mockState.filesystem.eigentRuntimeDirExists
-      if (path.includes('.eigent') && !path.includes('bin') && !path.includes('cache') && !path.includes('venvs') && !path.includes('runtime')) {
+      if (path.includes('.mygenassist-studio/bin') || path.includes('.mygenassist-studio\\bin')) return mockState.filesystem.eigentBinDirExists
+      if (path.includes('.mygenassist-studio/cache') || path.includes('.mygenassist-studio\\cache')) return mockState.filesystem.eigentCacheDirExists
+      if (path.includes('.mygenassist-studio/venvs') || path.includes('.mygenassist-studio\\venvs')) return mockState.filesystem.eigentVenvsDirExists
+      if (path.includes('.mygenassist-studio/runtime') || path.includes('.mygenassist-studio\\runtime')) return mockState.filesystem.eigentRuntimeDirExists
+      if (path.includes('.mygenassist-studio') && !path.includes('bin') && !path.includes('cache') && !path.includes('venvs') && !path.includes('runtime')) {
         return mockState.filesystem.eigentDirExists
       }
       if (path.includes('resources')) return mockState.filesystem.resourcesDirExists
@@ -167,15 +167,15 @@ dependencies = ["fastapi", "uvicorn"]
       if (!path || typeof path !== 'string') return
       if (path.includes('backend')) {
         mockState.filesystem.backendPathExists = true
-      } else if (path.includes('.eigent/bin') || path.includes('.eigent\\bin')) {
+      } else if (path.includes('.mygenassist-studio/bin') || path.includes('.mygenassist-studio\\bin')) {
         mockState.filesystem.eigentBinDirExists = true
-      } else if (path.includes('.eigent/cache') || path.includes('.eigent\\cache')) {
+      } else if (path.includes('.mygenassist-studio/cache') || path.includes('.mygenassist-studio\\cache')) {
         mockState.filesystem.eigentCacheDirExists = true
-      } else if (path.includes('.eigent/venvs') || path.includes('.eigent\\venvs')) {
+      } else if (path.includes('.mygenassist-studio/venvs') || path.includes('.mygenassist-studio\\venvs')) {
         mockState.filesystem.eigentVenvsDirExists = true
-      } else if (path.includes('.eigent/runtime') || path.includes('.eigent\\runtime')) {
+      } else if (path.includes('.mygenassist-studio/runtime') || path.includes('.mygenassist-studio\\runtime')) {
         mockState.filesystem.eigentRuntimeDirExists = true
-      } else if (path.includes('.eigent')) {
+      } else if (path.includes('.mygenassist-studio')) {
         mockState.filesystem.eigentDirExists = true
       }
     }),
@@ -193,7 +193,7 @@ dependencies = ["fastapi", "uvicorn"]
 
     readdirSync: vi.fn().mockImplementation((path: string, options?: any) => {
       if (!path || typeof path !== 'string') return []
-      if (path.includes('.eigent/venvs')) {
+      if (path.includes('.mygenassist-studio/venvs')) {
         // Return old venv directories for cleanup testing
         return mockState.filesystem.oldVenvsExist.map(venv => ({
           name: venv,
@@ -436,9 +436,9 @@ export function createProcessUtilsMock() {
       utilsMock.mockState = mockState
       
       utilsMock.getUvEnv.mockReturnValue({
-        UV_PYTHON_INSTALL_DIR: `${mockState.system.homedir}/.eigent/cache/uv_python`,
-        UV_TOOL_DIR: `${mockState.system.homedir}/.eigent/cache/uv_tool`,
-        UV_PROJECT_ENVIRONMENT: `${mockState.system.homedir}/.eigent/venvs/backend-mock`,
+        UV_PYTHON_INSTALL_DIR: `${mockState.system.homedir}/.mygenassist-studio/cache/uv_python`,
+        UV_TOOL_DIR: `${mockState.system.homedir}/.mygenassist-studio/cache/uv_tool`,
+        UV_PROJECT_ENVIRONMENT: `${mockState.system.homedir}/.mygenassist-studio/venvs/backend-mock`,
         UV_HTTP_TIMEOUT: '300',
       })
 
@@ -469,22 +469,22 @@ export function createProcessUtilsMock() {
       })
       
       utilsMock.getBinaryPath.mockImplementation(async (name?: string) => {
-        const binDir = `${mockState.system.homedir}/.eigent/bin`
+        const binDir = `${mockState.system.homedir}/.mygenassist-studio/bin`
         if (!name) return binDir
         const binaryName = mockState.system.platform === 'win32' ? `${name}.exe` : name
         return `${binDir}/${binaryName}`
       })
       
       utilsMock.getCachePath.mockImplementation((folder: string) => {
-        return `${mockState.system.homedir}/.eigent/cache/${folder}`
+        return `${mockState.system.homedir}/.mygenassist-studio/cache/${folder}`
       })
       
       utilsMock.getVenvPath.mockImplementation((version: string) => {
-        return `${mockState.system.homedir}/.eigent/venvs/backend-${version}`
+        return `${mockState.system.homedir}/.mygenassist-studio/venvs/backend-${version}`
       })
       
       utilsMock.getVenvsBaseDir.mockReturnValue(
-        `${mockState.system.homedir}/.eigent/venvs`
+        `${mockState.system.homedir}/.mygenassist-studio/venvs`
       )
       
       utilsMock.cleanupOldVenvs.mockImplementation(async (currentVersion: string) => {

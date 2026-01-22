@@ -12,6 +12,8 @@ import {
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import os, { homedir } from 'node:os';
+import http from 'node:http';
+import { AddressInfo } from 'node:net';
 import log from 'electron-log';
 import { update, registerUpdateIpcHandlers } from './update';
 import { checkToolInstalled, killProcessOnPort, startBackend } from './init';
@@ -71,9 +73,9 @@ let profileInitPromise: Promise<void>;
 
 // Set remote debugging port
 // Storage strategy:
-// 1. Main window: partition 'persist:main_window' in app userData → Eigent account (persistent)
+// 1. Main window: partition 'persist:main_window' in app userData → MyGenAssist account (persistent)
 // 2. WebView: partition 'persist:user_login' in app userData → will import cookies from tool_controller via session API
-// 3. tool_controller: ~/.eigent/browser_profiles/profile_user_login → source of truth for login cookies
+// 3. tool_controller: ~/.mygenassist/browser_profiles/profile_user_login → source of truth for login cookies
 // 4. CDP browser: uses separate profile (doesn't share with main app)
 profileInitPromise = findAvailablePort(browser_port).then(async (port) => {
   browser_port = port;
@@ -82,7 +84,7 @@ profileInitPromise = findAvailablePort(browser_port).then(async (port) => {
   // Create isolated profile for CDP browser only
   const browserProfilesBase = path.join(
     os.homedir(),
-    '.eigent',
+    '.mygenassist',
     'browser_profiles'
   );
   const cdpProfile = path.join(browserProfilesBase, `cdp_profile_${port}`);
@@ -116,7 +118,7 @@ app.commandLine.appendSwitch(
   'AutomationControlled'
 );
 
-// Override User Agent to remove Electron/eigent identifiers
+// Override User Agent to remove Electron/mygenassist identifiers
 // Dynamically generate User Agent based on actual platform and Chrome version
 const getPlatformUA = () => {
   // Use actual Chrome version from Electron instead of hardcoded value
@@ -177,16 +179,16 @@ if (!app.requestSingleInstanceLock()) {
 // ==================== protocol config ====================
 const setupProtocolHandlers = () => {
   if (process.env.NODE_ENV === 'development') {
-    const isDefault = app.isDefaultProtocolClient('eigent', process.execPath, [
+    const isDefault = app.isDefaultProtocolClient('mygenassist-studio', process.execPath, [
       path.resolve(process.argv[1]),
     ]);
     if (!isDefault) {
-      app.setAsDefaultProtocolClient('eigent', process.execPath, [
+      app.setAsDefaultProtocolClient('mygenassist-studio', process.execPath, [
         path.resolve(process.argv[1]),
       ]);
     }
   } else {
-    app.setAsDefaultProtocolClient('eigent');
+    app.setAsDefaultProtocolClient('mygenassist-studio');
   }
 };
 
@@ -270,7 +272,7 @@ const setupSingleInstanceLock = () => {
   } else {
     app.on('second-instance', (event, argv) => {
       log.info('second-instance', argv);
-      const url = argv.find((arg) => arg.startsWith('eigent://'));
+      const url = argv.find((arg) => arg.startsWith('mygenassist-studio://'));
       if (url) handleProtocolUrl(url);
       if (win) win.show();
     });
@@ -403,7 +405,7 @@ function registerIpcHandlers() {
         const { spawn } = await import('child_process');
 
         // Add --host parameter
-        const commandWithHost = `${command} --debug --host dev.eigent.ai/api/oauth/notion/callback?code=1`;
+        const commandWithHost = `${command} --debug --host dev.chat.int.bayer.com/api/v3/oauth/notion/callback?code=1`;
         // const commandWithHost = `${command}`;
 
         log.info(' start execute command:', commandWithHost);
@@ -513,7 +515,7 @@ function registerIpcHandlers() {
       const platform = process.platform;
       const arch = process.arch;
       const systemVersion = `${platform}-${arch}`;
-      const defaultFileName = `eigent-${appVersion}-${systemVersion}-${Date.now()}.log`;
+      const defaultFileName = `mygenassist-${appVersion}-${systemVersion}-${Date.now()}.log`;
 
       // Show save dialog
       const { canceled, filePath } = await dialog.showSaveDialog({
@@ -745,6 +747,46 @@ function registerIpcHandlers() {
     }
   });
 
+  // ==================== Azure AD Auth popup IPC handler ====================
+  // This allows the renderer to directly request opening an auth popup
+  // instead of relying on MSAL's window.open() which fails in Electron
+  ipcMain.on('open-auth-popup', (_, authUrl: string) => {
+    log.info('[AUTH IPC] Received request to open auth popup:', authUrl);
+    if (authUrl && authUrl.includes('login.microsoftonline.com')) {
+      createAuthPopup(authUrl);
+    } else {
+      log.warn('[AUTH IPC] Invalid auth URL, not opening popup');
+      if (win && !win.isDestroyed()) {
+        win.webContents.send('auth-popup-response', {
+          success: false,
+          error: 'Invalid authentication URL'
+        });
+      }
+    }
+  });
+
+  // ==================== System Browser Auth IPC handler ====================
+  // This enables SSO with Company Portal/Enterprise authentication by using the system browser
+  // instead of an Electron BrowserWindow. The system browser has access to SSO cookies and
+  // can properly integrate with device management solutions like Microsoft Intune.
+  ipcMain.handle('start-system-browser-auth', async () => {
+    log.info('[AUTH IPC] Received request to start system browser auth');
+    return await startSystemBrowserAuth();
+  });
+
+  // Handler to open a URL in the system browser (Safari/Chrome)
+  // Used for system browser authentication flow
+  ipcMain.handle('open-url-in-system-browser', async (_, url: string) => {
+    log.info('[AUTH IPC] Opening URL in system browser:', url);
+    try {
+      await shell.openExternal(url);
+      return { success: true };
+    } catch (error: any) {
+      log.error('[AUTH IPC] Failed to open URL in system browser:', error);
+      return { success: false, error: error.message || String(error) };
+    }
+  });
+
   // ==================== file operation handler ====================
   ipcMain.handle('select-file', async (event, options = {}) => {
     const result = await dialog.showOpenDialog(win!, {
@@ -913,7 +955,7 @@ function registerIpcHandlers() {
     fs.writeFileSync(ENV_PATH, lines.join('\n'), 'utf-8');
 
     // Also write to global .env file for backend process to read
-    const GLOBAL_ENV_PATH = path.join(os.homedir(), '.eigent', '.env');
+    const GLOBAL_ENV_PATH = path.join(os.homedir(), '.mygenassist', '.env');
     let globalContent = '';
     try {
       globalContent = fs.existsSync(GLOBAL_ENV_PATH)
@@ -951,7 +993,7 @@ function registerIpcHandlers() {
     log.info('env-remove success', ENV_PATH);
 
     // Also remove from global .env file
-    const GLOBAL_ENV_PATH = path.join(os.homedir(), '.eigent', '.env');
+    const GLOBAL_ENV_PATH = path.join(os.homedir(), '.mygenassist', '.env');
     try {
       let globalContent = fs.existsSync(GLOBAL_ENV_PATH)
         ? fs.readFileSync(GLOBAL_ENV_PATH, 'utf-8')
@@ -1207,15 +1249,15 @@ function registerIpcHandlers() {
   registerUpdateIpcHandlers();
 }
 
-// ==================== ensure eigent directories ====================
-const ensureEigentDirectories = () => {
-  const eigentBase = path.join(os.homedir(), '.eigent');
+// ==================== ensure mygenassist directories ====================
+const ensureMyGenAssistDirectories = () => {
+  const mygenassistBase = path.join(os.homedir(), '.mygenassist');
   const requiredDirs = [
-    eigentBase,
-    path.join(eigentBase, 'bin'),
-    path.join(eigentBase, 'cache'),
-    path.join(eigentBase, 'venvs'),
-    path.join(eigentBase, 'runtime'),
+    mygenassistBase,
+    path.join(mygenassistBase, 'bin'),
+    path.join(mygenassistBase, 'cache'),
+    path.join(mygenassistBase, 'venvs'),
+    path.join(mygenassistBase, 'runtime'),
   ];
 
   for (const dir of requiredDirs) {
@@ -1225,7 +1267,7 @@ const ensureEigentDirectories = () => {
     }
   }
 
-  log.info('.eigent directory structure ensured');
+  log.info('.mygenassist directory structure ensured');
 };
 
 // ==================== Shared backend startup logic ====================
@@ -1251,8 +1293,8 @@ let installationLock: Promise<PromiseReturnType> = Promise.resolve({
 async function createWindow() {
   const isMac = process.platform === 'darwin';
 
-  // Ensure .eigent directories exist before anything else
-  ensureEigentDirectories();
+  // Ensure .mygenassist directories exist before anything else
+  ensureMyGenAssistDirectories();
 
   log.info(
     `[PROJECT BROWSER WINDOW] Creating BrowserWindow which will start Chrome with CDP on port ${browser_port}`
@@ -1269,7 +1311,7 @@ async function createWindow() {
   );
 
   win = new BrowserWindow({
-    title: 'Eigent',
+    title: 'MyGenAssist Studio',
     width: 1200,
     height: 800,
     minWidth: 1050,
@@ -1360,7 +1402,7 @@ async function createWindow() {
   try {
     const browserProfilesBase = path.join(
       os.homedir(),
-      '.eigent',
+      '.mygenassist',
       'browser_profiles'
     );
     const toolControllerProfile = path.join(
@@ -1725,8 +1767,29 @@ const setupExternalLinkHandling = () => {
     }
   };
 
+  // Helper function to check if URL is Azure AD auth URL
+  const isAzureAuthUrl = (url: string): boolean => {
+    return url.includes('login.microsoftonline.com') ||
+           url.includes('login.live.com') ||
+           url.includes('login.windows.net') ||
+           url.includes('login.microsoft.com');
+  };
+
   // handle new window open
   win.webContents.setWindowOpenHandler(({ url }) => {
+    // Handle Azure AD/Entra ID authentication popups manually for Electron
+    // We need to create our own BrowserWindow and intercept the redirect
+    // because MSAL's built-in popup handling doesn't work properly in Electron
+    if (isAzureAuthUrl(url)) {
+      log.info('[AUTH] Creating custom Azure AD authentication popup:', url);
+
+      // Create auth popup window manually
+      createAuthPopup(url);
+
+      // Deny the default popup creation - we handle it ourselves
+      return { action: 'deny' };
+    }
+
     if (isExternalUrl(url)) {
       shell.openExternal(url);
       return { action: 'deny' };
@@ -1744,6 +1807,373 @@ const setupExternalLinkHandling = () => {
     }
     // For internal URLs (localhost, hash navigation), allow navigation to proceed
   });
+};
+
+// ==================== System Browser Authentication (SSO with Company Portal) ====================
+/**
+ * Active loopback server for system browser authentication.
+ * Used to receive the OAuth redirect from the system browser.
+ */
+let systemBrowserAuthServer: http.Server | null = null;
+
+/**
+ * Creates a loopback HTTP server to receive the OAuth redirect from the system browser.
+ * This enables proper SSO with Company Portal/Enterprise authentication on macOS/Windows.
+ *
+ * The flow:
+ * 1. Start a local HTTP server on a random available port
+ * 2. Return the localhost redirect URI to the renderer
+ * 3. Renderer builds auth URL and opens in system browser via shell.openExternal()
+ * 4. User authenticates in system browser (with full Company Portal SSO support)
+ * 5. Azure redirects to localhost, our server receives the auth code
+ * 6. Server sends auth code to renderer via IPC and closes
+ *
+ * @returns Promise with the port number and server instance
+ */
+const createSystemBrowserAuthServer = (): Promise<{ port: number; server: http.Server }> => {
+  return new Promise((resolve, reject) => {
+    // Clean up any existing server
+    if (systemBrowserAuthServer) {
+      try {
+        systemBrowserAuthServer.close();
+      } catch (e) {
+        log.warn('[SYSTEM BROWSER AUTH] Error closing existing server:', e);
+      }
+      systemBrowserAuthServer = null;
+    }
+
+    const server = http.createServer((req, res) => {
+      const url = new URL(req.url || '/', `http://localhost`);
+
+      log.info('[SYSTEM BROWSER AUTH] Received request:', url.pathname);
+
+      // Check if this is the OAuth callback
+      if (url.pathname === '/' || url.pathname === '/auth/callback') {
+        const code = url.searchParams.get('code');
+        const error = url.searchParams.get('error');
+        const errorDescription = url.searchParams.get('error_description');
+        const state = url.searchParams.get('state');
+
+        if (error) {
+          log.error('[SYSTEM BROWSER AUTH] OAuth error:', error, errorDescription);
+
+          // Send error page to browser
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <title>Authentication Failed</title>
+              <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                       display: flex; justify-content: center; align-items: center;
+                       height: 100vh; margin: 0; background: #f5f5f5; }
+                .container { text-align: center; padding: 40px; background: white;
+                            border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                h1 { color: #d32f2f; margin-bottom: 16px; }
+                p { color: #666; margin-bottom: 24px; }
+                .error-code { background: #fff3f3; padding: 12px; border-radius: 6px;
+                             color: #d32f2f; font-family: monospace; font-size: 14px; }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <h1>Authentication Failed</h1>
+                <p>There was an error signing you in. Please close this window and try again.</p>
+                <div class="error-code">${error}: ${errorDescription || 'Unknown error'}</div>
+              </div>
+            </body>
+            </html>
+          `);
+
+          // Send error to renderer
+          if (win && !win.isDestroyed()) {
+            win.webContents.send('system-browser-auth-result', {
+              success: false,
+              error: error,
+              errorDescription: errorDescription
+            });
+          }
+        } else if (code) {
+          log.info('[SYSTEM BROWSER AUTH] Received auth code, state:', state);
+
+          // Send success page to browser
+          res.writeHead(200, { 'Content-Type': 'text/html' });
+          res.end(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <title>Authentication Successful</title>
+              <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                       display: flex; justify-content: center; align-items: center;
+                       height: 100vh; margin: 0; background: #f5f5f5; }
+                .container { text-align: center; padding: 40px; background: white;
+                            border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+                h1 { color: #4caf50; margin-bottom: 16px; }
+                p { color: #666; }
+                .spinner { width: 24px; height: 24px; border: 3px solid #e0e0e0;
+                          border-top-color: #4caf50; border-radius: 50%;
+                          animation: spin 1s linear infinite; margin: 20px auto; }
+                @keyframes spin { to { transform: rotate(360deg); } }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <h1>Authentication Successful</h1>
+                <div class="spinner"></div>
+                <p>You can close this window and return to myGenAssist Studio.</p>
+              </div>
+            </body>
+            </html>
+          `);
+
+          // Send auth code to renderer
+          if (win && !win.isDestroyed()) {
+            win.webContents.send('system-browser-auth-result', {
+              success: true,
+              code: code,
+              state: state,
+              fullUrl: `http://localhost:${(server.address() as AddressInfo).port}${req.url}`
+            });
+          }
+        } else {
+          // No code or error - might be a favicon request or similar
+          res.writeHead(404);
+          res.end('Not Found');
+          return;
+        }
+
+        // Close the server after a short delay
+        setTimeout(() => {
+          log.info('[SYSTEM BROWSER AUTH] Closing loopback server');
+          try {
+            server.close();
+            systemBrowserAuthServer = null;
+          } catch (e) {
+            log.warn('[SYSTEM BROWSER AUTH] Error closing server:', e);
+          }
+        }, 1000);
+      } else {
+        // Handle other requests (favicon, etc.)
+        res.writeHead(404);
+        res.end('Not Found');
+      }
+    });
+
+    // Listen on a random available port on localhost
+    server.listen(0, '127.0.0.1', () => {
+      const address = server.address() as AddressInfo;
+      log.info('[SYSTEM BROWSER AUTH] Loopback server started on port:', address.port);
+      systemBrowserAuthServer = server;
+      resolve({ port: address.port, server });
+    });
+
+    server.on('error', (error) => {
+      log.error('[SYSTEM BROWSER AUTH] Server error:', error);
+      reject(error);
+    });
+
+    // Set a timeout to close the server if no response is received
+    setTimeout(() => {
+      if (systemBrowserAuthServer === server) {
+        log.warn('[SYSTEM BROWSER AUTH] Server timeout - closing');
+        try {
+          server.close();
+          systemBrowserAuthServer = null;
+          if (win && !win.isDestroyed()) {
+            win.webContents.send('system-browser-auth-result', {
+              success: false,
+              error: 'timeout',
+              errorDescription: 'Authentication timed out. Please try again.'
+            });
+          }
+        } catch (e) {
+          log.warn('[SYSTEM BROWSER AUTH] Error closing server on timeout:', e);
+        }
+      }
+    }, 300000); // 5 minute timeout
+  });
+};
+
+/**
+ * Starts the system browser authentication flow.
+ * Called via IPC from the renderer process.
+ *
+ * This function creates a loopback server and returns the redirect URI.
+ * The renderer is responsible for building the auth URL with this redirect URI
+ * and calling 'open-url-in-system-browser' to open it.
+ *
+ * @returns Promise with the localhost redirect URI
+ */
+const startSystemBrowserAuth = async (): Promise<{ success: boolean; redirectUri?: string; error?: string }> => {
+  try {
+    log.info('[SYSTEM BROWSER AUTH] Starting system browser auth flow - creating loopback server');
+
+    // Create the loopback server
+    const { port } = await createSystemBrowserAuthServer();
+    const redirectUri = `http://127.0.0.1:${port}`;
+
+    log.info('[SYSTEM BROWSER AUTH] Loopback server ready at:', redirectUri);
+
+    // Return the redirect URI - renderer will build the auth URL and open it
+    return { success: true, redirectUri };
+  } catch (error: any) {
+    log.error('[SYSTEM BROWSER AUTH] Error starting auth flow:', error);
+    return { success: false, error: error.message || String(error) };
+  }
+};
+
+// ==================== Azure AD Auth Popup Handler ====================
+/**
+ * Creates a custom BrowserWindow for Azure AD authentication.
+ * This keeps the entire SSO flow within Electron instead of opening in the system browser.
+ *
+ * The flow:
+ * 1. Open Azure login page in a new BrowserWindow
+ * 2. User authenticates with Microsoft
+ * 3. Azure redirects to our redirect URI (localhost or custom protocol)
+ * 4. We intercept the redirect, extract the auth code/hash from the URL
+ * 5. Send the auth response back to the main renderer via IPC
+ * 6. Close the popup
+ *
+ * @param authUrl The Azure AD login URL to open
+ */
+const createAuthPopup = (authUrl: string) => {
+  log.info('[AUTH POPUP] Creating authentication popup window');
+
+  const authPopup = new BrowserWindow({
+    width: 500,
+    height: 700,
+    center: true,
+    resizable: true,
+    title: 'Sign in - Microsoft',
+    parent: win || undefined,
+    modal: false,
+    show: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      // Don't need preload for auth popup - it's just for displaying Microsoft login
+    }
+  });
+
+  // Track if auth was completed to avoid double-handling
+  let authCompleted = false;
+
+  // Function to check if URL is our redirect URI
+  const isRedirectUri = (url: string): boolean => {
+    try {
+      const urlObj = new URL(url);
+      // Check for localhost redirects (dev mode)
+      if (urlObj.hostname === 'localhost' || urlObj.hostname === '127.0.0.1') {
+        return true;
+      }
+      // Check for custom protocol redirects (production)
+      if (urlObj.protocol === 'mygenassist-studio:') {
+        return true;
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  };
+
+  // Function to extract auth response from URL and send to main window
+  const handleAuthRedirect = (url: string) => {
+    if (authCompleted) return;
+
+    log.info('[AUTH POPUP] Handling auth redirect:', url);
+    authCompleted = true;
+
+    try {
+      // Send the entire redirect URL to the renderer
+      // The renderer (MSAL) will parse it and extract the auth code/tokens
+      if (win && !win.isDestroyed()) {
+        log.info('[AUTH POPUP] Sending auth-popup-response to main window');
+        win.webContents.send('auth-popup-response', {
+          success: true,
+          url: url
+        });
+      }
+    } catch (error) {
+      log.error('[AUTH POPUP] Error handling auth redirect:', error);
+      if (win && !win.isDestroyed()) {
+        win.webContents.send('auth-popup-response', {
+          success: false,
+          error: String(error)
+        });
+      }
+    }
+
+    // Close the popup after a short delay to ensure the message is sent
+    setTimeout(() => {
+      if (authPopup && !authPopup.isDestroyed()) {
+        authPopup.close();
+      }
+    }, 100);
+  };
+
+  // Listen for navigation events to intercept the redirect
+  authPopup.webContents.on('will-navigate', (event, url) => {
+    log.info('[AUTH POPUP] will-navigate:', url);
+
+    if (isRedirectUri(url)) {
+      log.info('[AUTH POPUP] Intercepting redirect to:', url);
+      event.preventDefault();
+      handleAuthRedirect(url);
+    }
+  });
+
+  // Also listen for will-redirect (handles 302 redirects)
+  authPopup.webContents.on('will-redirect', (event, url) => {
+    log.info('[AUTH POPUP] will-redirect:', url);
+
+    if (isRedirectUri(url)) {
+      log.info('[AUTH POPUP] Intercepting redirect (302) to:', url);
+      event.preventDefault();
+      handleAuthRedirect(url);
+    }
+  });
+
+  // Handle did-navigate for cases where navigation already happened
+  authPopup.webContents.on('did-navigate', (event, url) => {
+    log.info('[AUTH POPUP] did-navigate:', url);
+
+    if (isRedirectUri(url)) {
+      log.info('[AUTH POPUP] Page navigated to redirect URI:', url);
+      handleAuthRedirect(url);
+    }
+  });
+
+  // Handle popup being closed by user (auth cancelled)
+  authPopup.on('closed', () => {
+    log.info('[AUTH POPUP] Popup closed');
+    if (!authCompleted && win && !win.isDestroyed()) {
+      log.info('[AUTH POPUP] Auth cancelled by user');
+      win.webContents.send('auth-popup-response', {
+        success: false,
+        error: 'user_cancelled',
+        cancelled: true
+      });
+    }
+  });
+
+  // Load the auth URL
+  authPopup.loadURL(authUrl).catch((error) => {
+    log.error('[AUTH POPUP] Failed to load auth URL:', error);
+    if (win && !win.isDestroyed()) {
+      win.webContents.send('auth-popup-response', {
+        success: false,
+        error: String(error)
+      });
+    }
+    if (!authPopup.isDestroyed()) {
+      authPopup.close();
+    }
+  });
+
+  log.info('[AUTH POPUP] Auth popup created and loading:', authUrl);
 };
 
 // ==================== check and start backend ====================

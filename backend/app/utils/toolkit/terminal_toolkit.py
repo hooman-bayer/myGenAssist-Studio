@@ -58,7 +58,7 @@ class TerminalToolkit(BaseTerminalToolkit, AbstractToolkit):
             self.agent_name = agent_name
 
         # Get base directory from environment
-        base_dir = env("file_save_path", os.path.expanduser("~/.eigent/terminal/"))
+        base_dir = env("file_save_path", os.path.expanduser("~/.mygenassist-studio/terminal/"))
 
         if working_directory is None:
             working_directory = base_dir

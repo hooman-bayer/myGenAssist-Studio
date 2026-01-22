@@ -24,5 +24,5 @@ class NoteTakingToolkit(BaseNoteTakingToolkit, AbstractToolkit):
         if agent_name is not None:
             self.agent_name = agent_name
         if working_directory is None:
-            working_directory = env("file_save_path", os.path.expanduser("~/.eigent/notes")) + "/note.md"
+            working_directory = env("file_save_path", os.path.expanduser("~/.mygenassist-studio/notes")) + "/note.md"
         super().__init__(working_directory=working_directory, timeout=timeout)

@@ -345,7 +345,7 @@ export default function SignUp() {
 				<Button 
 				  variant="ghost"
 					size="xs"
-					onClick={() => window.open("https://www.eigent.ai/privacy-policy", "_blank", "noopener,noreferrer")}
+					onClick={() => window.open("https://chat.int.bayer.com/", "_blank", "noopener,noreferrer")}
 				>
 					{t("layout.privacy-policy")}
 				</Button>

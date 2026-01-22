@@ -45,7 +45,7 @@ async function downloadBunBinary(bun_download_url,platform, arch, version = DEFA
   }
 
   // Create output directory structure
-  const binDir = path.join(os.homedir(), '.eigent', 'bin')
+  const binDir = path.join(os.homedir(), '.mygenassist', 'bin')
   // Ensure directories exist
   fs.mkdirSync(binDir, { recursive: true })
 

@@ -416,11 +416,11 @@ describe('ChatBox Integration Tests - Different ChatStore Configurations', () =>
       const privacyLink = screen.getByRole('link', { name: /layout.privacy-policy/i })
       
       expect(termsLink).toBeInTheDocument()
-      expect(termsLink).toHaveAttribute('href', 'https://www.eigent.ai/terms-of-use')
+      expect(termsLink).toHaveAttribute('href', 'https://docs.int.bayer.com/baychatgpt/terms-of-use')
       expect(termsLink).toHaveAttribute('target', '_blank')
-      
+
       expect(privacyLink).toBeInTheDocument()
-      expect(privacyLink).toHaveAttribute('href', 'https://www.eigent.ai/privacy-policy')
+      expect(privacyLink).toHaveAttribute('href', 'https://docs.int.bayer.com/baychatgpt/privacy-policy')
       expect(privacyLink).toHaveAttribute('target', '_blank')
     })
   })

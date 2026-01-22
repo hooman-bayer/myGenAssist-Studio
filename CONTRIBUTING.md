@@ -1,6 +1,6 @@
-# 🐫 Welcome to Eigent! 🐫
+# Welcome to myGenAssist Studio!
 
-Thank you for your interest in contributing to the Eigent project! 🎉
+Thank you for your interest in contributing to the myGenAssist Studio project! 🎉
 We're excited to have your support. As an open-source product build on
 CAMEL in a rapidly evolving and open-ended field, we wholeheartedly
 welcome contributions of all kinds. Whether you want to introduce new
@@ -73,7 +73,7 @@ request is the ideal way to catch our attention. 🚀
 ### Contributing to Code Reviews 🔍
 
 This part outlines the guidelines and best practices for conducting
-code reviews in Eigent. The aim is to ensure that all contributions are
+code reviews in myGenAssist Studio. The aim is to ensure that all contributions are
 of high quality, align with the project's goals, and are consistent with
 our coding standards.
 
@@ -125,11 +125,11 @@ our coding standards.
 - Ignoring Feedback: Address all feedback provided by reviewers, even if you don’t agree with it—discuss it instead of ignoring it.
 - Rushed Reviews: Avoid rushing through reviews. Taking the time to thoroughly review code is critical to maintaining quality.
 
-Code reviews are an essential part of maintaining the quality and integrity of our open source project. By following these guidelines, we can ensure that Eigent remains robust, secure, and easy to maintain, while also fostering a collaborative and welcoming community.
+Code reviews are an essential part of maintaining the quality and integrity of our project. By following these guidelines, we can ensure that myGenAssist Studio remains robust, secure, and easy to maintain, while also fostering a collaborative and welcoming community.
 
 ### Guideline for Writing Docstrings
 
-This guideline will help you write clear, concise, and structured docstrings for contributing to `Eigent`.
+This guideline will help you write clear, concise, and structured docstrings for contributing to `myGenAssist Studio`.
 
 #### 1. Use the Triple-Quoted String with `r"""` (Raw String)
 
@@ -183,33 +183,27 @@ Examples:
 
 By adhering to this principle, we ensure that CAMEL remains accessible and unambiguous for both developers and AI agents.
 
-### Board Item Create Workflow 🛠️
+### Board Item Create Workflow
 
-At Eigent, we manage our project through a structured workflow that ensures efficiency and clarity in our development process. Our workflow includes stages for issue creation and pull requests (PRs), sprint planning, and reviews.
+The development workflow follows standard practices for feature development and bug fixes.
 
 #### Issue Item Stage
 
-Our [issues](https://github.com/eigent-ai/eigent/issues) page on GitHub is regularly updated with bugs, improvements, and feature requests. We have a handy set of labels to help you sort through and find issues that interest you. Feel free to use these labels to keep things organized.
-
-When you start working on an issue, please assign it to yourself so that others know it's being taken care of.
+For internal development, please coordinate with the myGenAssist team for issue tracking and assignment.
 
 When creating a new issue, it's best to keep it focused on a specific bug, improvement, or feature. If two issues are related or blocking each other, it's better to link them instead of merging them into one.
 
-We do our best to keep these issues up to date, but considering the fast-paced nature of this field, some may become outdated. If you come across any such issues, please give us a heads-up so we can address them promptly. 👀
+Here's how to engage with issues effectively:
 
-Here’s how to engage with our issues effectively:
-
-- Go to [GitHub Issues](https://github.com/eigent-ai/eigent/issues), create a new issue, choose the category, and fill in the required information.
-- Ensure the issue has a proper title and update the Assignees, Labels, Projects (select Backlog status), Development, and Milestones.
-- Discuss the issue during team meetings, then move it to the Analysis Done column.
-- At the beginning of each sprint, share the analyzed issue and move it to the Sprint Planned column if you are going to work on this issue in the sprint.
+- Create a new issue, choose the category, and fill in the required information.
+- Ensure the issue has a proper title and update the Assignees, Labels, and Milestones.
+- Discuss the issue during team meetings, then prioritize accordingly.
 
 #### Pull Request Item Stage
 
-- Go to [GitHub Pulls](https://github.com/eigent-ai/eigent/pulls), create a new PR, choose the branch, and fill in the information, linking the related issue.
-- Ensure the PR has a proper title and update the Reviewers (convert to draft), Assignees, Labels, Projects (select Developing status), Development, and Milestones.
-- If the PR is related to a roadmap, link the roadmap to the PR.
-- Move the PR item through the stages: Developing, Stuck, Reviewing (click ready for review), Merged. The linked issue will close automatically when the PR is merged.
+- Create a new PR, choose the branch, and fill in the information, linking the related issue.
+- Ensure the PR has a proper title and update the Reviewers, Assignees, and Labels.
+- Move the PR item through the stages: Developing, Reviewing, Merged. The linked issue will close automatically when the PR is merged.
 
 **Labeling PRs:**
 
@@ -225,16 +219,16 @@ Here’s how to engage with our issues effectively:
 
 Our aim is to make the developer setup as straightforward as possible. If you encounter any challenges during the setup process, don't hesitate to reach out to a maintainer. We're here to assist you and ensure that the experience is smooth not just for you but also for future contributors. 😊
 
-## Quick Start 🚀
+## Quick Start
 
 ```bash
-git clone https://github.com/eigent-ai/eigent.git
-cd eigent
+git clone <repository-url>
+cd myGenAssist-Studio
 npm install
 npm run dev
 
 # In a separate terminal, start the backend server
-cd eigent/server
+cd myGenAssist-Studio/server
 docker compose up
 ```
 

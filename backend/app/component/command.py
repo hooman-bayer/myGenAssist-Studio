@@ -2,7 +2,7 @@ import os
 
 
 def bun():
-    return os.path.expanduser("~/.eigent/bin/bun")
+    return os.path.expanduser("~/.mygenassist-studio/bin/bun")
 
 
 def uv():

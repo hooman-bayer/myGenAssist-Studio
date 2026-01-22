@@ -1,266 +1,27 @@
 import { useAuthStore } from '@/store/authStore';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useCallback, useEffect, useState, useRef } from 'react';
-import { useStackApp } from '@stackframe/react';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState, useRef } from 'react';
 import loginGif from '@/assets/login.gif';
 import { Button } from '@/components/ui/button';
-
-import { Input } from '@/components/ui/input';
-
-import github2 from '@/assets/github2.svg';
-import google from '@/assets/google.svg';
-import eye from '@/assets/eye.svg';
-import eyeOff from '@/assets/eye-off.svg';
-import { proxyFetchPost } from '@/api/http';
-import { hasStackKeys } from '@/lib';
 import { useTranslation } from 'react-i18next';
 import WindowControls from '@/components/WindowControls';
+import { useAuth } from '@/hooks/useAuth';
 
-const HAS_STACK_KEYS = hasStackKeys();
-let lock = false;
 export default function Login() {
-  const app = HAS_STACK_KEYS ? useStackApp() : null;
-  const { setAuth, setModelType, setLocalProxyValue } = useAuthStore();
+  const { setModelType, setLocalProxyValue } = useAuthStore();
   const navigate = useNavigate();
-  const location = useLocation();
-  const [hidePassword, setHidePassword] = useState(true);
   const { t } = useTranslation();
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-  const [errors, setErrors] = useState({
-    email: '',
-    password: '',
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [generalError, setGeneralError] = useState('');
+
+  // Bayer SSO auth hook
+  const {
+    login: ssoLogin,
+    isAuthenticated: ssoAuthenticated,
+    isLoading: ssoLoading,
+    error: ssoError,
+  } = useAuth();
+  const [ssoErrorMessage, setSsoErrorMessage] = useState<string>('');
   const titlebarRef = useRef<HTMLDivElement>(null);
   const [platform, setPlatform] = useState<string>('');
-
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validateForm = () => {
-    const newErrors = {
-      email: '',
-      password: '',
-    };
-
-    if (!formData.email) {
-      newErrors.email = t('layout.please-enter-email-address');
-    } else if (!validateEmail(formData.email)) {
-      newErrors.email = t('layout.please-enter-a-valid-email-address');
-    }
-
-    if (!formData.password) {
-      newErrors.password = t('layout.please-enter-password');
-    } else if (formData.password.length < 8) {
-      newErrors.password = t('layout.password-must-be-at-least-8-characters');
-    }
-
-    setErrors(newErrors);
-    return !newErrors.email && !newErrors.password;
-  };
-
-  const getLoginErrorMessage = (data: any) => {
-    if (!data || typeof data !== 'object' || typeof data.code !== 'number') {
-      return '';
-    }
-
-    if (data.code === 0) {
-      return '';
-    }
-
-    if (data.code === 10) {
-      return (
-        data.text ||
-        t('layout.login-failed-please-check-your-email-and-password')
-      );
-    }
-
-    if (data.code === 1 && Array.isArray(data.error) && data.error.length > 0) {
-      const firstError = data.error[0];
-      if (typeof firstError === 'string') {
-        return firstError;
-      }
-      if (typeof firstError?.msg === 'string') {
-        return firstError.msg;
-      }
-      if (typeof firstError?.message === 'string') {
-        return firstError.message;
-      }
-    }
-
-    return data.text || t('layout.login-failed-please-try-again');
-  };
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    if (errors[field as keyof typeof errors]) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: '',
-      }));
-    }
-
-    if (generalError) {
-      setGeneralError('');
-    }
-  };
-
-  //
-  const handleLogin = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
-    setGeneralError('');
-    setIsLoading(true);
-    try {
-      const data = await proxyFetchPost('/api/login', {
-        email: formData.email,
-        password: formData.password,
-      });
-
-      const errorMessage = getLoginErrorMessage(data);
-      if (errorMessage) {
-        setGeneralError(errorMessage);
-        return;
-      }
-
-      setAuth({ email: formData.email, ...data });
-      setModelType('cloud');
-      // Record VITE_USE_LOCAL_PROXY value at login
-      const localProxyValue = import.meta.env.VITE_USE_LOCAL_PROXY || null;
-      setLocalProxyValue(localProxyValue);
-      navigate('/');
-    } catch (error: any) {
-      console.error('Login failed:', error);
-      setGeneralError(
-        t('layout.login-failed-please-check-your-email-and-password')
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleLoginByStack = async (token: string) => {
-    try {
-      const data = await proxyFetchPost('/api/login-by_stack?token=' + token, {
-        token: token,
-      });
-
-      const errorMessage = getLoginErrorMessage(data);
-      if (errorMessage) {
-        setGeneralError(errorMessage);
-        return;
-      }
-      console.log('data', data);
-      setModelType('cloud');
-      setAuth({ email: formData.email, ...data });
-      // Record VITE_USE_LOCAL_PROXY value at login
-      const localProxyValue = import.meta.env.VITE_USE_LOCAL_PROXY || null;
-      setLocalProxyValue(localProxyValue);
-      navigate('/');
-    } catch (error: any) {
-      console.error('Login failed:', error);
-      setGeneralError(
-        t('layout.login-failed-please-check-your-email-and-password')
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleReloadBtn = async (type: string) => {
-    if (!app) {
-      console.error('Stack app not initialized');
-      return;
-    }
-    console.log('handleReloadBtn1', type);
-    const cookies = document.cookie.split('; ');
-    cookies.forEach((cookie) => {
-      const [name] = cookie.split('=');
-      if (name.startsWith('stack-oauth-outer-')) {
-        document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
-      }
-    });
-    console.log('handleReloadBtn2', type);
-    await app.signInWithOAuth(type);
-  };
-
-  const handleGetToken = async (code: string) => {
-    const code_verifier = localStorage.getItem('stack-oauth-outer-');
-    const formData = new URLSearchParams();
-    console.log(
-      'import.meta.env.PROD',
-      import.meta.env.PROD
-        ? `${import.meta.env.VITE_BASE_URL}/api/redirect/callback`
-        : `${import.meta.env.VITE_PROXY_URL}/api/redirect/callback`
-    );
-    formData.append(
-      'redirect_uri',
-      import.meta.env.PROD
-        ? `${import.meta.env.VITE_BASE_URL}/api/redirect/callback`
-        : `${import.meta.env.VITE_PROXY_URL}/api/redirect/callback`
-    );
-    formData.append('code_verifier', code_verifier || '');
-    formData.append('code', code);
-    formData.append('grant_type', 'authorization_code');
-    formData.append('client_id', 'aa49cdd0-318e-46bd-a540-0f1e5f2b391f');
-    formData.append(
-      'client_secret',
-      'pck_t13egrd9ve57tz52kfcd2s4h1zwya5502z43kr5xv5cx8'
-    );
-
-    try {
-      const res = await fetch(
-        'https://api.stack-auth.com/api/v1/auth/oauth/token',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-          },
-          body: formData,
-        }
-      );
-      const data = await res.json(); // parse response data
-      return data.access_token;
-    } catch (error) {
-      console.error(error);
-      setIsLoading(false);
-    }
-  };
-
-  const handleAuthCode = useCallback(
-    async (event: any, code: string) => {
-      if (lock || location.pathname !== '/login') return;
-
-      lock = true;
-      setIsLoading(true);
-      let accessToken = await handleGetToken(code);
-      handleLoginByStack(accessToken);
-      setTimeout(() => {
-        lock = false;
-      }, 1500);
-    },
-    [location.pathname]
-  );
-
-  useEffect(() => {
-    window.ipcRenderer?.on('auth-code-received', handleAuthCode);
-
-    return () => {
-      window.ipcRenderer?.off('auth-code-received', handleAuthCode);
-    };
-  }, []);
 
   useEffect(() => {
     const p = window.electronAPI.getPlatform();
@@ -285,6 +46,36 @@ export default function Login() {
     };
   }, []);
 
+  // Redirect to main app on successful SSO authentication
+  useEffect(() => {
+    if (ssoAuthenticated) {
+      setModelType('cloud');
+      const localProxyValue = import.meta.env.VITE_USE_LOCAL_PROXY || null;
+      setLocalProxyValue(localProxyValue);
+      navigate('/');
+    }
+  }, [ssoAuthenticated, navigate, setModelType, setLocalProxyValue]);
+
+  // Update SSO error message when error changes
+  useEffect(() => {
+    if (ssoError) {
+      setSsoErrorMessage(ssoError.message || t('layout.login-failed-please-try-again'));
+    }
+  }, [ssoError, t]);
+
+  // Handle Bayer SSO login
+  const handleSsoLogin = async () => {
+    try {
+      setSsoErrorMessage('');
+      await ssoLogin();
+    } catch (error: any) {
+      console.error('SSO Login failed:', error);
+      setSsoErrorMessage(
+        error?.message || t('layout.login-failed-please-try-again')
+      );
+    }
+  };
+
   return (
     <div className="h-full flex flex-col relative overflow-hidden">
       {/* Titlebar with drag region and window controls */}
@@ -303,7 +94,7 @@ export default function Login() {
         >
           {platform === 'darwin' && (
             <span className="text-label-md text-text-heading font-bold">
-              Eigent
+              myGenAssist Studio
             </span>
           )}
         </div>
@@ -338,120 +129,74 @@ export default function Login() {
         </div>
         <div className="h-full flex-1 flex flex-col items-center justify-center pt-11">
           <div className="flex-1 flex flex-col w-80 items-center justify-center">
-            <div className="flex self-stretch items-end justify-between mb-4">
-              <div className="text-text-heading text-heading-lg font-bold ">
+            <div className="flex self-stretch items-center justify-center mb-4">
+              <div className="text-text-heading text-heading-lg font-bold text-center">
                 {t('layout.login')}
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  if (import.meta.env.VITE_USE_LOCAL_PROXY === 'true') {
-                    navigate('/signup');
-                  } else {
-                    window.open(
-                      'https://www.eigent.ai/signup',
-                      '_blank',
-                      'noopener,noreferrer'
-                    );
-                  }
-                }}
-              >
-                {t('layout.sign-up')}
-              </Button>
             </div>
-            {HAS_STACK_KEYS && (
-              <div className="w-full pt-6">
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={() => handleReloadBtn('google')}
-                  className="w-full rounded-[24px] mb-4 transition-all duration-300 ease-in-out text-[#F5F5F5] text-center font-inter text-[15px] font-bold leading-[22px] justify-center"
-                  disabled={isLoading}
-                >
-                  <img src={google} className="w-5 h-5" />
-                  <span className="ml-2">
-                    {t('layout.continue-with-google-login')}
-                  </span>
-                </Button>
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={() => handleReloadBtn('github')}
-                  className="w-full rounded-[24px] mb-4 transition-all duration-300 ease-in-out text-[#F5F5F5] text-center font-inter text-[15px] font-bold leading-[22px] justify-center"
-                  disabled={isLoading}
-                >
-                  <img src={github2} className="w-5 h-5" />
-                  <span className="ml-2">
-                    {t('layout.continue-with-github-login')}
-                  </span>
-                </Button>
-              </div>
-            )}
-            {HAS_STACK_KEYS && (
-              <div className="mt-2 w-full text-[#222] text-center font-inter text-[15px]  font-medium leading-[22px] mb-6">
-                {t('layout.or')}
-              </div>
-            )}
-            <div className="flex flex-col gap-4 w-full">
-              {generalError && (
-                <p className="text-text-cuation text-label-md mt-1 mb-4">
-                  {generalError}
+            {/* Bayer SSO Login - Only Option */}
+            <div className="w-full pt-6 flex flex-col items-center">
+              {ssoErrorMessage && (
+                <p className="text-text-cuation text-label-md mb-4 text-center">
+                  {ssoErrorMessage}
                 </p>
               )}
-              <div className="flex flex-col gap-4 w-full mb-4 relative">
-                <Input
-                  id="email"
-                  type="email"
-                  size="default"
-                  title={t('layout.email')}
-                  placeholder={t('layout.enter-your-email')}
-                  required
-                  value={formData.email}
-                  onChange={(e) => handleInputChange('email', e.target.value)}
-                  state={errors.email ? 'error' : undefined}
-                  note={errors.email}
-                  onEnter={handleLogin}
-                />
-
-                <Input
-                  id="password"
-                  title={t('layout.password')}
-                  size="default"
-                  type={hidePassword ? 'password' : 'text'}
-                  required
-                  placeholder={t('layout.enter-your-password')}
-                  value={formData.password}
-                  onChange={(e) =>
-                    handleInputChange('password', e.target.value)
-                  }
-                  state={errors.password ? 'error' : undefined}
-                  note={errors.password}
-                  backIcon={<img src={hidePassword ? eye : eyeOff} />}
-                  onBackIconClick={() => setHidePassword(!hidePassword)}
-                  onEnter={handleLogin}
-                />
-              </div>
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={handleSsoLogin}
+                className="w-full rounded-[24px] mb-4 transition-all duration-300 ease-in-out text-[#F5F5F5] text-center font-inter text-[15px] font-bold leading-[22px] justify-center bg-[#10857F] hover:bg-[#0d6b66]"
+                disabled={ssoLoading}
+              >
+                {ssoLoading ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    <span>Signing in...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      className="w-5 h-5 mr-2"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    <span>Sign in with Bayer SSO</span>
+                  </>
+                )}
+              </Button>
             </div>
-            <Button
-              onClick={handleLogin}
-              size="md"
-              variant="primary"
-              type="submit"
-              className="w-full rounded-full"
-              disabled={isLoading}
-            >
-              <span className="flex-1">
-                {isLoading ? t('layout.logging-in') : t('layout.log-in')}
-              </span>
-            </Button>
           </div>
           <Button
             variant="ghost"
             size="xs"
             onClick={() =>
               window.open(
-                'https://www.eigent.ai/privacy-policy',
+                'https://chat.int.bayer.com/',
                 '_blank',
                 'noopener,noreferrer'
               )

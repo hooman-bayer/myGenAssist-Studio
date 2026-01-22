@@ -1,18 +1,18 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "name": "Eigent Documentation",
+  "name": "myGenAssist Studio Documentation",
   "theme": "aspen",
   "defaultPage": "/get_started/welcome",
   "logo": {
     "light": "images/logo-light.png",
     "dark": "images/logo-dark.png",
-    "href": "https://www.eigent.ai"
+    "href": "https://chat.int.bayer.com"
   },
   "favicon": "images/favicon.png",
   "colors": {
-    "primary": "#1d1d1d",
+    "primary": "#1FBD81",
     "light": "#F5F4F0",
-    "dark": "#363AF5"
+    "dark": "#1d1d1d"
   },
   "background": {
     "color": {
@@ -27,17 +27,11 @@
     }
   },
   "navbar": {
-    "links": [
-      {
-        "icon": "github",
-        "label": "GitHub",
-        "href": "https://github.com/eigent-ai/eigent"
-      }
-    ],
+    "links": [],
     "primary": {
       "type": "button",
       "label": "Get Started",
-      "href": "https://www.eigent.ai/download"
+      "href": "https://docs.int.bayer.com/baychatgpt"
     }
   },
   "navigation": {
@@ -89,18 +83,14 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Download Here",
-          "href": "https://www.eigent.ai",
-          "icon": "gift"
+          "anchor": "myGenAssist Platform",
+          "href": "https://chat.int.bayer.com",
+          "icon": "globe"
         }
       ]
     }
   },
   "footer": {
-    "socials": {
-      "github": "https://github.com/eigent-ai/eigent",
-      "twitter": "https://x.com/Eigent-AI",
-      "linkedin": "https://www.linkedin.com/company/eigent-ai/"
-    }
+    "socials": {}
   }
 }

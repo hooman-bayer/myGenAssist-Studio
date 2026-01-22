@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 
-const MCP_CONFIG_DIR = path.join(os.homedir(), '.eigent');
+const MCP_CONFIG_DIR = path.join(os.homedir(), '.mygenassist');
 const MCP_CONFIG_PATH = path.join(MCP_CONFIG_DIR, 'mcp.json');
 
 type McpServerConfig = {

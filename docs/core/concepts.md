@@ -1,6 +1,6 @@
 ---
 title: "Concepts"
-description: "Understand the core terms and features that make Eigent unique."
+description: "Understand the core terms and features that make myGenAssist Studio unique."
 icon: "key"
 ---
 
@@ -54,7 +54,7 @@ MCP extends your Workers' capabilities by providing access to real-world data an
 
 ## Models
 
-Different AI "brains" that power your Workers. Eigent allows you to choose from various models (like GPT-4.1 or Gemini 2.5 Pro), each with different strengths in speed, reasoning, and cost.
+Different AI "brains" that power your Workers. myGenAssist Studio allows you to choose from various models (like GPT-4.1 or Gemini 2.5 Pro), each with different strengths in speed, reasoning, and cost.
 
 Choose the right model for each task based on your specific needs for performance, accuracy, or cost efficiency.
 

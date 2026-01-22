@@ -228,7 +228,7 @@ export default function SettingModels() {
 				console.log("success");
 				toast(t("setting.validate-success"), {
 					description: t(
-						"setting.the-model-has-been-verified-to-support-function-calling-which-is-required-to-use-eigent"
+						"setting.the-model-has-been-verified-to-support-function-calling-which-is-required-to-use-mygenassist-studio"
 					),
 					closeButton: true,
 				});
@@ -375,7 +375,7 @@ export default function SettingModels() {
 					console.log("success");
 					toast(t("setting.validate-success"), {
 						description: t(
-							"setting.the-model-has-been-verified-to-support-function-calling-which-is-required-to-use-eigent"
+							"setting.the-model-has-been-verified-to-support-function-calling-which-is-required-to-use-mygenassist-studio"
 						),
 						closeButton: true,
 					});
@@ -628,7 +628,7 @@ export default function SettingModels() {
 					<div className="self-stretch flex flex-col justify-start items-start gap-1">
 						<div className="self-stretch inline-flex justify-start items-center gap-2">
 							<div className="flex-1 justify-center text-body-lg text-text-heading font-bold">
-								{t("setting.eigent-cloud-version")}
+								{t("setting.mygenassist-studio-cloud-version")}
 							</div>
 							{cloudPrefer ? (
 								<Button
@@ -671,7 +671,7 @@ export default function SettingModels() {
 							</span>
 							<span
 								onClick={() => {
-									window.location.href = `https://www.eigent.ai/pricing`;
+									window.location.href = `https://chat.int.bayer.com/pricing`;
 								}}
 								className="cursor-pointer text-text-label text-body-sm underline"
 							>
@@ -685,7 +685,7 @@ export default function SettingModels() {
 					<div className="flex flex-row items-center justify-start gap-4 w-full pb-2">
 						<Button
 							onClick={() => {
-								window.location.href = `https://www.eigent.ai/dashboard`;
+								window.location.href = `https://chat.int.bayer.com/dashboard`;
 							}}
 							variant="primary"
 							size="sm"

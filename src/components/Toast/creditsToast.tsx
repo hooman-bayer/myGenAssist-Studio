@@ -8,7 +8,7 @@ export function showCreditsToast() {
 			{i18n.t("chat.you-ve-reached-the-limit-of-your-current-plan")}
 			<a
 				className="underline cursor-pointer"
-				onClick={() => (window.location.href = "https://www.eigent.ai/pricing")}
+				onClick={() => (window.location.href = "https://chat.int.bayer.com/pricing")}
 			>
 				{i18n.t("chat.upgrade")}
 			</a>{" "}

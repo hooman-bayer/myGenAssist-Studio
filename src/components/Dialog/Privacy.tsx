@@ -135,7 +135,7 @@ export function PrivacyDialog({ open, onOpenChange, trigger }: PrivacyDialogProp
 										/>
 									</TooltipTrigger>
 									<TooltipContent className="max-w-[340px]">
-										<p className="text-text-body text-sm">{t("layout.eigent-is-a-desktop-software")}</p>
+										<p className="text-text-body text-sm">{t("layout.mygenassist-studio-is-a-desktop-software")}</p>
 									</TooltipContent>
 								</Tooltip>
 							</TooltipProvider>

@@ -21,6 +21,6 @@ class AudioAnalysisToolkit(BaseAudioAnalysisToolkit, AbstractToolkit):
         timeout: float | None = None,
     ):
         if cache_dir is None:
-            cache_dir = env("file_save_path", os.path.expanduser("~/.eigent/tmp/"))
+            cache_dir = env("file_save_path", os.path.expanduser("~/.mygenassist-studio/tmp/"))
         super().__init__(cache_dir, transcribe_model, audio_reasoning_model, timeout)
         self.api_task_id = api_task_id

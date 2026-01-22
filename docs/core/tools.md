@@ -1,6 +1,6 @@
 ---
 title: Tools
-description: Extend Eigent with MCP servers and tools
+description: Extend myGenAssist Studio with MCP servers and tools
 icon: plug
 ---
 

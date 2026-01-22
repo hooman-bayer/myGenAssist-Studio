@@ -7,14 +7,14 @@ export const ENV_END = '# === MCP INTEGRATION ENV END ===';
 
 export function getEnvPath(email: string) {
   const tempEmail = email.split("@")[0].replace(/[\\/*?:"<>|\s]/g, "_").replace(".", "_")
-  const eigentDir = path.join(os.homedir(), '.eigent')
+  const mygenassistDir = path.join(os.homedir(), '.mygenassist')
 
-  // Ensure .eigent directory exists
-  if (!fs.existsSync(eigentDir)) {
-    fs.mkdirSync(eigentDir, { recursive: true });
+  // Ensure .mygenassist directory exists
+  if (!fs.existsSync(mygenassistDir)) {
+    fs.mkdirSync(mygenassistDir, { recursive: true });
   }
 
-  const envPath = path.join(eigentDir, '.env.' + tempEmail)
+  const envPath = path.join(mygenassistDir, '.env.' + tempEmail)
   const defaultEnv = path.join(process.resourcesPath, 'backend', '.env');
   if (!fs.existsSync(envPath) && fs.existsSync(defaultEnv)) {
     fs.copyFileSync(defaultEnv, envPath);
@@ -81,7 +81,7 @@ export function removeEnvKey(lines: string[], key: string) {
 
 export function getEmailFolderPath(email: string) {
   const tempEmail = email.split("@")[0].replace(/[\\/*?:"<>|\s]/g, "_").replace(".", "_")
-  const MCP_CONFIG_DIR = path.join(os.homedir(), '.eigent');
+  const MCP_CONFIG_DIR = path.join(os.homedir(), '.mygenassist');
   const MCP_REMOTE_CONFIG_DIR = path.join(MCP_CONFIG_DIR, tempEmail);
   if (!fs.existsSync(MCP_REMOTE_CONFIG_DIR)) {
     fs.mkdirSync(MCP_REMOTE_CONFIG_DIR, { recursive: true });

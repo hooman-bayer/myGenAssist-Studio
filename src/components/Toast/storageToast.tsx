@@ -9,7 +9,7 @@ export function showStorageToast() {
 			<a
 				className="underline cursor-pointer"
 				onClick={() =>
-					(window.location.href = "https://www.eigent.ai/pricing")
+					(window.location.href = "https://chat.int.bayer.com/pricing")
 				}
 			>
 				{t("chat.upgrade")}

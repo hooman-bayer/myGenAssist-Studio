@@ -27,7 +27,7 @@ export const createSSESequence = (events: Array<{ event: any; delay: number }>) 
 }
 
 
-// https://github.com/eigent-ai/eigent/issues/619 - Two task boxes
+// Upstream issue reference: https://github.com/eigent-ai/eigent/issues/619 - Two task boxes
 export const issue619SseSequence = [
   {
     event: {

@@ -385,7 +385,7 @@ class HybridBrowserToolkit(BaseHybridBrowserToolkit, AbstractToolkit):
         if user_data_dir is None:
             # Use browser port to determine profile directory
             browser_port = env('browser_port', '9222')
-            user_data_base = os.path.expanduser("~/.eigent/browser_profiles")
+            user_data_base = os.path.expanduser("~/.mygenassist-studio/browser_profiles")
             user_data_dir = os.path.join(user_data_base, f"profile_{browser_port}")
             os.makedirs(user_data_dir, exist_ok=True)
             logger.info(f"[HybridBrowserToolkit] Using port-based user_data_dir: {user_data_dir} (port: {browser_port})")

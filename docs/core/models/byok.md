@@ -1,11 +1,11 @@
 ---
 title: "Bring Your Own Key (BYOK)"
-description: "Configure your own API keys to use various LLM providers with Eigent."
+description: "Configure your own API keys to use various LLM providers with myGenAssist Studio."
 ---
 
 ## What is BYOK?
 
-**Bring Your Own Key (BYOK)** allows you to use your own API keys from various AI model providers with Eigent. Instead of relying on a shared service, you connect directly to providers like OpenAI, Anthropic, or Google using your personal API credentials. This gives you:
+**Bring Your Own Key (BYOK)** allows you to use your own API keys from various AI model providers with myGenAssist Studio. Instead of relying on a shared service, you connect directly to providers like OpenAI, Anthropic, or Google using your personal API credentials. This gives you:
 
 - **Full control** over your API usage and billing
 - **Direct access** to the latest models from each provider
@@ -19,9 +19,9 @@ description: "Configure your own API keys to use various LLM providers with Eige
 2. Click **"Create new secret key"**
 3. Copy the generated key (you won't be able to see it again)
 
-### Step 2: Configure in Eigent
+### Step 2: Configure in myGenAssist Studio
 
-1. Launch Eigent and go to **Settings** \> **Models**
+1. Launch myGenAssist Studio and go to **Settings** \> **Models**
 2. Find the **OpenAI** card in the Custom Model section
 
    <img
@@ -60,7 +60,7 @@ description: "Configure your own API keys to use various LLM providers with Eige
 
 ## Common Errors
 
-When saving your configuration, Eigent validates your API key and model. Here are the errors you may encounter:
+When saving your configuration, myGenAssist Studio validates your API key and model. Here are the errors you may encounter:
 
 | Error                                      | Cause                                                                   | Solution                                                                   |
 | ------------------------------------------ | ----------------------------------------------------------------------- | -------------------------------------------------------------------------- |
@@ -70,7 +70,7 @@ When saving your configuration, Eigent validates your API key and model. Here ar
 
 ## Supported Providers
 
-Eigent supports the following BYOK providers:
+myGenAssist Studio supports the following BYOK providers:
 
 | Provider              | Default API Host                                           | Official Documentation                                                                        |
 | --------------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------- |

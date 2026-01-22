@@ -1,6 +1,6 @@
 ---
 title: Workforce
-description: Understand core concepts and features that power Eigent.
+description: Understand core concepts and features that power myGenAssist Studio.
 icon: cubes
 ---
 ## Concept: What is a Workforce?
@@ -63,7 +63,7 @@ To prevent infinite loops, if a task has failed or been decomposed more than a s
 
 ## Worker Nodes
 
-Eigent comes with a set of pre-configured agents, each designed for a specific domain of expertise. These agents are equipped with a curated set of toolkits to make them effective right out of the box.
+myGenAssist Studio comes with a set of pre-configured agents, each designed for a specific domain of expertise. These agents are equipped with a curated set of toolkits to make them effective right out of the box.
 
 ### DeveloperAgent
 

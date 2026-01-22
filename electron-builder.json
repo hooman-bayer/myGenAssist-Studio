@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "productName": "Eigent",
-  "appId": "com.eigent.app",
+  "productName": "myGenAssist Studio",
+  "appId": "com.bayer.mygenassist-studio",
   "asar": true,
   "directories": {
     "output": "release"
@@ -42,18 +42,11 @@
   ],
   "protocols": [
     {
-      "name": "Eigent OAuth",
-      "schemes": ["eigent"]
+      "name": "myGenAssist Studio OAuth",
+      "schemes": ["mygenassist-studio"]
     }
   ],
-  "publish": [
-    {
-      "provider": "github",
-      "owner": "eigent-ai",
-      "repo": "eigent",
-      "releaseType": "release"
-    }
-  ],
+  "publish": null,
   "icon": "build/icon.ico",
   "afterPack": "./config/before-sign.cjs",
   "afterSign": "./config/notarize.cjs",
@@ -88,8 +81,8 @@
     "extendInfo": {
       "CFBundleURLTypes": [
         {
-          "CFBundleURLName": "com.eigent.app",
-          "CFBundleURLSchemes": ["eigent"]
+          "CFBundleURLName": "com.bayer.mygenassist-studio",
+          "CFBundleURLSchemes": ["mygenassist-studio"]
         }
       ]
     }

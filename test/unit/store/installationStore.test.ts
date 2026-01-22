@@ -245,7 +245,7 @@ describe('Installation Store', () => {
       
       expect(electronAPI.exportLog).toHaveBeenCalled()
       expect(alertSpy).toHaveBeenCalledWith('Log saved: /mock/path/to/log.txt')
-      expect(window.location.href).toBe('https://github.com/eigent-ai/eigent/issues/new/choose')
+      expect(window.location.href).toBe('mailto:mygenassist@bayer.com?subject=myGenAssist%20Studio%20Bug%20Report')
       
       // Restore
       Object.defineProperty(window, 'location', {

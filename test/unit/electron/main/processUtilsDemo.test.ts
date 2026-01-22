@@ -47,7 +47,7 @@ describe('Process Utils Mocking Demo', () => {
       expect(uvBinaryName).toBe('uv.exe')
 
       const uvBinaryPath = await mockEnv.processUtilsMock.getBinaryPath('uv')
-      expect(uvBinaryPath).toContain('.eigent/bin')
+      expect(uvBinaryPath).toContain('.mygenassist-studio/bin')
       expect(uvBinaryPath).toContain('uv.exe')
     })
 
@@ -58,7 +58,7 @@ describe('Process Utils Mocking Demo', () => {
       expect(uvBinaryName).toBe('uv')
 
       const uvBinaryPath = await mockEnv.processUtilsMock.getBinaryPath('uv')
-      expect(uvBinaryPath).toContain('.eigent/bin')
+      expect(uvBinaryPath).toContain('.mygenassist-studio/bin')
       expect(uvBinaryPath).toContain('/uv')
       expect(uvBinaryPath).not.toContain('.exe')
     })
@@ -84,12 +84,12 @@ describe('Process Utils Mocking Demo', () => {
 
     it('should return correct cache paths', () => {
       const cachePath = mockEnv.processUtilsMock.getCachePath('models')
-      expect(cachePath).toContain('.eigent/cache/models')
+      expect(cachePath).toContain('.mygenassist-studio/cache/models')
     })
 
     it('should return correct venv paths', () => {
       const venvPath = mockEnv.processUtilsMock.getVenvPath('1.0.0')
-      expect(venvPath).toContain('.eigent/venvs/backend-1.0.0')
+      expect(venvPath).toContain('.mygenassist-studio/venvs/backend-1.0.0')
     })
   })
 
@@ -176,8 +176,8 @@ describe('Process Utils Mocking Demo', () => {
       expect(mockEnv.mockState.filesystem.eigentBinDirExists).toBe(false)
       
       // Simulate directory creation
-      mockEnv.fsMock.mkdirSync('/mock/home/.eigent', { recursive: true })
-      mockEnv.fsMock.mkdirSync('/mock/home/.eigent/bin', { recursive: true })
+      mockEnv.fsMock.mkdirSync('/mock/home/.mygenassist-studio', { recursive: true })
+      mockEnv.fsMock.mkdirSync('/mock/home/.mygenassist-studio/bin', { recursive: true })
       
       expect(mockEnv.mockState.filesystem.eigentDirExists).toBe(true)
       expect(mockEnv.mockState.filesystem.eigentBinDirExists).toBe(true)

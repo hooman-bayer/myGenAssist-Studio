@@ -1,10 +1,10 @@
 ---
 title: Quick Start
-description: Get started with Eigent in just a few minutes! 
+description: Get started with myGenAssist Studio in just a few minutes!
 icon: rocket
 ---
 
-This guide will walk you through building your first multi-agent workforce using Eigent.
+This guide will walk you through building your first multi-agent workforce using myGenAssist Studio.
 
 ## Create Your First Task
 
@@ -50,8 +50,8 @@ This is the filing cabinet for your workforce. Any files your agents create or u
 #### 📌 Note on File Storage
 You can always find your task files in a dedicated folder on your machine.
 
-- **Windows:** `C:\Users\[YourUsername]\eigent\[YourEmailPrefix]\task_[TaskID]`
-- **Mac:** `/Users/[YourUsername]/eigent/[YourEmailPrefix]/task_[TaskID]`
+- **Windows:** `C:\Users\[YourUsername]\mygenassist-studio\[YourEmailPrefix]\task_[TaskID]`
+- **Mac:** `/Users/[YourUsername]/mygenassist-studio/[YourEmailPrefix]/task_[TaskID]`
 
 Cloud version users: outputs are also saved in your cloud workspace according to your subscription tier. Visit the Support page for more details.
 
@@ -59,7 +59,7 @@ Cloud version users: outputs are also saved in your cloud workspace according to
 
 ### Pre-built Agents
 
-Eigent comes with four ready-to-work agents. Each is equipped with a specific set of tools and shines at specific tasks—click to explore:
+myGenAssist Studio comes with four ready-to-work agents. Each is equipped with a specific set of tools and shines at specific tasks—click to explore:
 
 1. **Developer Agent** – writes, debugs and executes code
 2. **Browser Agent** – fetches and gathers info from the web
@@ -86,7 +86,7 @@ Now that you have a workforce, let's put it to work.
 
 ### Step 1: Define Your Goal
 
-Type your task in the top Message Box. Be as descriptive as you like. For example, ask Eigent to conduct an UK healthcare market research . You can attach files (like docs, data, images) by clicking the **paperclip icon** in the Message Box.Then, hit **Send**.
+Type your task in the top Message Box. Be as descriptive as you like. For example, ask myGenAssist Studio to conduct an UK healthcare market research . You can attach files (like docs, data, images) by clicking the **paperclip icon** in the Message Box.Then, hit **Send**.
 
 ### Step 2: Review Subtask Flow
 
@@ -97,7 +97,7 @@ Once you send your task, our **Coordinator Agent** and **Task Agent** kick in to
 
 ### Step 3: Lauch the Task
 
-Once you're happy with the plan, hit **Start Task.** Eigent will automatically assign each subtask to the best agent for the job based on the tools they have.
+Once you're happy with the plan, hit **Start Task.** myGenAssist Studio will automatically assign each subtask to the best agent for the job based on the tools they have.
 
 ![Launch the Task](/docs/images/quickstart_lauchtask.gif)
 
@@ -170,7 +170,7 @@ Your privacy is important to us! Because Eigent agents operate on your desktop, 
 
 
 **⚠️ Important: Cloud vs. Self-hosted**
-Eigent can run in two modes. Your choice here affects how you are billed and what models are available.
+myGenAssist Studio can run in two modes. Your choice here affects how you are billed and what models are available.
 
 </aside>
 

@@ -487,8 +487,8 @@ describe("File Operations and Utilities", () => {
         const taskId = "test123";
         const projectId = "xyz";
         
-        const sourceLogPath = `/home/.eigent/user/task_${taskId}`;
-        const destLogPath = `/home/.eigent/user/project_${projectId}/task_${taskId}`;
+        const sourceLogPath = `/home/.mygenassist-studio/user/task_${taskId}`;
+        const destLogPath = `/home/.mygenassist-studio/user/project_${projectId}/task_${taskId}`;
 
         (fs.existsSync as Mock).mockReturnValue(true);
         const mockRenameSync = vi.fn();
@@ -497,7 +497,7 @@ describe("File Operations and Utilities", () => {
         vi.mocked(fs).mkdirSync = mockMkdirSync;
 
         // Simulate log migration
-        const destLogDir = `/home/.eigent/user/project_${projectId}`;
+        const destLogDir = `/home/.mygenassist-studio/user/project_${projectId}`;
         mockMkdirSync(destLogDir, { recursive: true });
         mockRenameSync(sourceLogPath, destLogPath);
 

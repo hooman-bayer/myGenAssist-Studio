@@ -6,6 +6,9 @@ interface IpcRenderer {
   triggerMenuAction: (action: string) => void;
   onExecuteAction: (callback: (action: string) => void) => void;
   invoke: (channel: string, ...args: any[]) => Promise<any>;
+  send: (channel: string, ...args: any[]) => void;
+  on: (channel: string, listener: (event: any, ...args: any[]) => void) => void;
+  off: (channel: string, listener: (...args: any[]) => void) => void;
 }
 
 interface ElectronAPI {
@@ -80,6 +83,34 @@ interface ElectronAPI {
     tempEmail: string;
   }>;
   restartApp: () => Promise<void>;
+  // Azure AD SSO auth popup response listener
+  onAuthPopupResponse: (callback: (data: {
+    success: boolean;
+    url?: string;
+    error?: string;
+    cancelled?: boolean;
+  }) => void) => () => void;
+  // System Browser Auth for SSO with Company Portal/Enterprise authentication
+  // This method starts a loopback server and returns the redirect URI (does NOT open browser)
+  startSystemBrowserAuth: () => Promise<{
+    success: boolean;
+    redirectUri?: string;
+    error?: string;
+  }>;
+  // Opens a URL in the system browser (Safari/Chrome) for authentication
+  openUrlInSystemBrowser: (url: string) => Promise<{
+    success: boolean;
+    error?: string;
+  }>;
+  // Listener for system browser auth results (receives auth code from loopback server)
+  onSystemBrowserAuthResult: (callback: (data: {
+    success: boolean;
+    code?: string;
+    state?: string;
+    fullUrl?: string;
+    error?: string;
+    errorDescription?: string;
+  }) => void) => () => void;
 }
 
 declare global {

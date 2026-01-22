@@ -3,8 +3,8 @@ title: Bug
 description: "Follow these simple steps to report bugs and help improve our product for everyone:"
 ---
 
-<img 
-  src="/docs/images/bug_report.gif" 
+<img
+  src="/docs/images/bug_report.gif"
   alt="Bug Report"
   width="100%"
   height="auto"
@@ -28,30 +28,17 @@ description: "Follow these simple steps to report bugs and help improve our prod
     - **Screenshot Upload**: Attach relevant screenshots that demonstrate the problem
     - **Log File Upload**: Upload the log files that were downloaded in Step 2
 
-### Step 4: Join Our Community for Real-time Support
+### Step 4: Contact Support
 
-### For English-speaking Users:
+For additional support or urgent issues:
 
-- Join our **CAMEL-AI Discord**  **🤖｜eigent** channel : https://discord.com/invite/CNcNpquyDc for bug discussions and community support
-- Get direct assistance from our team and community members
-
-### For Chinese-speaking Users:
-
-- Add our WeChat assistant: **CamelAIOrg** to join the **bug fix group** for Chinese community support
-- Communicate with our Chinese-speaking support team
-
-### Alternative: GitHub Issues
-
-Developers and technical users are welcome to report issues directly through our GitHub issues:
-
-- **Repository URL**: https://github.com/eigent-ai/eigent
-- Submit detailed issues with reproduction steps
+- **Email**: mygenassist@bayer.com
+- **Documentation**: https://docs.int.bayer.com/baychatgpt
 
 ## Important Notes
 
 - Always include log files when reporting bugs for faster resolution
 - Provide as much detail as possible in your bug description
 - Screenshots help our team understand visual issues more quickly
-- Our community channels provide the fastest response times for urgent issues
 
-Thank you for helping us improve our product through your feedback and bug reports!
+Thank you for helping us improve myGenAssist Studio through your feedback and bug reports!

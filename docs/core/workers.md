@@ -4,13 +4,13 @@ description: Understand how to create and equip a custom worker.
 icon: bot
 ---
 
-Eigent is designed to be extensible. Beyond the pre-configured agents, you can significantly expand your workforce's capabilities by connecting to external tools via custom MCP Servers and creating specialized workers to use them.
+myGenAssist Studio is designed to be extensible. Beyond the pre-configured agents, you can significantly expand your workforce's capabilities by connecting to external tools via custom MCP Servers and creating specialized workers to use them.
 
 This guide will walk you through how to integrate a new tool and build a custom worker step-by-step.
 
 ## Configuring a Custom MCP Server
 
-The Model Context Protocol (MCP) is the framework that allows Eigent to connect to external tools and services like GitHub, Notion, or any other API. By adding a custom MCP server, you are essentially teaching your workforce a new skill.
+The Model Context Protocol (MCP) is the framework that allows myGenAssist Studio to connect to external tools and services like GitHub, Notion, or any other API. By adding a custom MCP server, you are essentially teaching your workforce a new skill.
 
 - Step 1: Click the **Settings** gear icon → Select the **MCP and Tools** tab.
 - Step 2: Click the **+ Add MCP Server** button to open the configuration dialog.

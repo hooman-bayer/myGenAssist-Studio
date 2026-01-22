@@ -1,6 +1,6 @@
 ---
 title: "Models (Local Model)"
-description: "Configure and deploy your preferred LLM models with Eigent."
+description: "Configure and deploy your preferred LLM models with myGenAssist Studio."
 ---
 
 ## **Self-Host Model**

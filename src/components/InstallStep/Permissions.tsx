@@ -27,7 +27,7 @@ export const Permissions: React.FC = () => {
 			checked: false,
 		},
 		{
-			title: "Share data to enhance Eigent",
+			title: "Share data to enhance myGenAssist Studio",
 			checked: false,
 		},
 	]);

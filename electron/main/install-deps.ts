@@ -458,7 +458,7 @@ class InstallLogs {
  */
 function cleanupCacheInProduction(): void {
   try {
-    const cacheBaseDir = path.join(os.homedir(), '.eigent', 'cache');
+    const cacheBaseDir = path.join(os.homedir(), '.mygenassist', 'cache');
 
     if (!fs.existsSync(cacheBaseDir)) {
       log.info(
