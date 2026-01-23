@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,9 +83,6 @@ export default function SettingModels() {
 	);
 	const [collapsed, setCollapsed] = useState(false);
 
-	// Track previous SSO token for auto-sync detection
-	const prevTokenRef = useRef<string | null>(null);
-
 	// Local Model independent state
 	const [localEnabled, setLocalEnabled] = useState(true);
 	const [localPlatform, setLocalPlatform] = useState("ollama");
@@ -113,10 +110,12 @@ export default function SettingModels() {
 							(p: any) => p.provider_name === item.id
 						);
 						if (found) {
+							const isOpenAICompatible = item.id === 'openai-compatible-model';
 							return {
 								...fi,
 								provider_id: found.id,
-								apiKey: found.api_key || "",
+								// Use live SSO token for OpenAI Compatible, ignore saved value
+								apiKey: isOpenAICompatible ? (token || "") : (found.api_key || ""),
 								apiHost: found.endpoint_url || "",
 								is_valid: !!found?.is_valid,
 								prefer: found.prefer ?? false,
@@ -173,17 +172,12 @@ export default function SettingModels() {
 			setForm((f) =>
 				f.map((fi, idx) => {
 					if (items[idx]?.id === 'openai-compatible-model') {
-						// Check if current apiKey was auto-filled (matches previous token or is empty)
-						const wasAutoFilled = !fi.apiKey || fi.apiKey === prevTokenRef.current;
-						if (wasAutoFilled) {
-							return { ...fi, apiKey: token };
-						}
+						// Always use live SSO token for myGenAssist API
+						return { ...fi, apiKey: token };
 					}
 					return fi;
 				})
 			);
-			// Update previous token reference
-			prevTokenRef.current = token;
 		}
 	}, [token, items]);
 
@@ -265,9 +259,11 @@ export default function SettingModels() {
 			setLoading(null);
 		}
 
+		const isOpenAICompatible = item.id === 'openai-compatible-model';
 		const data: any = {
 			provider_name: item.id,
-			api_key: form[idx].apiKey,
+			// Don't save SSO token - it changes every hour
+			api_key: isOpenAICompatible ? '' : form[idx].apiKey,
 			endpoint_url: form[idx].apiHost,
 			is_valid: form[idx].is_valid,
 			model_type: form[idx].model_type,
@@ -294,10 +290,12 @@ export default function SettingModels() {
 						(p: any) => p.provider_name === item.id
 					);
 					if (found) {
+						const isOpenAICompatible = item.id === 'openai-compatible-model';
 						return {
 							...fi,
 							provider_id: found.id,
-							apiKey: found.api_key || "",
+							// Use live SSO token for OpenAI Compatible, ignore saved value
+							apiKey: isOpenAICompatible ? token : (found.api_key || ""),
 							apiHost: found.endpoint_url || "",
 							is_valid: !!found.is_valid,
 							prefer: found.prefer ?? false,
@@ -560,8 +558,10 @@ export default function SettingModels() {
 				prev.map((fi, i) => {
 					if (i !== idx) return fi;
 					const item = items[i];
+					const isOpenAICompatible = item.id === 'openai-compatible-model';
 					return {
-						apiKey: "",
+						// Use live SSO token for OpenAI Compatible after reset
+						apiKey: isOpenAICompatible ? (token || "") : "",
 						apiHost: "",
 						is_valid: false,
 						model_type: "",

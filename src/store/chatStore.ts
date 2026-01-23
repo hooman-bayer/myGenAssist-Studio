@@ -438,7 +438,8 @@ const chatStore = (initial?: Partial<ChatStore>) => createStore<ChatStore>()(
 			}
 
 			apiModel = {
-				api_key: provider.api_key,
+				// Use live SSO token for OpenAI Compatible, as it refreshes hourly
+				api_key: provider.provider_name === 'openai-compatible-model' ? (token || '') : provider.api_key,
 				model_type: provider.model_type,
 				model_platform: provider.provider_name,
 				api_url: provider.endpoint_url || provider.api_url,
