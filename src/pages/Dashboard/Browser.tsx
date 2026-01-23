@@ -5,6 +5,7 @@ import { fetchPost, fetchGet, fetchDelete } from "@/api/http";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import AlertDialog from "@/components/ui/alertDialog";
+import { PrivacyPolicyDialog } from "@/components/Dialog/PrivacyPolicyDialog";
 
 interface CookieDomain {
 	domain: string;
@@ -28,6 +29,7 @@ export default function Browser() {
 	const [showRestartDialog, setShowRestartDialog] = useState(false);
 	const [cookiesBeforeBrowser, setCookiesBeforeBrowser] = useState<number>(0);
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+	const [isPrivacyPolicyOpen, setIsPrivacyPolicyOpen] = useState(false);
 
 	// Extract main domain (e.g., "aa.bb.cc" -> "bb.cc", "www.google.com" -> "google.com")
 	const getMainDomain = (domain: string): string => {
@@ -337,8 +339,17 @@ export default function Browser() {
 					</div>
           
 					<div className="flex-1 w-full items-center justify-center text-label-xs text-text-label text-center">
-						For more information, check out our 
-					<a href="https://chat.int.bayer.com/" target="_blank" className="text-text-information underline ml-1">{t("layout.privacy-policy")}</a>
+						For more information, check out our
+					<button
+						onClick={() => setIsPrivacyPolicyOpen(true)}
+						className="text-text-information underline ml-1 bg-transparent border-none p-0 cursor-pointer text-label-xs"
+					>
+						{t("layout.privacy-policy")}
+					</button>
+					<PrivacyPolicyDialog
+						open={isPrivacyPolicyOpen}
+						onOpenChange={setIsPrivacyPolicyOpen}
+					/>
           </div>
 
 				</div>

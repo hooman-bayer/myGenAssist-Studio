@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import WindowControls from '@/components/WindowControls';
 import { useAuth } from '@/hooks/useAuth';
+import { PrivacyPolicyDialog } from '@/components/Dialog/PrivacyPolicyDialog';
 
 export default function Login() {
   const { setModelType, setLocalProxyValue } = useAuthStore();
@@ -23,6 +24,7 @@ export default function Login() {
   const [ssoErrorMessage, setSsoErrorMessage] = useState<string>('');
   const titlebarRef = useRef<HTMLDivElement>(null);
   const [platform, setPlatform] = useState<string>('');
+  const [isPrivacyPolicyOpen, setIsPrivacyPolicyOpen] = useState(false);
 
   useEffect(() => {
     const p = window.electronAPI.getPlatform();
@@ -204,16 +206,14 @@ export default function Login() {
           <Button
             variant="ghost"
             size="xs"
-            onClick={() =>
-              window.open(
-                'https://chat.int.bayer.com/',
-                '_blank',
-                'noopener,noreferrer'
-              )
-            }
+            onClick={() => setIsPrivacyPolicyOpen(true)}
           >
             {t('layout.privacy-policy')}
           </Button>
+          <PrivacyPolicyDialog
+            open={isPrivacyPolicyOpen}
+            onOpenChange={setIsPrivacyPolicyOpen}
+          />
         </div>
       </div>
     </div>

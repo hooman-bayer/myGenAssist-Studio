@@ -201,7 +201,22 @@
 	"failed-to-delete-cookies": "Failed to delete cookies. Please try again.",
 	"confirm-delete-all-cookies": "Are you sure you want to delete all cookies? This action cannot be undone.",
 	"all-cookies-deleted": "All cookies have been deleted successfully.",
-	"cookie-delete-warning": "Note: Deleting cookies will log you out of the associated websites. You may need to restart the browser to see changes take effect."
+	"cookie-delete-warning": "Note: Deleting cookies will log you out of the associated websites. You may need to restart the browser to see changes take effect.",
+
+	"privacy-policy-title": "Privacy Policy",
+	"privacy-policy-last-updated": "Last updated: January 2025",
+	"privacy-policy-overview-title": "Overview",
+	"privacy-policy-overview": "myGenAssist Studio is Bayer's enterprise AI assistant application designed to help employees with productivity tasks. This privacy policy explains how we collect, use, and protect your data when you use myGenAssist Studio. Your privacy is important to us, and we are committed to handling your information responsibly and in accordance with Bayer's data protection standards.",
+	"privacy-policy-data-collection-title": "Data Collection",
+	"privacy-policy-data-collection": "We collect only the essential data needed to run your tasks. This includes: screenshots captured to analyze UI elements and determine next actions (when permitted), mouse and keyboard interactions to access local software and files you specify, and minimal task data sent to AI model providers. We do not collect personal data beyond what is necessary for the application to function. All data collection is transparent and can be controlled through the privacy settings.",
+	"privacy-policy-data-storage-title": "Data Storage",
+	"privacy-policy-data-storage": "myGenAssist Studio is built on a local-first principle. Your data remains on your device by default. Task files, outputs, and screenshots are stored in your designated task folder locally. Credentials are stored locally, encrypted, and used only for approved steps. Cloud features are optional and only use the minimum data necessary to function. We implement industry-standard security measures to protect your data.",
+	"privacy-policy-third-party-title": "Third-Party Sharing",
+	"privacy-policy-third-party": "Only the minimum task data required for processing is sent to AI model providers (such as the myGenAssist API) or third-party integrations you explicitly enable. We have zero data-retention agreements with these providers. Your data is never sold to third parties. We do not share your personal information with external parties except as required to provide the service or as required by law.",
+	"privacy-policy-user-rights-title": "User Rights",
+	"privacy-policy-user-rights": "You have full control over your data. You can enable or disable privacy permissions at any time through Settings. You can view and delete your locally stored data, including task files and browser cookies. Your data is never used to train AI models without your explicit consent. You can request information about what data we collect and how it is used by contacting the myGenAssist team.",
+	"privacy-policy-contact-title": "Contact",
+	"privacy-policy-contact": "If you have questions about this privacy policy or how your data is handled, please contact the myGenAssist team at mygenassist@bayer.com. For general data protection inquiries at Bayer, please refer to Bayer's corporate privacy policy."
 	}
 
 

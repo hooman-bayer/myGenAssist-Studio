@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import useChatStoreAdapter from '@/hooks/useChatStoreAdapter';
 import { replayActiveTask } from '@/lib';
+import { PrivacyPolicyDialog } from '@/components/Dialog/PrivacyPolicyDialog';
 
 export default function ChatBox(): JSX.Element {
   const [message, setMessage] = useState<string>('');
@@ -37,6 +38,7 @@ export default function ChatBox(): JSX.Element {
   const [isConfigLoaded, setIsConfigLoaded] = useState<boolean>(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   // const [privacyDialogOpen, setPrivacyDialogOpen] = useState(false);
+  const [isPrivacyPolicyOpen, setIsPrivacyPolicyOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -1044,16 +1046,21 @@ export default function ChatBox(): JSX.Element {
                         {t('layout.terms-of-use')}
                       </a>{' '}
                       {t('layout.and')}{' '}
-                      <a
-                        href="https://chat.int.bayer.com/"
-                        target="_blank"
-                        className="text-text-information underline"
-                        onClick={(e) => e.stopPropagation()}
+                      <button
+                        className="text-text-information underline bg-transparent border-none p-0 cursor-pointer font-medium text-label-xs"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsPrivacyPolicyOpen(true);
+                        }}
                       >
                         {t('layout.privacy-policy')}
-                      </a>
+                      </button>
                       .
                     </span>
+                    <PrivacyPolicyDialog
+                      open={isPrivacyPolicyOpen}
+                      onOpenChange={setIsPrivacyPolicyOpen}
+                    />
                   </div>
                 </div>
               ) : null}

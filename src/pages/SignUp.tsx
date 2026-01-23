@@ -14,6 +14,7 @@ import eyeOff from "@/assets/eye-off.svg";
 import { proxyFetchPost } from "@/api/http";
 import { hasStackKeys } from "@/lib";
 import { useTranslation } from "react-i18next";
+import { PrivacyPolicyDialog } from "@/components/Dialog/PrivacyPolicyDialog";
 
 const HAS_STACK_KEYS = hasStackKeys();
 let lock = false;
@@ -36,6 +37,7 @@ export default function SignUp() {
 	});
 	const [isLoading, setIsLoading] = useState(false);
 	const [generalError, setGeneralError] = useState("");
+	const [isPrivacyPolicyOpen, setIsPrivacyPolicyOpen] = useState(false);
 
 	const validateEmail = (email: string) => {
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -342,13 +344,17 @@ export default function SignUp() {
 							</span>
 						</Button>
 				</div>
-				<Button 
+				<Button
 				  variant="ghost"
 					size="xs"
-					onClick={() => window.open("https://chat.int.bayer.com/", "_blank", "noopener,noreferrer")}
+					onClick={() => setIsPrivacyPolicyOpen(true)}
 				>
 					{t("layout.privacy-policy")}
 				</Button>
+				<PrivacyPolicyDialog
+					open={isPrivacyPolicyOpen}
+					onOpenChange={setIsPrivacyPolicyOpen}
+				/>
 			</div>
 		</div>
 	);

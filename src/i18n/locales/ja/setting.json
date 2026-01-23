@@ -174,6 +174,21 @@
   "recommended": "おすすめ",
   "reset": "リセット",
   "reset-success": "リセットに成功しました！",
-  "reset-failed": "リセットに失敗しました！"
+  "reset-failed": "リセットに失敗しました！",
+
+  "privacy-policy-title": "プライバシーポリシー",
+  "privacy-policy-last-updated": "最終更新日：2025年1月",
+  "privacy-policy-overview-title": "概要",
+  "privacy-policy-overview": "myGenAssist Studioは、従業員の生産性タスクを支援するために設計されたBayerのエンタープライズAIアシスタントアプリケーションです。このプライバシーポリシーは、myGenAssist Studioを使用する際に、お客様のデータをどのように収集、使用、保護するかを説明しています。お客様のプライバシーは私たちにとって重要であり、Bayerのデータ保護基準に従って、責任を持って情報を取り扱うことをお約束します。",
+  "privacy-policy-data-collection-title": "データ収集",
+  "privacy-policy-data-collection": "私たちは、タスクの実行に必要な最小限のデータのみを収集します。これには、UI要素を分析し次のアクションを決定するためのスクリーンショット（許可されている場合）、指定したローカルソフトウェアやファイルにアクセスするためのマウスとキーボードの操作、AIモデルプロバイダーに送信される最小限のタスクデータが含まれます。",
+  "privacy-policy-data-storage-title": "データ保存",
+  "privacy-policy-data-storage": "myGenAssist Studioはローカルファーストの原則に基づいて構築されています。お客様のデータはデフォルトでデバイスに保存されます。タスクファイル、出力、スクリーンショットは、指定されたタスクフォルダにローカルで保存されます。認証情報はローカルに暗号化して保存され、承認されたステップにのみ使用されます。",
+  "privacy-policy-third-party-title": "第三者との共有",
+  "privacy-policy-third-party": "処理に必要な最小限のタスクデータのみが、AIモデルプロバイダー（myGenAssist APIなど）またはお客様が明示的に有効にしたサードパーティ統合に送信されます。これらのプロバイダーとはデータ保持なしの契約を結んでいます。お客様のデータは第三者に販売されることはありません。",
+  "privacy-policy-user-rights-title": "ユーザーの権利",
+  "privacy-policy-user-rights": "お客様はご自身のデータを完全に管理できます。設定からいつでもプライバシー権限を有効または無効にできます。タスクファイルやブラウザのCookieを含む、ローカルに保存されたデータを表示および削除できます。お客様の明示的な同意なしに、データがAIモデルのトレーニングに使用されることはありません。",
+  "privacy-policy-contact-title": "お問い合わせ",
+  "privacy-policy-contact": "このプライバシーポリシーまたはデータの取り扱いについてご質問がある場合は、myGenAssistチーム（mygenassist@bayer.com）までお問い合わせください。"
 }
 

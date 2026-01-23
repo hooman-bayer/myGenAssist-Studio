@@ -174,6 +174,21 @@
   "recommended": "Consigliato",
   "reset": "Reimposta",
   "reset-success": "Reimpostazione riuscita!",
-  "reset-failed": "Reimpostazione non riuscita!"
+  "reset-failed": "Reimpostazione non riuscita!",
+
+  "privacy-policy-title": "Informativa sulla Privacy",
+  "privacy-policy-last-updated": "Ultimo aggiornamento: Gennaio 2025",
+  "privacy-policy-overview-title": "Panoramica",
+  "privacy-policy-overview": "myGenAssist Studio è l'applicazione di assistente IA aziendale di Bayer progettata per aiutare i dipendenti con compiti di produttività. Questa informativa sulla privacy spiega come raccogliamo, utilizziamo e proteggiamo i tuoi dati quando utilizzi myGenAssist Studio. La tua privacy è importante per noi, e ci impegniamo a gestire le tue informazioni in modo responsabile e in conformità con gli standard di protezione dei dati di Bayer.",
+  "privacy-policy-data-collection-title": "Raccolta Dati",
+  "privacy-policy-data-collection": "Raccogliamo solo i dati essenziali necessari per eseguire le tue attività. Questo include: screenshot per analizzare elementi dell'interfaccia utente e determinare le azioni successive (quando consentito), interazioni mouse e tastiera per accedere a software locali e file da te specificati, e dati minimi delle attività inviati ai fornitori di modelli IA.",
+  "privacy-policy-data-storage-title": "Archiviazione Dati",
+  "privacy-policy-data-storage": "myGenAssist Studio è costruito su un principio local-first. I tuoi dati rimangono sul tuo dispositivo per impostazione predefinita. I file delle attività, gli output e gli screenshot sono archiviati localmente nella tua cartella attività designata. Le credenziali sono archiviate localmente, crittografate e utilizzate solo per i passaggi approvati.",
+  "privacy-policy-third-party-title": "Condivisione con Terze Parti",
+  "privacy-policy-third-party": "Solo i dati minimi delle attività richiesti per l'elaborazione vengono inviati ai fornitori di modelli IA (come l'API myGenAssist) o alle integrazioni di terze parti che abiliti esplicitamente. Abbiamo accordi di zero conservazione dati con questi fornitori. I tuoi dati non vengono mai venduti a terzi.",
+  "privacy-policy-user-rights-title": "Diritti degli Utenti",
+  "privacy-policy-user-rights": "Hai il pieno controllo sui tuoi dati. Puoi abilitare o disabilitare le autorizzazioni sulla privacy in qualsiasi momento tramite le Impostazioni. Puoi visualizzare ed eliminare i tuoi dati archiviati localmente, inclusi i file delle attività e i cookie del browser. I tuoi dati non vengono mai utilizzati per addestrare modelli IA senza il tuo esplicito consenso.",
+  "privacy-policy-contact-title": "Contatto",
+  "privacy-policy-contact": "Se hai domande su questa informativa sulla privacy o su come vengono gestiti i tuoi dati, contatta il team myGenAssist all'indirizzo mygenassist@bayer.com."
 }
 

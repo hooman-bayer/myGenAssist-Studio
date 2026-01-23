@@ -1,10 +1,9 @@
 import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
 import { proxyFetchGet, proxyFetchPut } from "@/api/http";
-import { Button } from "@/components/ui/button";
-import { FolderSearch, ChevronDown } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { useTranslation } from "react-i18next";
+import { PrivacyPolicyDialog } from "@/components/Dialog/PrivacyPolicyDialog";
 export default function SettingPrivacy() {
 	const { email } = useAuthStore();
 	const [_privacy, setPrivacy] = useState(false);
@@ -99,7 +98,7 @@ export default function SettingPrivacy() {
 	};
 
 	const [logFolder, setLogFolder] = useState("");
-	const [isHowWeHandleOpen, setIsHowWeHandleOpen] = useState(false);
+	const [isPrivacyPolicyOpen, setIsPrivacyPolicyOpen] = useState(false);
 	useEffect(() => {
 		window.ipcRenderer.invoke("get-log-folder", email).then((logFolder) => {
 			setLogFolder(logFolder);
@@ -119,54 +118,18 @@ export default function SettingPrivacy() {
 			<span className="text-body-sm font-normal text-text-body">
 				{t("setting.data-privacy-description")}
 				{" "}
-				<a
-					className="text-blue-500 no-underline"
-					href="https://chat.int.bayer.com/"
-					target="_blank"
+				<button
+					className="text-blue-500 no-underline hover:underline cursor-pointer bg-transparent border-none p-0 font-normal text-body-sm"
+					onClick={() => setIsPrivacyPolicyOpen(true)}
 				>
 					{t("setting.privacy-policy")}
-				</a>
+				</button>
 				.
 			</span>
-			<Button
-			  variant="ghost"
-				size="sm"
-				className="-ml-2"
-				onClick={() => setIsHowWeHandleOpen((prev) => !prev)}
-				aria-expanded={isHowWeHandleOpen}
-				aria-controls="how-we-handle-your-data"
-			>
-				<span>{t("setting.how-we-handle-your-data")}</span>
-				<ChevronDown
-					className={`w-4 h-4 transition-transform ${isHowWeHandleOpen ? "rotate-0" : "-rotate-90"}`}
-				/>
-			</Button>
-			{isHowWeHandleOpen && (
-				<ol id="how-we-handle-your-data" className="pl-5 text-body-sm text-text-body font-normal mt-2">
-					<li>{t("setting.we-only-use-the-essential-data-needed-to-run-your-tasks")}:</li>
-					<ul className="pl-4 mb-2">
-						<li>
-							{t("setting.how-we-handle-your-data-line-1-line-1")}
-						</li>
-						<li>
-							{t("setting.how-we-handle-your-data-line-1-line-2")}
-						</li>
-						<li>
-							{t("setting.how-we-handle-your-data-line-1-line-3")}
-						</li>
-					</ul>
-					<li>
-						{t("setting.how-we-handle-your-data-line-2")}
-					</li>
-					<li>
-						{t("setting.how-we-handle-your-data-line-3")}
-					</li>
-					<li>
-						{t("setting.how-we-handle-your-data-line-4")}
-					</li>
-					<li>{t("setting.how-we-handle-your-data-line-5")}</li>
-				</ol>
-			)}
+			<PrivacyPolicyDialog
+				open={isPrivacyPolicyOpen}
+				onOpenChange={setIsPrivacyPolicyOpen}
+			/>
 			</div>
 
 			{/* Privacy controls */}

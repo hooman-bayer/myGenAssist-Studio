@@ -174,5 +174,20 @@
   "recommended": "추천",
   "reset": "초기화",
   "reset-success": "초기화 완료!",
-  "reset-failed": "초기화 실패!"
+  "reset-failed": "초기화 실패!",
+
+  "privacy-policy-title": "개인정보 처리방침",
+  "privacy-policy-last-updated": "최종 업데이트: 2025년 1월",
+  "privacy-policy-overview-title": "개요",
+  "privacy-policy-overview": "myGenAssist Studio는 직원들의 생산성 작업을 지원하도록 설계된 Bayer의 기업용 AI 어시스턴트 애플리케이션입니다. 이 개인정보 처리방침은 myGenAssist Studio를 사용할 때 귀하의 데이터를 어떻게 수집, 사용 및 보호하는지 설명합니다. 귀하의 개인정보는 저희에게 중요하며, Bayer의 데이터 보호 표준에 따라 귀하의 정보를 책임감 있게 처리할 것을 약속합니다.",
+  "privacy-policy-data-collection-title": "데이터 수집",
+  "privacy-policy-data-collection": "작업 실행에 필요한 필수 데이터만 수집합니다. 여기에는 UI 요소를 분석하고 다음 작업을 결정하기 위한 스크린샷(허용된 경우), 지정된 로컬 소프트웨어 및 파일에 액세스하기 위한 마우스 및 키보드 상호 작용, AI 모델 제공업체에 전송되는 최소한의 작업 데이터가 포함됩니다.",
+  "privacy-policy-data-storage-title": "데이터 저장",
+  "privacy-policy-data-storage": "myGenAssist Studio는 로컬 우선 원칙을 기반으로 구축되었습니다. 귀하의 데이터는 기본적으로 장치에 남아 있습니다. 작업 파일, 출력 및 스크린샷은 지정된 작업 폴더에 로컬로 저장됩니다. 자격 증명은 로컬에 암호화되어 저장되며 승인된 단계에만 사용됩니다.",
+  "privacy-policy-third-party-title": "제3자 공유",
+  "privacy-policy-third-party": "처리에 필요한 최소한의 작업 데이터만 AI 모델 제공업체(예: myGenAssist API) 또는 명시적으로 활성화한 타사 통합에 전송됩니다. 이러한 제공업체와는 데이터 보존 없음 계약을 맺고 있습니다. 귀하의 데이터는 제3자에게 판매되지 않습니다.",
+  "privacy-policy-user-rights-title": "사용자 권리",
+  "privacy-policy-user-rights": "귀하는 자신의 데이터를 완전히 통제할 수 있습니다. 설정을 통해 언제든지 개인정보 권한을 활성화하거나 비활성화할 수 있습니다. 작업 파일 및 브라우저 쿠키를 포함하여 로컬에 저장된 데이터를 확인하고 삭제할 수 있습니다. 귀하의 명시적인 동의 없이 데이터가 AI 모델 학습에 사용되지 않습니다.",
+  "privacy-policy-contact-title": "문의",
+  "privacy-policy-contact": "이 개인정보 처리방침 또는 데이터 처리 방식에 대한 질문이 있으시면 myGenAssist 팀(mygenassist@bayer.com)으로 문의하시기 바랍니다."
 }

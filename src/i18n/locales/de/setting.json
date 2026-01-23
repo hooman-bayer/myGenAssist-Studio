@@ -174,5 +174,20 @@
   "recommended": "Empfohlen",
   "reset": "Zurücksetzen",
   "reset-success": "Zurücksetzen erfolgreich!",
-  "reset-failed": "Zurücksetzen fehlgeschlagen!"
+  "reset-failed": "Zurücksetzen fehlgeschlagen!",
+
+  "privacy-policy-title": "Datenschutzrichtlinie",
+  "privacy-policy-last-updated": "Zuletzt aktualisiert: Januar 2025",
+  "privacy-policy-overview-title": "Überblick",
+  "privacy-policy-overview": "myGenAssist Studio ist die Enterprise-KI-Assistenzanwendung von Bayer, die Mitarbeitern bei Produktivitätsaufgaben hilft. Diese Datenschutzrichtlinie erklärt, wie wir Ihre Daten erfassen, verwenden und schützen, wenn Sie myGenAssist Studio nutzen. Ihre Privatsphäre ist uns wichtig, und wir verpflichten uns, Ihre Informationen verantwortungsvoll und in Übereinstimmung mit den Datenschutzstandards von Bayer zu behandeln.",
+  "privacy-policy-data-collection-title": "Datenerfassung",
+  "privacy-policy-data-collection": "Wir erfassen nur die für die Ausführung Ihrer Aufgaben erforderlichen Daten. Dies umfasst: Screenshots zur Analyse von UI-Elementen und zur Bestimmung der nächsten Aktionen (wenn erlaubt), Maus- und Tastaturinteraktionen zum Zugriff auf lokale Software und von Ihnen angegebene Dateien sowie minimale Aufgabendaten, die an KI-Modellanbieter gesendet werden. Wir erfassen keine personenbezogenen Daten über das für die Funktion der Anwendung notwendige Maß hinaus.",
+  "privacy-policy-data-storage-title": "Datenspeicherung",
+  "privacy-policy-data-storage": "myGenAssist Studio basiert auf einem Local-First-Prinzip. Ihre Daten verbleiben standardmäßig auf Ihrem Gerät. Aufgabendateien, Ausgaben und Screenshots werden lokal in Ihrem angegebenen Aufgabenordner gespeichert. Anmeldeinformationen werden lokal und verschlüsselt gespeichert und nur für genehmigte Schritte verwendet. Cloud-Funktionen sind optional und verwenden nur die minimal erforderlichen Daten.",
+  "privacy-policy-third-party-title": "Weitergabe an Dritte",
+  "privacy-policy-third-party": "Nur die für die Verarbeitung erforderlichen minimalen Aufgabendaten werden an KI-Modellanbieter (wie die myGenAssist-API) oder von Ihnen explizit aktivierte Drittanbieter-Integrationen gesendet. Wir haben Vereinbarungen über keine Datenspeicherung mit diesen Anbietern. Ihre Daten werden niemals an Dritte verkauft.",
+  "privacy-policy-user-rights-title": "Benutzerrechte",
+  "privacy-policy-user-rights": "Sie haben die volle Kontrolle über Ihre Daten. Sie können Datenschutzberechtigungen jederzeit über die Einstellungen aktivieren oder deaktivieren. Sie können Ihre lokal gespeicherten Daten, einschließlich Aufgabendateien und Browser-Cookies, einsehen und löschen. Ihre Daten werden niemals ohne Ihre ausdrückliche Zustimmung zum Training von KI-Modellen verwendet.",
+  "privacy-policy-contact-title": "Kontakt",
+  "privacy-policy-contact": "Bei Fragen zu dieser Datenschutzrichtlinie oder zur Handhabung Ihrer Daten wenden Sie sich bitte an das myGenAssist-Team unter mygenassist@bayer.com."
 }

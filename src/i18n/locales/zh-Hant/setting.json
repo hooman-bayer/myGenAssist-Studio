@@ -174,5 +174,20 @@
   "recommended": "推薦",
   "reset": "重設",
   "reset-success": "重設成功！",
-  "reset-failed": "重設失敗！"
+  "reset-failed": "重設失敗！",
+
+  "privacy-policy-title": "隱私政策",
+  "privacy-policy-last-updated": "最後更新：2025年1月",
+  "privacy-policy-overview-title": "概述",
+  "privacy-policy-overview": "myGenAssist Studio 是拜耳的企業級AI助手應用程式，旨在協助員工完成生產力任務。本隱私政策說明了我們在您使用 myGenAssist Studio 時如何收集、使用和保護您的資料。您的隱私對我們非常重要，我們承諾按照拜耳的資料保護標準負責任地處理您的資訊。",
+  "privacy-policy-data-collection-title": "資料收集",
+  "privacy-policy-data-collection": "我們僅收集執行您任務所需的基本資料。這包括：用於分析UI元素和確定下一步操作的螢幕截圖（在獲得許可時）、用於存取您指定的本地軟體和檔案的滑鼠和鍵盤互動，以及傳送給AI模型供應商的最少任務資料。",
+  "privacy-policy-data-storage-title": "資料儲存",
+  "privacy-policy-data-storage": "myGenAssist Studio 基於本地優先原則建構。預設情況下，您的資料保留在您的裝置上。任務檔案、輸出和螢幕截圖儲存在您指定的本地任務資料夾中。憑證在本地加密儲存，僅用於核准的步驟。",
+  "privacy-policy-third-party-title": "第三方共享",
+  "privacy-policy-third-party": "僅將處理所需的最少任務資料傳送給AI模型供應商（如 myGenAssist API）或您明確啟用的第三方整合。我們與這些供應商簽訂了零資料保留協議。您的資料永遠不會被出售給第三方。",
+  "privacy-policy-user-rights-title": "使用者權利",
+  "privacy-policy-user-rights": "您對自己的資料擁有完全控制權。您可以隨時透過設定啟用或停用隱私權限。您可以檢視和刪除本地儲存的資料，包括任務檔案和瀏覽器Cookie。未經您的明確同意，您的資料永遠不會用於訓練AI模型。",
+  "privacy-policy-contact-title": "聯絡方式",
+  "privacy-policy-contact": "如果您對本隱私政策或資料處理方式有任何疑問，請聯絡 myGenAssist 團隊：mygenassist@bayer.com。"
 }
