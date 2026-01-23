@@ -1,6 +1,6 @@
 {
   "name": "mygenassist-studio",
-  "version": "0.0.80",
+  "version": "0.0.82",
   "main": "dist-electron/main/index.js",
   "description": "myGenAssist Studio - Desktop companion for myGenAssist",
   "author": "Bayer",
