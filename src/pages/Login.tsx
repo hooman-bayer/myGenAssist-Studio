@@ -1,8 +1,8 @@
 import { useAuthStore } from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
-import loginGif from '@/assets/login.gif';
 import myGenAssistLogo from '@/assets/mygenassist_logo.svg';
+import { LoginBackground } from '@/components/LoginBackground';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import WindowControls from '@/components/WindowControls';
@@ -117,12 +117,14 @@ export default function Login() {
         </div>
       </div>
 
-      {/* Main content - image extends to top, form has padding */}
+      {/* Main content - split pane layout */}
       <div className={`p-2 flex items-center justify-center gap-2 h-full`}>
-        <div className="flex items-center justify-center h-full rounded-3xl bg-white-100%">
-          <img src={loginGif} className="rounded-3xl h-full object-cover" />
+        {/* Left pane - animated background */}
+        <div className="w-1/2 h-full rounded-3xl overflow-hidden">
+          <LoginBackground />
         </div>
-        <div className="h-full flex-1 flex flex-col items-center justify-center pt-11">
+        {/* Right pane - login form */}
+        <div className="w-1/2 h-full flex flex-col items-center justify-center pt-11">
           <div className="flex-1 flex flex-col w-80 items-center justify-center">
             {/* Logo and Branding */}
             <div className="flex flex-col items-center mb-10">

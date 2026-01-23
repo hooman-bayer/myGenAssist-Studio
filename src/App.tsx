@@ -3,8 +3,7 @@ import React, { useEffect, useState } from "react";
 import { stackClientApp } from "@/stack/client";
 import { StackProvider, StackTheme } from "@stackframe/react";
 import { useNavigate } from "react-router-dom";
-import { AnimationJson } from "@/components/AnimationJson";
-import animationData from "@/assets/animation/openning_animaiton.json";
+import { SplashScreen } from "@/components/SplashScreen";
 import { useAuthStore } from "./store/authStore";
 import { Toaster } from "sonner";
 import { hasStackKeys } from "./lib";
@@ -59,9 +58,8 @@ function App() {
 	const renderMainContent = () => {
 		if (isFirstLaunch && !animationFinished) {
 			return (
-				<AnimationJson
+				<SplashScreen
 					onComplete={() => setAnimationFinished(true)}
-					animationData={animationData}
 					slogan={t("layout.splash-slogan")}
 				/>
 			);
