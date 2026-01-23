@@ -19,8 +19,7 @@ export type Provider = {
   externalConfig?: externalConfig[]
   is_valid?: boolean,
   model_type?: string,
-  prefer?: boolean,
-  azure_deployment?: string
+  prefer?: boolean
 }
 
 export type Model = {
