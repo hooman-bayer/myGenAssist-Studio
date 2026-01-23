@@ -14,13 +14,23 @@ interface AuthInfo {
 	user_id: number;
 }
 
+// local auth info interface (for eigent server)
+interface LocalAuthInfo {
+	localToken: string;
+	localEmail: string;
+}
+
 // auth state interface
 interface AuthState {
-	// user auth info
+	// user auth info (SSO token for myGenAssist API)
 	token: string | null;
 	username: string | null;
 	email: string | null;
 	user_id: number | null;
+
+	// local eigent server auth (separate from SSO)
+	localToken: string | null;
+	localEmail: string | null;
 
 	// application settings
 	appearance: string;
@@ -41,6 +51,7 @@ interface AuthState {
 
 	// auth related methods
 	setAuth: (auth: AuthInfo) => void;
+	setLocalAuth: (auth: LocalAuthInfo) => void;
 	logout: () => void;
 	setLocalProxyValue: (value: string | null) => void;
 
@@ -72,6 +83,8 @@ const authStore = create<AuthState>()(
 			username: null,
 			email: null,
 			user_id: null,
+			localToken: null,
+			localEmail: null,
 			appearance: 'light',
 			language: 'system',
 			isFirstLaunch: true,
@@ -86,12 +99,17 @@ const authStore = create<AuthState>()(
 			setAuth: ({ token, username, email, user_id }) =>
 				set({ token, username, email, user_id }),
 
+			setLocalAuth: ({ localToken, localEmail }) =>
+				set({ localToken, localEmail }),
+
 			logout: () =>
 				set({
 					token: null,
 					username: null,
 					email: null,
 					user_id: null,
+					localToken: null,
+					localEmail: null,
 					initState: 'carousel',
 					localProxyValue: null
 				}),
@@ -161,6 +179,8 @@ const authStore = create<AuthState>()(
 				username: state.username,
 				email: state.email,
 				user_id: state.user_id,
+				localToken: state.localToken,
+				localEmail: state.localEmail,
 				appearance: state.appearance,
 				language: state.language,
 				modelType: state.modelType,

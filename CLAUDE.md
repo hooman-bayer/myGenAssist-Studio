@@ -249,6 +249,75 @@ bd close <issue-id>
 
 ---
 
+## Local Development Setup
+
+### Prerequisites
+
+- **Docker Desktop** - installed and running
+- **Node.js** - version 18.0.0 or higher
+- **npm** or **yarn** - package manager
+
+### Step 1: Start Local Backend (Required)
+
+The local backend provides PostgreSQL database and FastAPI server for storing provider configurations.
+
+```bash
+cd server
+cp .env.example .env  # If .env doesn't exist
+docker compose up -d
+```
+
+- PostgreSQL + FastAPI API server starts in Docker
+- API available at: `http://localhost:3001`
+- API documentation at: `http://localhost:3001/docs`
+
+### Step 2: Configure Environment
+
+Ensure `.env.development` contains:
+
+```bash
+VITE_USE_LOCAL_PROXY=true
+VITE_PROXY_URL=http://localhost:3001
+```
+
+### Step 3: Start Frontend
+
+```bash
+npm install
+npm run dev
+```
+
+### Step 4: Configure Model Provider
+
+1. Go to **Settings > Models**
+2. In the **OpenAI Compatible** section (pre-configured for myGenAssist):
+   - **API Host**: `https://dev.chat.int.bayer.com/api/v2`
+   - **API Key**: Auto-filled from SSO token
+   - **Model Type**: `claude-sonnet-4.5` (or other available models)
+3. Click **Save** to validate and store configuration
+
+---
+
+## Architecture Overview
+
+| Layer | Technology | Description |
+|-------|------------|-------------|
+| Frontend | React + Vite + Electron | User interface and desktop wrapper |
+| Local Backend | FastAPI + PostgreSQL (Docker) | Provider config storage and API proxy |
+| Authentication | Azure AD SSO | Enterprise single sign-on |
+| Model API | OpenAI-compatible | myGenAssist endpoint at `dev.chat.int.bayer.com` |
+
+### Key Environment Variables
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `VITE_USE_LOCAL_PROXY` | Enable local backend proxy | `true` |
+| `VITE_PROXY_URL` | Local backend URL | `http://localhost:3001` |
+| `VITE_AZURE_CLIENT_ID` | Azure AD app client ID | `620f686c-ab5d-...` |
+| `VITE_AZURE_TENANT_ID` | Azure AD tenant ID | `fcb2b37b-5da0-...` |
+
+---
+
 ## Development Notes
 
 ### Upstream Sync Strategy
@@ -257,13 +326,6 @@ This is a fork with a "thin wrapper" approach:
 - Minimize divergence from upstream Eigent
 - Keep Bayer-specific changes isolated
 - Periodically sync with upstream for bug fixes and features
-
-### Environment Setup
-
-1. Ensure Node.js 18-22 is installed
-2. Install Python 3.10 with uv package manager
-3. Run `npm install` for frontend dependencies
-4. Backend dependencies are managed by uv
 
 ### Testing
 

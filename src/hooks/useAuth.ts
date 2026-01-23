@@ -23,6 +23,7 @@ import {
   acquireTokenSilent,
   getActiveAccount,
 } from '@/lib/msal';
+import { authenticateWithLocalServer } from '@/lib/localAuth';
 import { useAuthStore } from '@/store/authStore';
 
 /**
@@ -80,7 +81,9 @@ export const useAuth = (): AuthState & AuthActions => {
     email,
     username,
     user_id,
+    localToken,
     setAuth,
+    setLocalAuth,
     logout: storeLogout,
   } = useAuthStore();
 
@@ -94,7 +97,7 @@ export const useAuth = (): AuthState & AuthActions => {
       }
     : null;
 
-  const isAuthenticated = !!token && !!email;
+  const isAuthenticated = !!token && !!email && !!localToken;
 
   /**
    * Initialize auth on mount
@@ -120,6 +123,14 @@ export const useAuth = (): AuthState & AuthActions => {
               email: userInfo.email,
               user_id: parseInt(userInfo.id) || 0,
             });
+
+            // Also authenticate with local eigent server
+            const localAuth = await authenticateWithLocalServer(userInfo.email);
+            if (localAuth) {
+              setLocalAuth(localAuth);
+            } else {
+              console.warn('[useAuth] Failed to authenticate with local server during init');
+            }
           }
         }
       } catch (err) {
@@ -131,11 +142,12 @@ export const useAuth = (): AuthState & AuthActions => {
     };
 
     init();
-  }, [setAuth]);
+  }, [setAuth, setLocalAuth]);
 
   /**
    * Login with Azure AD
    * Uses popup authentication directly - NO silent auth attempts
+   * Also authenticates with local eigent server after SSO success
    */
   const login = useCallback(async () => {
     try {
@@ -150,12 +162,25 @@ export const useAuth = (): AuthState & AuthActions => {
         const accessToken = result.accessToken;
         const userInfo = extractUserInfo(result.account);
 
+        // Set SSO auth first
         setAuth({
           token: accessToken,
           username: userInfo.name,
           email: userInfo.email,
           user_id: parseInt(userInfo.id) || 0,
         });
+
+        // Also authenticate with local eigent server
+        // This auto-registers the user if they don't exist
+        console.log('[useAuth] SSO login successful, authenticating with local server...');
+        const localAuth = await authenticateWithLocalServer(userInfo.email);
+        if (localAuth) {
+          setLocalAuth(localAuth);
+          console.log('[useAuth] Local server authentication successful');
+        } else {
+          console.error('[useAuth] Failed to authenticate with local server');
+          // Don't throw - SSO is still valid, local auth can be retried
+        }
       }
     } catch (err) {
       console.error('[useAuth] Login error:', err);
@@ -164,7 +189,7 @@ export const useAuth = (): AuthState & AuthActions => {
     } finally {
       setIsLoading(false);
     }
-  }, [setAuth]);
+  }, [setAuth, setLocalAuth]);
 
   /**
    * Logout from Azure AD
@@ -236,6 +261,12 @@ export const useAuth = (): AuthState & AuthActions => {
             email: userInfo.email,
             user_id: parseInt(userInfo.id) || 0,
           });
+
+          // Also refresh local server auth
+          const localAuth = await authenticateWithLocalServer(userInfo.email);
+          if (localAuth) {
+            setLocalAuth(localAuth);
+          }
         }
       } else {
         // No valid session, clear store
@@ -247,7 +278,7 @@ export const useAuth = (): AuthState & AuthActions => {
     } finally {
       setIsLoading(false);
     }
-  }, [setAuth, storeLogout]);
+  }, [setAuth, setLocalAuth, storeLogout]);
 
   return {
     user,

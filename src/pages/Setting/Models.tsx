@@ -43,7 +43,7 @@ import { useTranslation } from "react-i18next";
 const LOCAL_PROVIDER_NAMES = ["ollama", "vllm", "sglang", "lmstudio"];
 
 export default function SettingModels() {
-	const { modelType, cloud_model_type, setModelType, setCloudModelType } =
+	const { modelType, cloud_model_type, setModelType, setCloudModelType, token } =
 		useAuthStore();
 	const navigate = useNavigate();
 	const { t } = useTranslation();
@@ -177,6 +177,21 @@ export default function SettingModels() {
 			updateCredits();
 		}
 	}, []);
+
+	// Auto-fill API key with SSO token for OpenAI Compatible when form is empty
+	useEffect(() => {
+		if (token) {
+			setForm((f) =>
+				f.map((fi, idx) => {
+					// Only auto-fill for openai-compatible-model if API key is empty
+					if (items[idx]?.id === 'openai-compatible-model' && !fi.apiKey) {
+						return { ...fi, apiKey: token };
+					}
+					return fi;
+				})
+			);
+		}
+	}, [token, items]);
 
 	const handleVerify = async (idx: number) => {
 		const { apiKey, apiHost, externalConfig, model_type, provider_id } =

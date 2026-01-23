@@ -164,15 +164,17 @@ async function proxyFetchRequest(
 ): Promise<any> {
   const baseURL = await getProxyBaseURL()
   const fullUrl = `${baseURL}${url}`
-  const { token } = getAuthStore()
+  // Use localToken for eigent server requests (local auth), not SSO token
+  const { localToken } = getAuthStore()
 
   const headers: Record<string, string> = {
     ...defaultHeaders,
     ...customHeaders,
   }
 
-  if (!url.includes('http://') && !url.includes('https://') && token) {
-    headers['Authorization'] = `Bearer ${token}`
+  // Use localToken for Authorization to eigent server
+  if (!url.includes('http://') && !url.includes('https://') && localToken) {
+    headers['Authorization'] = `Bearer ${localToken}`
   }
 
 
@@ -221,7 +223,8 @@ export const proxyFetchDelete = (url: string, data?: any, headers?: any) =>
 export async function uploadFile(url: string, formData: FormData, headers?: Record<string, string>): Promise<any> {
   const baseURL = await getProxyBaseURL()
   const fullUrl = `${baseURL}${url}`
-  const { token } = getAuthStore()
+  // Use localToken for eigent server requests (local auth), not SSO token
+  const { localToken } = getAuthStore()
 
   const requestHeaders: Record<string, string> = {
     ...headers,
@@ -232,8 +235,9 @@ export async function uploadFile(url: string, formData: FormData, headers?: Reco
     delete requestHeaders['Content-Type']
   }
 
-  if (!url.includes('http://') && !url.includes('https://') && token) {
-    requestHeaders['Authorization'] = `Bearer ${token}`
+  // Use localToken for Authorization to eigent server
+  if (!url.includes('http://') && !url.includes('https://') && localToken) {
+    requestHeaders['Authorization'] = `Bearer ${localToken}`
   }
 
   if (import.meta.env.DEV) {
