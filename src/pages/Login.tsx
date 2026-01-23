@@ -50,7 +50,7 @@ export default function Login() {
   // Redirect to main app on successful SSO authentication
   useEffect(() => {
     if (ssoAuthenticated) {
-      setModelType('cloud');
+      setModelType('custom');
       const localProxyValue = import.meta.env.VITE_USE_LOCAL_PROXY || null;
       setLocalProxyValue(localProxyValue);
       navigate('/');

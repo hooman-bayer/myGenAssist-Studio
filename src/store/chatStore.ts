@@ -425,40 +425,24 @@ const chatStore = (initial?: Partial<ChatStore>) => createStore<ChatStore>()(
 				api_url: '',
 				extra_params: {}
 			}
-			if (modelType === 'custom' || modelType === 'local') {
-				const res = await proxyFetchGet('/api/providers', {
-					prefer: true
-				});
-				const providerList = res.items || []
-				console.log('providerList', providerList)
-				const provider = providerList[0]
+			// Get provider configuration
+			const res = await proxyFetchGet('/api/providers', {
+				prefer: true
+			});
+			const providerList = res.items || []
+			console.log('providerList', providerList)
+			const provider = providerList[0]
 
-				if (!provider) {
-					throw new Error('No model provider configured. Please go to Settings > Models and configure at least one model provider as default.');
-				}
+			if (!provider) {
+				throw new Error('No model provider configured. Please go to Settings > Models and configure at least one model provider as default.');
+			}
 
-				apiModel = {
-					api_key: provider.api_key,
-					model_type: provider.model_type,
-					model_platform: provider.provider_name,
-					api_url: provider.endpoint_url || provider.api_url,
-					extra_params: provider.encrypted_config
-				}
-			} else if (modelType === 'cloud') {
-				// get current model
-				const res = await proxyFetchGet('/api/user/key');
-				if (res.warning_code && res.warning_code === '21') {
-					showStorageToast()
-				}
-				apiModel = {
-					api_key: res.value,
-					model_type: cloud_model_type,
-					model_platform: cloud_model_type.includes('gpt') ? 'openai' :
-						cloud_model_type.includes('claude') ? 'anthropic' :
-							cloud_model_type.includes('gemini') ? 'gemini' : 'openai-compatible-model',
-					api_url: res.api_url,
-					extra_params: {}
-				}
+			apiModel = {
+				api_key: provider.api_key,
+				model_type: provider.model_type,
+				model_platform: provider.provider_name,
+				api_url: provider.endpoint_url || provider.api_url,
+				extra_params: provider.encrypted_config
 			}
 
 
@@ -530,7 +514,7 @@ const chatStore = (initial?: Partial<ChatStore>) => createStore<ChatStore>()(
 					"language": systemLanguage,
 					"model_platform": apiModel.model_platform,
 					"model_type": apiModel.model_type,
-					"api_url": modelType === 'cloud' ? "cloud" : apiModel.api_url,
+					"api_url": apiModel.api_url,
 					"max_retries": 3,
 					"file_save_path": "string",
 					"installed_mcp": "string",
@@ -732,7 +716,7 @@ const chatStore = (initial?: Partial<ChatStore>) => createStore<ChatStore>()(
 										"language": systemLanguage,
 										"model_platform": apiModel.model_platform,
 										"model_type": apiModel.model_type,
-										"api_url": modelType === 'cloud' ? "cloud" : apiModel.api_url,
+										"api_url": apiModel.api_url,
 										"max_retries": 3,
 										"file_save_path": "string",
 										"installed_mcp": "string",

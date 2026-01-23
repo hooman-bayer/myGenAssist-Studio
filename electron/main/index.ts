@@ -1872,21 +1872,73 @@ const createSystemBrowserAuthServer = (): Promise<{ port: number; server: http.S
             <head>
               <title>Authentication Failed</title>
               <style>
-                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                       display: flex; justify-content: center; align-items: center;
-                       height: 100vh; margin: 0; background: #f5f5f5; }
-                .container { text-align: center; padding: 40px; background: white;
-                            border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-                h1 { color: #d32f2f; margin-bottom: 16px; }
-                p { color: #666; margin-bottom: 24px; }
-                .error-code { background: #fff3f3; padding: 12px; border-radius: 6px;
-                             color: #d32f2f; font-family: monospace; font-size: 14px; }
+                * { box-sizing: border-box; }
+                body {
+                  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  height: 100vh;
+                  margin: 0;
+                  background: linear-gradient(135deg, #faf8f8 0%, #f4f0f0 100%);
+                }
+                .container {
+                  text-align: center;
+                  padding: 48px 56px;
+                  background: white;
+                  border-radius: 20px;
+                  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+                  max-width: 420px;
+                }
+                .error-icon {
+                  width: 72px;
+                  height: 72px;
+                  margin: 0 auto 24px;
+                  border-radius: 50%;
+                  background: #FEF2F2;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                }
+                .error-icon svg {
+                  width: 32px;
+                  height: 32px;
+                }
+                h1 {
+                  color: #1a1a1a;
+                  font-size: 22px;
+                  font-weight: 600;
+                  margin: 0 0 8px 0;
+                  letter-spacing: -0.3px;
+                }
+                p {
+                  color: #666;
+                  font-size: 15px;
+                  line-height: 1.5;
+                  margin: 0 0 20px 0;
+                }
+                .error-code {
+                  background: #FEF2F2;
+                  padding: 12px 16px;
+                  border-radius: 10px;
+                  color: #DC2626;
+                  font-family: 'SF Mono', Monaco, monospace;
+                  font-size: 13px;
+                  word-break: break-word;
+                }
               </style>
             </head>
             <body>
               <div class="container">
-                <h1>Authentication Failed</h1>
-                <p>There was an error signing you in. Please close this window and try again.</p>
+                <div class="error-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                  </svg>
+                </div>
+                <h1>Something went wrong</h1>
+                <p>Close this window and try signing in again.</p>
                 <div class="error-code">${error}: ${errorDescription || 'Unknown error'}</div>
               </div>
             </body>
@@ -1910,26 +1962,88 @@ const createSystemBrowserAuthServer = (): Promise<{ port: number; server: http.S
             <!DOCTYPE html>
             <html>
             <head>
-              <title>Authentication Successful</title>
+              <title>Authentication Complete</title>
               <style>
-                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-                       display: flex; justify-content: center; align-items: center;
-                       height: 100vh; margin: 0; background: #f5f5f5; }
-                .container { text-align: center; padding: 40px; background: white;
-                            border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-                h1 { color: #4caf50; margin-bottom: 16px; }
-                p { color: #666; }
-                .spinner { width: 24px; height: 24px; border: 3px solid #e0e0e0;
-                          border-top-color: #4caf50; border-radius: 50%;
-                          animation: spin 1s linear infinite; margin: 20px auto; }
-                @keyframes spin { to { transform: rotate(360deg); } }
+                * { box-sizing: border-box; }
+                body {
+                  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                  height: 100vh;
+                  margin: 0;
+                  background: linear-gradient(135deg, #f8faf9 0%, #f0f4f2 100%);
+                }
+                .container {
+                  text-align: center;
+                  padding: 48px 56px;
+                  background: white;
+                  border-radius: 20px;
+                  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+                  max-width: 380px;
+                }
+                .checkmark-circle {
+                  width: 72px;
+                  height: 72px;
+                  margin: 0 auto 24px;
+                }
+                .checkmark-circle svg {
+                  width: 100%;
+                  height: 100%;
+                }
+                .circle {
+                  fill: none;
+                  stroke: #1FBD81;
+                  stroke-width: 3;
+                  stroke-dasharray: 200;
+                  stroke-dashoffset: 200;
+                  animation: drawCircle 0.4s ease-out forwards;
+                }
+                .checkmark {
+                  fill: none;
+                  stroke: #1FBD81;
+                  stroke-width: 3;
+                  stroke-linecap: round;
+                  stroke-linejoin: round;
+                  stroke-dasharray: 50;
+                  stroke-dashoffset: 50;
+                  animation: drawCheck 0.3s ease-out 0.3s forwards;
+                }
+                @keyframes drawCircle {
+                  to { stroke-dashoffset: 0; }
+                }
+                @keyframes drawCheck {
+                  to { stroke-dashoffset: 0; }
+                }
+                h1 {
+                  color: #1a1a1a;
+                  font-size: 22px;
+                  font-weight: 600;
+                  margin: 0 0 8px 0;
+                  letter-spacing: -0.3px;
+                }
+                p {
+                  color: #666;
+                  font-size: 15px;
+                  line-height: 1.5;
+                  margin: 0;
+                }
+                .brand {
+                  color: #1FBD81;
+                  font-weight: 500;
+                }
               </style>
             </head>
             <body>
               <div class="container">
-                <h1>Authentication Successful</h1>
-                <div class="spinner"></div>
-                <p>You can close this window and return to myGenAssist Studio.</p>
+                <div class="checkmark-circle">
+                  <svg viewBox="0 0 52 52">
+                    <circle class="circle" cx="26" cy="26" r="23"/>
+                    <path class="checkmark" d="M14 27l8 8 16-16"/>
+                  </svg>
+                </div>
+                <h1>You're all set</h1>
+                <p>Return to <span class="brand">myGenAssist Studio</span> to continue.</p>
               </div>
             </body>
             </html>

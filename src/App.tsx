@@ -8,6 +8,7 @@ import { useAuthStore } from "./store/authStore";
 import { Toaster } from "sonner";
 import { hasStackKeys } from "./lib";
 import { useTranslation } from "react-i18next";
+import { useTokenRefresh } from "@/hooks/useTokenRefresh";
 
 const HAS_STACK_KEYS = hasStackKeys();
 
@@ -17,6 +18,9 @@ function App() {
 	const [animationFinished, setAnimationFinished] = useState(false);
 	const { isFirstLaunch } = useAuthStore();
 	const { t } = useTranslation();
+
+	// Proactive background token refresh
+	useTokenRefresh();
 
 	useEffect(() => {
 		const handleShareCode = (event: any, share_token: string) => {

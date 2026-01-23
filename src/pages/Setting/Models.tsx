@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -83,8 +83,8 @@ export default function SettingModels() {
 	);
 	const [collapsed, setCollapsed] = useState(false);
 
-	// Cloud Model
-	const [cloudPrefer, setCloudPrefer] = useState(false);
+	// Track previous SSO token for auto-sync detection
+	const prevTokenRef = useRef<string | null>(null);
 
 	// Local Model independent state
 	const [localEnabled, setLocalEnabled] = useState(true);
@@ -154,42 +154,36 @@ export default function SettingModels() {
 					setLocalPrefer(local.prefer ?? false);
 					setLocalProviderId(local.id);
 				}
-				if (modelType === "cloud") {
-					setCloudPrefer(true);
-					setForm((f) => f.map((fi) => ({ ...fi, prefer: false })));
-					setLocalPrefer(false);
-				} else if (modelType === "local") {
+				if (modelType === "local") {
 					setLocalEnabled(true);
 					setForm((f) => f.map((fi) => ({ ...fi, prefer: false })));
 					setLocalPrefer(true);
-					setCloudPrefer(false);
 				} else {
 					setLocalPrefer(false);
-					setCloudPrefer(false);
 				}
 			} catch (e) {
 				// ignore error
 			}
 		})();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		if (import.meta.env.VITE_USE_LOCAL_PROXY !== "true") {
-			fetchSubscription();
-			updateCredits();
-		}
 	}, []);
 
-	// Auto-fill API key with SSO token for OpenAI Compatible when form is empty
+	// Auto-fill and auto-update API key with SSO token for OpenAI Compatible
 	useEffect(() => {
 		if (token) {
 			setForm((f) =>
 				f.map((fi, idx) => {
-					// Only auto-fill for openai-compatible-model if API key is empty
-					if (items[idx]?.id === 'openai-compatible-model' && !fi.apiKey) {
-						return { ...fi, apiKey: token };
+					if (items[idx]?.id === 'openai-compatible-model') {
+						// Check if current apiKey was auto-filled (matches previous token or is empty)
+						const wasAutoFilled = !fi.apiKey || fi.apiKey === prevTokenRef.current;
+						if (wasAutoFilled) {
+							return { ...fi, apiKey: token };
+						}
 					}
 					return fi;
 				})
 			);
+			// Update previous token reference
+			prevTokenRef.current = token;
 		}
 	}, [token, items]);
 
@@ -501,7 +495,6 @@ export default function SettingModels() {
 			setModelType("custom");
 			setActiveModelIdx(idx);
 			setLocalEnabled(false);
-			setCloudPrefer(false);
 			setForm((f) => f.map((fi, i) => ({ ...fi, prefer: i === idx }))); // Only one prefer allowed
 			setLocalPrefer(false);
 		} catch (e) {
@@ -535,7 +528,6 @@ export default function SettingModels() {
 			setActiveModelIdx(null);
 			setForm((f) => f.map((fi) => ({ ...fi, prefer: false }))); // Set all others' prefer to false
 			setLocalPrefer(true);
-			setCloudPrefer(false);
 		} catch (e) {
 			// Optional: add error message
 		}
@@ -609,192 +601,8 @@ export default function SettingModels() {
 		return _hasApiKey && _hasApiId;
 	};
 
-	const [subscription, setSubscription] = useState<any>(null);
-	const fetchSubscription = async () => {
-		const res = await proxyFetchGet("/api/subscription");
-		console.log(res);
-		if (res) {
-			setSubscription(res);
-		}
-	};
-	const [credits, setCredits] = useState<any>(0);
-	const [loadingCredits, setLoadingCredits] = useState(false);
-	const updateCredits = async () => {
-		try {
-			setLoadingCredits(true);
-			const res = await proxyFetchGet(`/api/user/current_credits`);
-			console.log(res?.credits);
-			setCredits(res?.credits);
-		} catch (error) {
-			console.error(error);
-		} finally {
-			setLoadingCredits(false);
-		}
-	};
-
 	return (
 		<div className="flex flex-col gap-4 pb-40">
-			{import.meta.env.VITE_USE_LOCAL_PROXY !== "true" && (
-				<div className="w-full pt-4 self-stretch px-6 py-4 bg-gradient-to-t from-orange-50 to-surface-tertiary rounded-2xl inline-flex flex-col justify-start items-start gap-4 border-solid border-border-disabled">
-					<div className="self-stretch flex flex-col justify-start items-start gap-1">
-						<div className="self-stretch inline-flex justify-start items-center gap-2">
-							<div className="flex-1 justify-center text-body-lg text-text-heading font-bold">
-								{t("setting.cloud-version")}
-							</div>
-							{cloudPrefer ? (
-								<Button
-									variant="success"
-									size="sm"
-									className="focus-none"
-									onClick={() => {
-										// currently selected -> unselect
-										setCloudPrefer(false);
-										setModelType("custom");
-									}}
-								>
-									Default
-									<Check />
-								</Button>
-							) : (
-								<Button
-									variant="ghost"
-									size="sm"
-									className="!text-text-label"
-									onClick={() => {
-										// not selected -> select cloud prefer
-										setLocalPrefer(false);
-										setActiveModelIdx(null);
-										setForm((f) => f.map((fi) => ({ ...fi, prefer: false })));
-										setCloudPrefer(true);
-										setModelType("cloud");
-									}}
-								>
-									Set as Default
-								</Button>
-							)}
-						</div>
-						<div className="self-stretch justify-center">
-							<span className="text-text-label text-body-sm">
-								{t("setting.you-are-currently-subscribed-to-the")}{" "}
-								{subscription?.plan_key?.charAt(0).toUpperCase() +
-									subscription?.plan_key?.slice(1)}
-								. {t("setting.discover-more-about-our")}{" "}
-							</span>
-							<span
-								onClick={() => {
-									window.location.href = `https://chat.int.bayer.com/pricing`;
-								}}
-								className="cursor-pointer text-text-label text-body-sm underline"
-							>
-								{t("setting.pricing-options")}
-							</span>
-							<span className="text-text-body text-xs font-normal font-['Inter'] leading-tight">
-								.
-							</span>
-						</div>
-					</div>
-					<div className="flex flex-row items-center justify-start gap-4 w-full pb-2">
-						<Button
-							onClick={() => {
-								window.location.href = `https://chat.int.bayer.com/dashboard`;
-							}}
-							variant="primary"
-							size="sm"
-						>
-							{loadingCredits ? (
-								<Loader2 className="w-4 h-4 animate-spin" />
-							) : (
-								subscription?.plan_key?.charAt(0).toUpperCase() +
-								subscription?.plan_key?.slice(1)
-							)}
-							<Settings />
-						</Button>
-						<div className="text-text-body text-body-sm">
-							{t("setting.credits")}:{" "}
-							{loadingCredits ? (
-								<Loader2 className="w-4 h-4 animate-spin" />
-							) : (
-								credits
-							)}
-						</div>
-					</div>
-					<div className="w-full flex items-center flex-1 justify-between pt-6 border-b-0 border-x-0 border-solid border-border-disabled">
-						<div className="flex items-center flex-1 min-w-0">
-							<span className="whitespace-nowrap overflow-hidden text-ellipsis text-body-sm">
-								{t("setting.select-model-type")}
-							</span>
-							<Tooltip>
-								<TooltipTrigger asChild>
-									<span className="ml-1 cursor-pointer inline-flex items-center">
-										<Info className="w-4 h-4 text-icon-secondary" />
-									</span>
-								</TooltipTrigger>
-								<TooltipContent
-									side="top"
-									className="flex items-center justify-center text-center min-w-[220px] min-h-[40px]"
-								>
-									<span className="w-full flex items-center justify-center">
-										{cloud_model_type === "gpt-4.1-mini"
-											? t("setting.gpt-4.1-mini")
-											: cloud_model_type === "gpt-4.1"
-												? t("setting.gpt-4.1")
-												: cloud_model_type === "claude-sonnet-4-5"
-													? t("setting.claude-sonnet-4-5")
-													: cloud_model_type === "claude-sonnet-4-20250514"
-														? t("setting.claude-sonnet-4")
-														: cloud_model_type === "claude-3-5-haiku-20241022"
-															? t("setting.claude-3.5-haiku")
-															: cloud_model_type === "gemini-3-pro-preview"
-																? t("setting.gemini-3-pro-preview")
-																: cloud_model_type === "gpt-5"
-																	? t("setting.gpt-5")
-																	: cloud_model_type === "gpt-5.1"
-																		? t("setting.gpt-5")
-																		: cloud_model_type === "gpt-5.2"
-																			? t("setting.gpt-5")
-																	: cloud_model_type === "gpt-5-mini"
-																		? t("setting.gpt-5-mini")
-																		: cloud_model_type === "gemini-3-flash-preview"
-																			? t("setting.gemini-3-flash-preview")
-																			: t("setting.gemini-2.5-pro")}
-									</span>
-								</TooltipContent>
-							</Tooltip>
-						</div>
-						<div className="flex-shrink-0">
-							<Select
-								value={cloud_model_type}
-								onValueChange={setCloudModelType}
-							>
-								<SelectTrigger size="sm">
-									<SelectValue placeholder="Select Model Type" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="gemini/gemini-2.5-pro">Gemini 2.5 Pro</SelectItem>
-									<SelectItem value="gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
-									<SelectItem value="gemini-3-pro-preview">Gemini 3 Pro Preview</SelectItem>
-									<SelectItem value="gemini-3-flash-preview">Gemini 3 Flash Preview</SelectItem>
-									<SelectItem value="gpt-4.1-mini">GPT-4.1 mini</SelectItem>
-									<SelectItem value="gpt-4.1">GPT-4.1</SelectItem>
-									<SelectItem value="gpt-5">GPT-5</SelectItem>
-									<SelectItem value="gpt-5.1">GPT-5.1</SelectItem>
-									<SelectItem value="gpt-5.2">GPT-5.2</SelectItem>
-									<SelectItem value="gpt-5-mini">GPT-5 mini</SelectItem>
-									<SelectItem value="claude-sonnet-4-5">
-										Claude Sonnet 4-5
-									</SelectItem>
-									<SelectItem value="claude-sonnet-4-20250514">
-										Claude Sonnet 4
-									</SelectItem>
-									<SelectItem value="claude-3-5-haiku-20241022">
-										Claude 3.5 Haiku
-									</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-					</div>
-				</div>
-			)}
 			{/* customer models */}
 			<div className="self-stretch my-2 border-border-disabled inline-flex flex-col justify-start items-start border-x-0 border-solid">
 				{/* header */}

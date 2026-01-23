@@ -37,45 +37,24 @@ export default function ChatBox(): JSX.Element {
   const [isConfigLoaded, setIsConfigLoaded] = useState<boolean>(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   // const [privacyDialogOpen, setPrivacyDialogOpen] = useState(false);
-  const { modelType } = useAuthStore();
-  const [useCloudModelInDev, setUseCloudModelInDev] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
   // Shared function to check model configuration
   const checkModelConfig = useCallback(async () => {
     try {
-      if (modelType === 'cloud') {
-        // For cloud model, check if API key exists
-        const res = await proxyFetchGet('/api/user/key');
-        setHasModel(!!res.value);
-      } else if (modelType === 'local' || modelType === 'custom') {
-        // For local/custom model, check if provider exists
-        const res = await proxyFetchGet('/api/providers', { prefer: true });
-        const providerList = res.items || [];
-        setHasModel(providerList.length > 0);
-      } else {
-        setHasModel(false);
-      }
+      // Check if provider is configured
+      const res = await proxyFetchGet('/api/providers', { prefer: true });
+      const providerList = res.items || [];
+      setHasModel(providerList.length > 0);
     } catch (err) {
       console.error('Failed to check model config:', err);
       setHasModel(false);
     } finally {
       setIsConfigLoaded(true);
     }
-  }, [modelType]);
+  }, []);
 
-  useEffect(() => {
-    // Only show warning message, don't block functionality
-    if (
-      import.meta.env.VITE_USE_LOCAL_PROXY === 'true' &&
-      modelType === 'cloud'
-    ) {
-      setUseCloudModelInDev(true);
-    } else {
-      setUseCloudModelInDev(false);
-    }
-  }, [modelType]);
   useEffect(() => {
     proxyFetchGet('/api/user/privacy')
       .then((res) => {
@@ -105,7 +84,7 @@ export default function ChatBox(): JSX.Element {
       .catch((err) => console.error('Failed to fetch configs:', err));
 
     checkModelConfig();
-  }, [modelType, checkModelConfig]);
+  }, [checkModelConfig]);
 
   // Re-check model config when returning from settings page
   useEffect(() => {
@@ -910,7 +889,6 @@ export default function ChatBox(): JSX.Element {
     // Standard checks - check model first, then privacy
     if (!hasModel) return true;
     if (!privacy) return true;
-    if (useCloudModelInDev) return true;
     if (task.isContextExceeded) return true;
 
     return false;
@@ -919,7 +897,6 @@ export default function ChatBox(): JSX.Element {
     chatStore.tasks,
     privacy,
     hasModel,
-    useCloudModelInDev,
     isTaskBusy,
   ]);
 
@@ -1000,7 +977,6 @@ export default function ChatBox(): JSX.Element {
                 textareaRef: textareaRef,
                 allowDragDrop: true,
                 privacy: privacy,
-                useCloudModelInDev: useCloudModelInDev,
               }}
             />
           )}
@@ -1044,7 +1020,6 @@ export default function ChatBox(): JSX.Element {
                   textareaRef: textareaRef,
                   allowDragDrop: false,
                   privacy: privacy,
-                  useCloudModelInDev: useCloudModelInDev,
                 }}
               />
             )}

@@ -37,7 +37,7 @@ interface SearchEngineConfigDialogProps {
 	onClose: () => void;
 }
 
-function buildSearchEngines(modelType: 'cloud' | 'local' | 'custom'): SearchEngineProvider[] {
+function buildSearchEngines(modelType: 'local' | 'custom'): SearchEngineProvider[] {
 	// Only Google search engine, with custom mode requiring API key configuration
 	if (modelType === 'custom') {
 		return [
@@ -63,7 +63,7 @@ function buildSearchEngines(modelType: 'cloud' | 'local' | 'custom'): SearchEngi
 		];
 	}
 
-	// cloud or local → Google enabled by default, no config required
+	// local → Google enabled by default, no config required
 	return [
 		{
 			id: "google",

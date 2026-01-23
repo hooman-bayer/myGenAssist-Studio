@@ -1,7 +1,7 @@
 import { getAuthStore } from '@/store/authStore'
+import { getValidToken } from '@/lib/tokenManager'
 import { showCreditsToast } from '@/components/Toast/creditsToast';
 import { showStorageToast } from '@/components/Toast/storageToast';
-import { showTrafficToast } from '@/components/Toast/trafficToast';
 
 const defaultHeaders = {
   'Content-Type': 'application/json',
@@ -21,11 +21,12 @@ async function fetchRequest(
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   url: string,
   data?: Record<string, any>,
-  customHeaders: Record<string, string> = {}
+  customHeaders: Record<string, string> = {},
+  isRetry: boolean = false
 ): Promise<any> {
   const baseURL = await getBaseURL()
   const fullUrl = `${baseURL}${url}`
-  const { token } = getAuthStore()
+  const token = await getValidToken()
 
   const headers: Record<string, string> = {
     ...defaultHeaders,
@@ -49,19 +50,62 @@ async function fetchRequest(
         .map(([key, val]) => `${encodeURIComponent(key)}=${encodeURIComponent(val)}`)
         .join('&')
       : ''
-    return handleResponse(fetch(fullUrl + query, options), data)
+
+    try {
+      return await handleResponse(fetch(fullUrl + query, options), data)
+    } catch (err: any) {
+      // Handle 401 with retry
+      if (!isRetry && (err?.status === 401 || err?.response?.status === 401)) {
+        console.log('[HTTP] Got 401, attempting token refresh...')
+        const freshToken = await getValidToken()
+        if (freshToken) {
+          console.log('[HTTP] Token refreshed, retrying request...')
+          return fetchRequest(method, url, data, customHeaders, true)
+        }
+        // Refresh failed - redirect to login
+        console.log('[HTTP] Token refresh failed, redirecting to login')
+        window.location.href = '#/login'
+        return
+      }
+      throw err
+    }
   }
 
   if (data) {
     options.body = JSON.stringify(data)
   }
 
-  return handleResponse(fetch(fullUrl, options), data)
+  try {
+    return await handleResponse(fetch(fullUrl, options), data)
+  } catch (err: any) {
+    // Handle 401 with retry
+    if (!isRetry && (err?.status === 401 || err?.response?.status === 401)) {
+      console.log('[HTTP] Got 401, attempting token refresh...')
+      const freshToken = await getValidToken()
+      if (freshToken) {
+        console.log('[HTTP] Token refreshed, retrying request...')
+        return fetchRequest(method, url, data, customHeaders, true)
+      }
+      // Refresh failed - redirect to login
+      console.log('[HTTP] Token refresh failed, redirecting to login')
+      window.location.href = '#/login'
+      return
+    }
+    throw err
+  }
 }
 
 async function handleResponse(responsePromise: Promise<Response>, requestData?: Record<string, any>): Promise<any> {
   try {
     const res = await responsePromise
+
+    // Check HTTP 401 status first and throw with status attached
+    if (res.status === 401) {
+      const error = new Error('Unauthorized') as Error & { status: number };
+      error.status = 401;
+      throw error;
+    }
+
     if (res.status === 204) {
       return { code: 0, text: '' }
     }
@@ -103,13 +147,6 @@ async function handleResponse(responsePromise: Promise<Response>, requestData?: 
 
     return resData
   } catch (err: any) {
-
-    // Only show traffic toast for cloud model requests
-    const isCloudRequest = requestData?.api_url === 'cloud'
-    if (isCloudRequest) {
-      showTrafficToast()
-    }
-
     console.error('[fetch error]:', err)
 
     if (err?.response?.status === 401) {
