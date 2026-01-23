@@ -41,6 +41,9 @@ yarn.lock
 
 .cursor
 
+# Beads issue tracker (local database)
+.beads/
+
 # Public directory (large media files)
 public/
 
