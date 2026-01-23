@@ -7,7 +7,6 @@
 
 	"account": "계정",
 	"you-are-currently-signed-in-with": "{{email}} 계정으로 로그인되어 있습니다.",
-	"manage": "관리",
 	"log-out": "로그아웃",
 	"language": "언어",
 	"select-language": "언어 선택",

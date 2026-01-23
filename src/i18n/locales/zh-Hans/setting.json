@@ -7,7 +7,6 @@
 
 	"account": "账户",
 	"you-are-currently-signed-in-with": "你当前使用的是 {{email}} 账户",
-	"manage": "管理",
 	"log-out": "退出",
 	"language": "语言",
 	"select-language": "选择语言",

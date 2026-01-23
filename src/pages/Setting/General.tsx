@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogOut, Settings, Check } from "lucide-react";
+import { LogOut, Check } from "lucide-react";
 import light from "@/assets/light.png";
 import dark from "@/assets/dark.png";
 import transparent from "@/assets/transparent.png";
@@ -149,16 +149,6 @@ export default function SettingGeneral() {
 					})}
 				</div>
 				<div className="flex items-center gap-sm">
-					<Button
-						onClick={() => {
-							window.location.href = `https://chat.int.bayer.com/dashboard?email=${authStore.email}`;
-						}}
-						variant="primary"
-						size="xs"
-					>
-						<Settings className="w-4 h-4 text-button-primary-icon-default" />
-						{t("setting.manage")}
-					</Button>
 					<Button
 						variant="outline"
 						size="xs"
