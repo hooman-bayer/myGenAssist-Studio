@@ -72,11 +72,6 @@ export function SearchHistoryDialog() {
 		console.log("Delete task:", taskId);
 	};
 
-	const handleShare = (taskId: string) => {
-		// TODO: Implement share functionality similar to HistorySidebar
-		console.log("Share task:", taskId);
-	};
-
 	useEffect(() => {
 		fetchHistoryTasks(setHistoryTasks);
 	}, []);
@@ -103,7 +98,6 @@ export function SearchHistoryDialog() {
 							<GroupedHistoryView
 								onTaskSelect={handleSetActive}
 								onTaskDelete={handleDelete}
-								onTaskShare={handleShare}
 								activeTaskId={chatStore.activeTaskId || undefined}
 							/>
 						</div>

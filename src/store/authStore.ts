@@ -40,9 +40,6 @@ interface AuthState {
 	cloud_model_type: CloudModelType;
 	initState: InitState;
 
-	// shared token
-	share_token?: string | null;
-
 	// local proxy value recorded at login
 	localProxyValue?: string | null;
 
@@ -91,7 +88,6 @@ const authStore = create<AuthState>()(
 			modelType: 'custom',
 			cloud_model_type: getRandomDefaultModel(),
 			initState: 'permissions',
-			share_token: null,
 			localProxyValue: null,
 			workerListData: {},
 

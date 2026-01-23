@@ -29,7 +29,20 @@
 	"how-we-handle-your-data-line-5":".نحن لا نبيع بياناتك لأطراف ثالثة",
 	"enable-privacy-permissions-settings": "تمكين إعدادات أذونات الخصوصية",
 	"enable-privacy-permissions-settings-description": ".من خلال تفعيل هذا الخيار، فإنك تقر بأنك قد قرأت ووافقت على سياسة الخصوصية الخاصة بنا بشأن كيفية جمع بيانات مهامك ومعالجتها وحمايتها",
-	
+
+	"mygenassist": "myGenAssist",
+	"connected": "متصل",
+	"connected-to-bayer-ai-platform": "متصل بمنصة Bayer AI",
+	"sso-managed-credentials": "تتم إدارة بيانات اعتمادك تلقائيًا عبر Bayer SSO. هذه الإعدادات للقراءة فقط لأسباب أمنية.",
+	"access-token": "رمز الوصول",
+	"sso-token-placeholder": "تدار بواسطة SSO",
+	"api-endpoint": "نقطة نهاية API",
+	"model": "النموذج",
+	"verify-connection": "التحقق من الاتصال",
+	"default": "افتراضي",
+	"not-configured": "غير مكون",
+	"set-as-default": "تعيين كافتراضي",
+
 	"api-key-can-not-be-empty": "!لا يمكن أن يكون مفتاح واجهة برمجة التطبيقات فارغًا",
 	"api-host-can-not-be-empty": "!لا يمكن أن يكون مضيف واجهة برمجة التطبيقات فارغًا",
 	"model-type-can-not-be-empty": "!لا يمكن أن يكون نوع النموذج فارغًا",

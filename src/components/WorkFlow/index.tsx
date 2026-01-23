@@ -10,10 +10,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Node as CustomNodeComponent } from "./node";
 
-import { SquareStack, ChevronLeft, ChevronRight, Share } from "lucide-react";
+import { SquareStack, ChevronLeft, ChevronRight } from "lucide-react";
 import "@xyflow/react/dist/style.css";
 import { useWorkerList } from "@/store/authStore";
-import { share } from "@/lib/share";
 import { useTranslation } from "react-i18next";
 import useChatStoreAdapter from "@/hooks/useChatStoreAdapter";
 
@@ -340,10 +339,6 @@ export default function Workflow({
 		setTimeout(() => {
 			setIsAnimating(false);
 		}, VIEWPORT_ANIMATION_DURATION);
-	};
-
-	const handleShare = async (taskId: string) => {
-		share(taskId);
 	};
 
 	useEffect(() => {

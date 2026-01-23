@@ -2,7 +2,6 @@ import AppRoutes from "@/routers/index";
 import React, { useEffect, useState } from "react";
 import { stackClientApp } from "@/stack/client";
 import { StackProvider, StackTheme } from "@stackframe/react";
-import { useNavigate } from "react-router-dom";
 import { SplashScreen } from "@/components/SplashScreen";
 import { useAuthStore } from "./store/authStore";
 import { Toaster } from "sonner";
@@ -13,7 +12,6 @@ import { useTokenRefresh } from "@/hooks/useTokenRefresh";
 const HAS_STACK_KEYS = hasStackKeys();
 
 function App() {
-	const navigate = useNavigate();
 	const { setInitState } = useAuthStore();
 	const [animationFinished, setAnimationFinished] = useState(false);
 	const { isFirstLaunch } = useAuthStore();
@@ -23,13 +21,6 @@ function App() {
 	useTokenRefresh();
 
 	useEffect(() => {
-		const handleShareCode = (event: any, share_token: string) => {
-			navigate({
-				pathname: "/",
-				search: `?share_token=${encodeURIComponent(share_token)}`,
-			});
-		};
-
 		//  listen version update notification
 		const handleUpdateNotification = (data: {
 			type: string;
@@ -49,14 +40,12 @@ function App() {
 			}
 		};
 
-		window.ipcRenderer?.on("auth-share-token-received", handleShareCode);
 		window.electronAPI?.onUpdateNotification(handleUpdateNotification);
 
 		return () => {
-			window.ipcRenderer?.off("auth-share-token-received", handleShareCode);
 			window.electronAPI?.removeAllListeners("update-notification");
 		};
-	}, [navigate, setInitState]);
+	}, [setInitState]);
 
 	// render main content
 	const renderMainContent = () => {

@@ -23,7 +23,6 @@ interface ProjectGroupProps {
   project: ProjectGroupType;
   onTaskSelect: (projectId: string, question: string, historyId: string) => void;
   onTaskDelete: (taskId: string) => void;
-  onTaskShare: (taskId: string) => void;
   activeTaskId?: string;
   searchValue?: string;
   isOngoing?: boolean;
@@ -39,7 +38,6 @@ export default function ProjectGroup({
   project,
   onTaskSelect,
   onTaskDelete,
-  onTaskShare,
   activeTaskId,
   searchValue = "",
   isOngoing = false,
@@ -261,7 +259,6 @@ export default function ProjectGroup({
             onProjectRename={handleProjectRename}
             onTaskSelect={onTaskSelect}
             onTaskDelete={onTaskDelete}
-            onTaskShare={onTaskShare}
             activeTaskId={activeTaskId}
           />
 
@@ -398,7 +395,6 @@ export default function ProjectGroup({
         onProjectRename={handleProjectRename}
         onTaskSelect={onTaskSelect}
         onTaskDelete={onTaskDelete}
-        onTaskShare={onTaskShare}
         activeTaskId={activeTaskId}
       />
     </div>

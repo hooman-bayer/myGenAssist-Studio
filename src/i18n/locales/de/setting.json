@@ -29,7 +29,20 @@
 	"how-we-handle-your-data-line-5":"Wir verkaufen Ihre Daten nicht an Dritte.",
 	"enable-privacy-permissions-settings": "Datenschutzeinstellungen aktivieren",
 	"enable-privacy-permissions-settings-description": "Durch die Aktivierung dieser Option bestätigen Sie, dass Sie unsere Datenschutzrichtlinie bezüglich der Erfassung, Verarbeitung und des Schutzes Ihrer Aufgabendaten gelesen und akzeptiert haben.",
-	
+
+	"mygenassist": "myGenAssist",
+	"connected": "Verbunden",
+	"connected-to-bayer-ai-platform": "Verbunden mit Bayer AI Platform",
+	"sso-managed-credentials": "Ihre Anmeldedaten werden automatisch über Bayer SSO verwaltet. Diese Einstellungen sind aus Sicherheitsgründen schreibgeschützt.",
+	"access-token": "Zugriffstoken",
+	"sso-token-placeholder": "Von SSO verwaltet",
+	"api-endpoint": "API-Endpunkt",
+	"model": "Modell",
+	"verify-connection": "Verbindung überprüfen",
+	"default": "Standard",
+	"not-configured": "Nicht konfiguriert",
+	"set-as-default": "Als Standard festlegen",
+
 	"api-key-can-not-be-empty": "API-Schlüssel darf nicht leer sein!",
 	"api-host-can-not-be-empty": "API-Host darf nicht leer sein!",
 	"model-type-can-not-be-empty": "Modelltyp darf nicht leer sein!",

@@ -29,7 +29,20 @@
 	"how-we-handle-your-data-line-5":"お客様のデータを第三者に販売することはありません。",
 	"enable-privacy-permissions-settings": "プライバシー権限設定を有効にする",
 	"enable-privacy-permissions-settings-description": "これをオンにすることで、タスクデータの収集、処理、保護方法に関するプライバシーポリシーを読み、同意したことを認めます。",
-	
+
+	"mygenassist": "myGenAssist",
+	"connected": "接続済み",
+	"connected-to-bayer-ai-platform": "Bayer AIプラットフォームに接続済み",
+	"sso-managed-credentials": "認証情報はBayer SSOを通じて自動的に管理されます。セキュリティのため、これらの設定は読み取り専用です。",
+	"access-token": "アクセストークン",
+	"sso-token-placeholder": "SSOで管理",
+	"api-endpoint": "APIエンドポイント",
+	"model": "モデル",
+	"verify-connection": "接続を確認",
+	"default": "デフォルト",
+	"not-configured": "未設定",
+	"set-as-default": "デフォルトに設定",
+
 	"api-key-can-not-be-empty": "APIキーは空にできません！",
 	"api-host-can-not-be-empty": "APIホストは空にできません！",
 	"model-type-can-not-be-empty": "モデルタイプは空にできません！",

@@ -1,5 +1,5 @@
 import React from "react";
-import { Ellipsis, Share, Trash2, Clock, CheckCircle, XCircle, CirclePause, CirclePlay, Pin, Hash } from "lucide-react";
+import { Ellipsis, Trash2, Clock, CheckCircle, XCircle, CirclePause, CirclePlay, Pin, Hash } from "lucide-react";
 import { HistoryTask } from "@/types/history";
 import { Button } from "@/components/ui/button";
 import { Tag } from "@/components/ui/tag";
@@ -18,7 +18,6 @@ interface TaskItemProps {
   isActive: boolean;
   onSelect: () => void;
   onDelete: () => void;
-  onShare: () => void;
   isLast: boolean;
   isOngoing?: boolean;
   onPause?: () => void;
@@ -31,7 +30,6 @@ export default function TaskItem({
   isActive,
   onSelect,
   onDelete,
-  onShare,
   isLast,
   isOngoing = false,
   onPause,
@@ -162,28 +160,11 @@ export default function TaskItem({
                 <Ellipsis />
               </Button>
             </PopoverTrigger>
-            <PopoverContent 
+            <PopoverContent
               align="end"
               className="w-[98px] p-sm rounded-[12px] bg-dropdown-bg border border-solid border-dropdown-border"
             >
               <div className="space-y-1">
-                {!isOngoing && (
-                  <PopoverClose asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onShare();
-                      }}
-                    >
-                      <Share size={14} />
-                      {t("layout.share")}
-                    </Button>
-                  </PopoverClose>
-                )}
-
                 <PopoverClose asChild>
                   <Button
                     variant="ghost"

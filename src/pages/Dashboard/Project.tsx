@@ -13,7 +13,6 @@ import {
 	CirclePause,
 	Ellipsis,
 	Trash2,
-	Share,
 	CirclePlay,
 } from "lucide-react";
 import folderIcon from "@/assets/Folder-1.svg";
@@ -40,7 +39,6 @@ import {
 import { getAuthStore } from "@/store/authStore";
 import { ProjectGroup as ProjectGroupType } from "@/types/history";
 import { Tag } from "@/components/ui/tag";
-import { share } from "@/lib/share";
 import { useTranslation } from "react-i18next";
 import AlertDialog from "@/components/ui/alertDialog";
 import { fetchHistoryTasks } from "@/service/historyApi";
@@ -191,10 +189,6 @@ export default function Project() {
 		}
 	};
 
-	const handleShare = async (taskId: string) => {
-		share(taskId);
-	};
-
 	const handleReplay = async (taskId: string, question: string) => {
 		chatStore.replay(taskId, question, 0);
 		navigate({ pathname: "/" });
@@ -281,7 +275,6 @@ export default function Project() {
         <GroupedHistoryView
           onTaskSelect={handleSetActive}
           onTaskDelete={handleDelete}
-          onTaskShare={handleShare}
           activeTaskId={chatStore.activeTaskId || undefined}
           ongoingTasks={chatStore.tasks}
           onOngoingTaskClick={(taskId) => {

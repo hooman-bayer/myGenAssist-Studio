@@ -16,7 +16,6 @@ interface GroupedHistoryViewProps {
   searchValue?: string;
   onTaskSelect: (projectId: string, question: string, historyId: string) => void;
   onTaskDelete: (historyId: string, callback: () => void) => void;
-  onTaskShare: (taskId: string) => void;
   activeTaskId?: string;
   refreshTrigger?: number; // For triggering refresh from parent
   ongoingTasks?: { [taskId: string]: any }; // Add ongoing tasks from chatStore
@@ -32,7 +31,6 @@ export default function GroupedHistoryView({
   searchValue = "",
   onTaskSelect,
   onTaskDelete,
-  onTaskShare,
   activeTaskId,
   refreshTrigger,
   ongoingTasks = {},
@@ -350,7 +348,6 @@ export default function GroupedHistoryView({
                       project={project}
                       onTaskSelect={onTaskSelect}
                       onTaskDelete={onDelete}
-                      onTaskShare={onTaskShare}
                       activeTaskId={activeTaskId}
                       searchValue={searchValue}
                       isOngoing={project.total_ongoing_tasks > 0}
@@ -409,7 +406,6 @@ export default function GroupedHistoryView({
                       project={project}
                       onTaskSelect={onTaskSelect}
                       onTaskDelete={onDelete}
-                      onTaskShare={onTaskShare}
                       activeTaskId={activeTaskId}
                       searchValue={searchValue}
                       isOngoing={project.total_ongoing_tasks > 0}

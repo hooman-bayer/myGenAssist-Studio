@@ -29,7 +29,20 @@
 	"how-we-handle-your-data-line-5":"We don’t sell your data to third parties.",
 	"enable-privacy-permissions-settings": "Enable Privacy Permissions Settings",
 	"enable-privacy-permissions-settings-description": "By turning this on, you acknowledge that you have read and agree to our Privacy Policy regarding how your task data is collected, processed, and protected.",
-	
+
+	"mygenassist": "myGenAssist",
+	"connected": "Connecté",
+	"connected-to-bayer-ai-platform": "Connecté à la plateforme Bayer AI",
+	"sso-managed-credentials": "Vos identifiants sont automatiquement gérés via Bayer SSO. Ces paramètres sont en lecture seule pour des raisons de sécurité.",
+	"access-token": "Jeton d'accès",
+	"sso-token-placeholder": "Géré par SSO",
+	"api-endpoint": "Point de terminaison API",
+	"model": "Modèle",
+	"verify-connection": "Vérifier la connexion",
+	"default": "Par défaut",
+	"not-configured": "Non configuré",
+	"set-as-default": "Définir par défaut",
+
 	"api-key-can-not-be-empty": "API Key can not be empty!",
 	"api-host-can-not-be-empty": "API Host can not be empty!",
 	"model-type-can-not-be-empty": "Model Type can not be empty!",

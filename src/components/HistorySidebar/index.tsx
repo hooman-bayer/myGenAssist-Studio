@@ -11,7 +11,6 @@ import {
 	Image,
 	ChevronDown,
 	Ellipsis,
-	Share,
 	SquarePlay,
 	Trash2,
 	Bot,
@@ -39,7 +38,6 @@ import {
 import AlertDialog from "../ui/alertDialog";
 import { proxyFetchGet, proxyFetchDelete } from "@/api/http";
 import { Tag } from "../ui/tag";
-import { share } from "@/lib/share";
 import { replayProject } from "@/lib";
 import { useTranslation } from "react-i18next";
 import useChatStoreAdapter from "@/hooks/useChatStoreAdapter";
@@ -218,11 +216,6 @@ export default function HistorySidebar() {
 		}
 	};
 
-	const handleShare = async (taskId: string) => {
-		close();
-		share(taskId);
-	};
-
 	const handleSetActive = (projectId: string, question: string, historyId: string) => {
 		const project = projectStore.getProjectById(projectId);
 		//If project exists
@@ -377,21 +370,6 @@ export default function HistorySidebar() {
 																className="w-full"
 																onClick={(e) => {
 																	e.stopPropagation();
-																	handleShare(project.project_id);
-																}}
-															>
-																<Share size={16} />
-																{t("layout.share")}
-															</Button>
-														</PopoverClose>
-						
-														<PopoverClose asChild>
-															<Button
-																variant="ghost"
-																size="sm"
-																className="w-full"
-																onClick={(e) => {
-																	e.stopPropagation();
 																	handleDelete(project.project_id);
 																}}
 															>
@@ -469,21 +447,6 @@ export default function HistorySidebar() {
 												</PopoverTrigger>
 												<PopoverContent className="w-[98px] p-sm rounded-[12px] bg-dropdown-bg border border-solid border-dropdown-border">
 													<div className="space-y-1">
-														<PopoverClose asChild>
-															<Button
-																variant="ghost"
-																size="sm"
-																className="w-full"
-																onClick={(e) => {
-																	e.stopPropagation();
-																	handleShare(project.project_id);
-																}}
-															>
-																<Share size={16} />
-																{t("layout.share")}
-															</Button>
-														</PopoverClose>
-						
 														<PopoverClose asChild>
 															<Button
 																variant="ghost"

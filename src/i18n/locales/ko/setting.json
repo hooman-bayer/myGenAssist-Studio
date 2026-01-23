@@ -29,7 +29,20 @@
 	"how-we-handle-your-data-line-5":"귀하의 데이터를 제3자에게 판매하지 않습니다.",
 	"enable-privacy-permissions-settings": "개인정보 보호 설정 활성화",
 	"enable-privacy-permissions-settings-description": "이 설정을 켜면 작업 데이터가 수집, 처리 및 보호되는 방식에 관한 개인정보 처리방침을 읽었으며 이에 동의했음을 인정하는 것입니다.",
-	
+
+	"mygenassist": "myGenAssist",
+	"connected": "연결됨",
+	"connected-to-bayer-ai-platform": "Bayer AI 플랫폼에 연결됨",
+	"sso-managed-credentials": "자격 증명은 Bayer SSO를 통해 자동으로 관리됩니다. 보안을 위해 이 설정은 읽기 전용입니다.",
+	"access-token": "액세스 토큰",
+	"sso-token-placeholder": "SSO로 관리됨",
+	"api-endpoint": "API 엔드포인트",
+	"model": "모델",
+	"verify-connection": "연결 확인",
+	"default": "기본값",
+	"not-configured": "구성되지 않음",
+	"set-as-default": "기본값으로 설정",
+
 	"api-key-can-not-be-empty": "API 키는 비워둘 수 없습니다!",
 	"api-host-can-not-be-empty": "API 호스트는 비워둘 수 없습니다!",
 	"model-type-can-not-be-empty": "모델 유형은 비워둘 수 없습니다!",

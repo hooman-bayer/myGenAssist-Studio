@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { MenuToggleGroup, MenuToggleItem } from "@/components/MenuButton/MenuButton";
 import { FileDown, Inbox, LayoutGrid, MessageCircleQuestion, Network, Settings2Icon } from "lucide-react";
-import giftIcon from "@/assets/gift.svg";
 
 // Icons - you can replace these with actual icon components
 const HomeIcon = () => (
@@ -24,10 +23,6 @@ const BugIcon = () => (
   <FileDown/>
 );
 
-const ReferIcon = () => (
-  <img src={giftIcon} alt="gift-icon" className="w-[20px] h-[20px]" />
-);
-
 const SupportIcon = () => (
   <MessageCircleQuestion/>
 );
@@ -48,7 +43,6 @@ export default function SideBar({ className }: SideBarProps) {
 
   const bottomItems = [
     { id: "bug", icon: <BugIcon />, label: "Bug" },
-    { id: "refer", icon: <ReferIcon />, label: "Refer" },
     { id: "support", icon: <SupportIcon />, label: "Support" },
   ];
 

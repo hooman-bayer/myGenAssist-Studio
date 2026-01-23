@@ -11,7 +11,7 @@ import { ProjectChatContainer } from './ProjectChatContainer';
 import { TriangleAlert, Square, SquareCheckBig } from 'lucide-react';
 import { generateUniqueId } from '@/lib';
 import { proxyFetchGet } from '@/api/http';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -125,8 +125,6 @@ export default function ChatBox(): JSX.Element {
   // 			.catch((err) => console.error("Failed to fetch settings:", err));
   // 	}
   // }, [privacyDialogOpen]);
-  const [searchParams] = useSearchParams();
-  const share_token = searchParams.get('share_token');
 
   const handleSend = async (messageStr?: string, taskId?: string) => {
     const _taskId = taskId || chatStore.activeTaskId;
@@ -368,62 +366,8 @@ export default function ChatBox(): JSX.Element {
   };
 
   useEffect(() => {
-    // Wait for both config and privacy to be loaded before handling share token
-    if (share_token && isConfigLoaded && isPrivacyLoaded) {
-      handleSendShare(share_token);
-    }
-  }, [share_token, isConfigLoaded, isPrivacyLoaded]);
-
-  useEffect(() => {
     console.log('ChatStore Data: ', chatStore);
   }, []);
-
-  const handleSendShare = async (token: string) => {
-    if (!token) return;
-    if (!projectStore.activeProjectId) {
-      console.warn("Can't send share due to no active projectId");
-      return;
-    }
-
-    // Check model configuration before starting task
-    if (!hasModel) {
-      toast.error('Please select a model first.');
-      navigate('/setting/models');
-      return;
-    }
-    if (!privacy) {
-      toast.error('Please accept the privacy policy first.');
-      return;
-    }
-
-    let _token: string = token.split('__')[0];
-    let taskId: string = token.split('__')[1];
-    chatStore.create(taskId, 'share');
-    chatStore.setHasMessages(taskId, true);
-    const res = await proxyFetchGet(`/api/chat/share/info/${_token}`);
-    if (res?.question) {
-      chatStore.addMessages(taskId, {
-        id: generateUniqueId(),
-        role: 'user',
-        content: res.question.split('|')[0],
-      });
-      try {
-        await chatStore.startTask(taskId, 'share', _token, 0.1);
-        chatStore.setActiveTaskId(taskId);
-        chatStore.handleConfirmTask(
-          projectStore.activeProjectId,
-          taskId,
-          'share'
-        );
-      } catch (err: any) {
-        console.error('Failed to start shared task:', err);
-        toast.error(
-          err?.message ||
-            'Failed to start task. Please check your model configuration.'
-        );
-      }
-    }
-  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && e.ctrlKey && !e.shiftKey) {

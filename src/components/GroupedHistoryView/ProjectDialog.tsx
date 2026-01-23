@@ -32,7 +32,6 @@ interface ProjectDialogProps {
 		historyId: string
 	) => void;
 	onTaskDelete: (taskId: string) => void;
-	onTaskShare: (taskId: string) => void;
 	activeTaskId?: string;
 }
 
@@ -43,7 +42,6 @@ export default function ProjectDialog({
 	onProjectRename,
 	onTaskSelect,
 	onTaskDelete,
-	onTaskShare,
 	activeTaskId,
 }: ProjectDialogProps) {
 	const { t } = useTranslation();
@@ -232,7 +230,6 @@ export default function ProjectDialog({
 											)
 										}
 										onDelete={() => onTaskDelete(task.id.toString())}
-										onShare={() => onTaskShare(task.id.toString())}
 										isLast={index === project.tasks.length - 1}
 										showActions={false}
 									/>

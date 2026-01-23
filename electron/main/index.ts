@@ -209,11 +209,9 @@ function handleProtocolUrl(url: string) {
 function processProtocolUrl(url: string) {
   const urlObj = new URL(url);
   const code = urlObj.searchParams.get('code');
-  const share_token = urlObj.searchParams.get('share_token');
 
   log.info('urlObj', urlObj);
   log.info('code', code);
-  log.info('share_token', share_token);
 
   if (win && !win.isDestroyed()) {
     log.info('urlObj.pathname', urlObj.pathname);
@@ -230,10 +228,6 @@ function processProtocolUrl(url: string) {
     if (code) {
       log.error('protocol code:', code);
       win.webContents.send('auth-code-received', code);
-    }
-
-    if (share_token) {
-      win.webContents.send('auth-share-token-received', share_token);
     }
   } else {
     log.error('window not available');
@@ -1582,7 +1576,6 @@ async function createWindow() {
                   modelType: 'cloud',
                   cloud_model_type: 'gpt-4.1',
                   initState: 'carousel',
-                  share_token: null,
                   workerListData: {}
                 },
                 version: 0

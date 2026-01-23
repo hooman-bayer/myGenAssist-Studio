@@ -5,14 +5,14 @@ import { Input } from "@/components/ui/input";
 import {
 	Circle,
 	Settings,
-	ChevronUp,
-	ChevronDown,
 	Eye,
 	EyeOff,
 	Info,
 	RotateCcw,
 	Loader2,
 	Check,
+	Lock,
+	Shield,
 } from "lucide-react";
 import { INIT_PROVODERS } from "@/lib/llm";
 import { Provider } from "@/types";
@@ -81,8 +81,6 @@ export default function SettingModels() {
 			apiHost: "",
 		}))
 	);
-	const [collapsed, setCollapsed] = useState(false);
-
 	// Local Model independent state
 	const [localEnabled, setLocalEnabled] = useState(true);
 	const [localPlatform, setLocalPlatform] = useState("ollama");
@@ -601,250 +599,156 @@ export default function SettingModels() {
 		return _hasApiKey && _hasApiId;
 	};
 
-	return (
-		<div className="flex flex-col gap-4 pb-40">
-			{/* customer models */}
-			<div className="self-stretch my-2 border-border-disabled inline-flex flex-col justify-start items-start border-x-0 border-solid">
-				{/* header */}
-				<div className="sticky top-[87px] py-2 z-10 bg-surface-tertiary self-stretch inline-flex justify-start items-start gap-2 pl-6 pr-2 my-6 border-y-0 border-r-0 border-solid border-border-secondary">
-					<div className="flex flex-col w-full items-start gap-1">
-						<span className="justify-center text-text-body text-body-md font-bold">
-							{t("setting.custom-model")}
-						</span>
-						<span className="justify-center text-text-body text-label-sm font-normal">
-							{t("setting.use-your-own-api-keys-or-set-up-a-local-model")}
-						</span>
-					</div>
-					<Button
-						variant="ghost"
-						size="md"
-						onClick={(e) => {
-							e.preventDefault();
-							e.stopPropagation();
-							setCollapsed((c) => !c);
-						}}
-					>
-						{collapsed ? (
-							<ChevronDown className="w-4 h-4" />
-						) : (
-							<ChevronUp className="w-4 h-4" />
-						)}
-					</Button>
-				</div>
+	// Find the openai-compatible-model index for the myGenAssist card
+	const myGenAssistIdx = items.findIndex(item => item.id === 'openai-compatible-model');
+	const myGenAssistForm = myGenAssistIdx >= 0 ? form[myGenAssistIdx] : null;
+	const myGenAssistItem = myGenAssistIdx >= 0 ? items[myGenAssistIdx] : null;
+	const isConfigured = myGenAssistForm?.provider_id !== undefined;
+	const canSwitch = !!myGenAssistForm?.provider_id;
 
-				{/*  model list */}
-				<div
-					className={`self-stretch inline-flex flex-col justify-start items-start gap-8 transition-all duration-300 ease-in-out overflow-hidden ${collapsed
-						? "max-h-0 opacity-0 pointer-events-none"
-						: "opacity-100"
-						}`}
-					style={{
-						transform: collapsed ? "translateY(-10px)" : "translateY(0)",
-					}}
-				>
-					{items.map((item, idx) => {
-						const canSwitch = !!form[idx].provider_id;
-						return (
-							<div
-								key={item.id}
-								className="w-full bg-surface-secondary rounded-2xl overflow-hidden"
-							>
-								<div className="flex flex-col justify-between items-start gap-1 px-6 py-4">
-									<div className="self-stretch inline-flex justify-between items-center gap-2">
-										<div className="flex-1 justify-center text-body-lg text-text-heading font-bold">
-											{item.name}
-										</div>
-										{form[idx].prefer ? (
-											<Button
-												variant="success"
-												size="sm"
-												className="focus-none"
-												disabled={!canSwitch || loading === idx}
-												onClick={() => handleSwitch(idx, false)}
-											>
-												Default
-												<Check />
-											</Button>
-										) : (
-											<Button
-												variant="ghost"
-												size="sm"
-												disabled={!canSwitch || loading === idx}
-												onClick={() => handleSwitch(idx, true)}
-												className={canSwitch ? "!text-text-label" : ""}
-											>
-												{!canSwitch ? "Not Configured" : "Set as Default"}
-											</Button>
-										)}
-									</div>
-									<div className="text-body-sm text-text-label">
-										{item.description}
-									</div>
-								</div>
-								<div className="flex flex-col w-full items-center gap-4 px-6">
-									{/* API Key Setting */}
-									<Input
-										id={`apiKey-${item.id}`}
-										type={showApiKey[idx] ? "text" : "password"}
-										size="default"
-										title="API Key Setting"
-										state={errors[idx]?.apiKey ? "error" : "default"}
-										note={errors[idx]?.apiKey ?? undefined}
-										placeholder={` ${t("setting.enter-your-api-key")} ${item.name
-											} ${t("setting.key")}`}
-										backIcon={showApiKey[idx] ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
-										onBackIconClick={() =>
-											setShowApiKey((arr) => arr.map((v, i) => (i === idx ? !v : v)))
-										}
-										value={form[idx].apiKey}
-										onChange={(e) => {
-											const v = e.target.value;
-											setForm((f) =>
-												f.map((fi, i) =>
-													i === idx ? { ...fi, apiKey: v } : fi
-												)
-											);
-											setErrors((errs) =>
-												errs.map((er, i) =>
-													i === idx ? { ...er, apiKey: "" } : er
-												)
-											);
-										}}
-									/>
-									{/* API Host Setting */}
-									<Input
-										id={`apiHost-${item.id}`}
-										size="default"
-										title="API Host Setting"
-										state={errors[idx]?.apiHost ? "error" : "default"}
-										note={errors[idx]?.apiHost ?? undefined}
-										placeholder={`${t("setting.enter-your-api-host")} ${item.name
-											} ${t("setting.url")}`}
-										value={form[idx].apiHost}
-										onChange={(e) => {
-											const v = e.target.value;
-											setForm((f) =>
-												f.map((fi, i) =>
-													i === idx ? { ...fi, apiHost: v } : fi
-												)
-											);
-											setErrors((errs) =>
-												errs.map((er, i) =>
-													i === idx ? { ...er, apiHost: "" } : er
-												)
-											);
-										}}
-									/>
-									{/* Model Type Setting */}
-									<Input
-										id={`modelType-${item.id}`}
-										size="default"
-										title="Model Type Setting"
-										state={errors[idx]?.model_type ? "error" : "default"}
-										note={errors[idx]?.model_type ?? undefined}
-										placeholder={`${t("setting.enter-your-model-type")} ${item.name
-											} ${t("setting.model-type")}`}
-										value={form[idx].model_type}
-										onChange={(e) => {
-											const v = e.target.value;
-											setForm((f) =>
-												f.map((fi, i) =>
-													i === idx ? { ...fi, model_type: v } : fi
-												)
-											);
-											setErrors((errs) =>
-												errs.map((er, i) =>
-													i === idx ? { ...er, model_type: "" } : er
-												)
-											);
-										}}
-									/>
-									{/* externalConfig render */}
-									{item.externalConfig &&
-										form[idx].externalConfig &&
-										form[idx].externalConfig.map((ec, ecIdx) => (
-											<div key={ec.key} className="w-full h-full flex flex-col gap-4">
-												{ec.options && ec.options.length > 0 ? (
-													<Select
-														value={ec.value}
-														onValueChange={(v) => {
-															setForm((f) =>
-																f.map((fi, i) =>
-																	i === idx
-																		? {
-																			...fi,
-																			externalConfig: fi.externalConfig?.map(
-																				(eec, i2) =>
-																					i2 === ecIdx
-																						? { ...eec, value: v }
-																						: eec
-																			),
-																		}
-																		: fi
-																)
-															);
-														}}
-													>
-														<SelectTrigger size="default" title={ec.name} state={errors[idx]?.externalConfig ? "error" : undefined} note={errors[idx]?.externalConfig ?? undefined}>
-															<SelectValue placeholder="please select" />
-														</SelectTrigger>
-														<SelectContent>
-															{ec.options.map((opt) => (
-																<SelectItem key={opt.value} value={opt.value}>
-																	{opt.label}
-																</SelectItem>
-															))}
-														</SelectContent>
-													</Select>
-												) : (
-													<Input
-														size="default"
-														title={ec.name}
-														state={errors[idx]?.externalConfig ? "error" : undefined}
-														note={errors[idx]?.externalConfig ?? undefined}
-														value={ec.value}
-														onChange={(e) => {
-															const v = e.target.value;
-															setForm((f) =>
-																f.map((fi, i) =>
-																	i === idx
-																		? {
-																			...fi,
-																			externalConfig: fi.externalConfig?.map(
-																				(eec, i2) =>
-																					i2 === ecIdx
-																						? { ...eec, value: v }
-																						: eec
-																			),
-																		}
-																		: fi
-																)
-															);
-														}}
-													/>
-												)}
-											</div>
-										))}
-								</div>
-								{/* Action Button */}
-								<div className="flex justify-end mt-6 px-6 py-4 gap-2 border-b-0 border-x-0 border-solid border-border-secondary">
-									<Button variant="ghost" size="sm" className="!text-text-label" onClick={() => handleDelete(idx)}>{t("setting.reset")}</Button>
-									<Button
-										variant="primary"
-										size="sm"
-										onClick={() => handleVerify(idx)}
-										disabled={loading === idx}
-									>
-										<span className="text-text-inverse-primary">
-											{loading === idx ? "Configuring..." : "Save"}
+	return (
+		<div className="flex flex-col gap-6 pb-40">
+			{/* myGenAssist Connection Card */}
+			{myGenAssistIdx >= 0 && myGenAssistForm && myGenAssistItem && (
+				<div className="w-full bg-surface-secondary rounded-2xl overflow-hidden border border-border-secondary">
+					{/* Header */}
+					<div className="px-6 pt-6 pb-4">
+						<div className="flex items-start justify-between">
+							<div className="flex flex-col gap-1.5">
+								<div className="flex items-center gap-3">
+									<h2 className="text-body-lg font-bold text-text-heading">
+										{t("setting.mygenassist")}
+									</h2>
+									{isConfigured && (
+										<span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+											<span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+											{t("setting.connected")}
 										</span>
-									</Button>
+									)}
 								</div>
+								<p className="text-body-sm text-text-label">
+									{t("setting.connected-to-bayer-ai-platform")}
+								</p>
 							</div>
-						);
-					})}
+
+							{/* Default button */}
+							{myGenAssistForm.prefer ? (
+								<Button
+									variant="success"
+									size="sm"
+									className="focus-none"
+									disabled={!canSwitch || loading === myGenAssistIdx}
+									onClick={() => handleSwitch(myGenAssistIdx, false)}
+								>
+									{t("setting.default")}
+									<Check className="w-4 h-4 ml-1" />
+								</Button>
+							) : (
+								<Button
+									variant="ghost"
+									size="sm"
+									disabled={!canSwitch || loading === myGenAssistIdx}
+									onClick={() => handleSwitch(myGenAssistIdx, true)}
+									className={canSwitch ? "!text-text-label" : ""}
+								>
+									{!canSwitch ? t("setting.not-configured") : t("setting.set-as-default")}
+								</Button>
+							)}
+						</div>
+					</div>
+
+					{/* SSO Info Banner */}
+					<div className="mx-6 mb-4 px-4 py-3 rounded-xl flex items-center gap-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/30">
+						<Shield className="w-4 h-4 flex-shrink-0 text-green-600 dark:text-green-400" />
+						<p className="text-xs text-text-label">
+							{t("setting.sso-managed-credentials")}
+						</p>
+					</div>
+
+					{/* Form Fields - Read Only */}
+					<div className="px-6 pb-4 flex flex-col gap-4">
+						{/* Access Token - Editable for SSO troubleshooting */}
+						<Input
+							id={`apiKey-${myGenAssistItem.id}`}
+							type={showApiKey[myGenAssistIdx] ? "text" : "password"}
+							size="default"
+							title={t("setting.access-token")}
+							state={errors[myGenAssistIdx]?.apiKey ? "error" : "default"}
+							note={errors[myGenAssistIdx]?.apiKey ?? undefined}
+							placeholder={t("setting.sso-token-placeholder")}
+							backIcon={showApiKey[myGenAssistIdx] ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+							onBackIconClick={() =>
+								setShowApiKey((arr) => arr.map((v, i) => (i === myGenAssistIdx ? !v : v)))
+							}
+							value={myGenAssistForm.apiKey}
+							onChange={(e) => {
+								const v = e.target.value;
+								setForm((f) =>
+									f.map((fi, i) =>
+										i === myGenAssistIdx ? { ...fi, apiKey: v } : fi
+									)
+								);
+								setErrors((errs) =>
+									errs.map((er, i) =>
+										i === myGenAssistIdx ? { ...er, apiKey: "" } : er
+									)
+								);
+							}}
+						/>
+
+						{/* API Endpoint */}
+						<div className="relative">
+							<Input
+								id={`apiHost-${myGenAssistItem.id}`}
+								size="default"
+								title={t("setting.api-endpoint")}
+								state={errors[myGenAssistIdx]?.apiHost ? "error" : "default"}
+								note={errors[myGenAssistIdx]?.apiHost ?? undefined}
+								placeholder="https://dev.chat.int.bayer.com/api/v2"
+								value={myGenAssistForm.apiHost}
+								disabled
+								className="!bg-surface-tertiary !cursor-default"
+							/>
+							<div className="absolute right-3 top-[38px] flex items-center">
+								<Lock className="w-3.5 h-3.5 text-text-label/40" />
+							</div>
+						</div>
+
+						{/* Model */}
+						<div className="relative">
+							<Input
+								id={`modelType-${myGenAssistItem.id}`}
+								size="default"
+								title={t("setting.model")}
+								state={errors[myGenAssistIdx]?.model_type ? "error" : "default"}
+								note={errors[myGenAssistIdx]?.model_type ?? undefined}
+								placeholder="claude-sonnet-4.5"
+								value={myGenAssistForm.model_type}
+								disabled
+								className="!bg-surface-tertiary !cursor-default"
+							/>
+							<div className="absolute right-3 top-[38px] flex items-center">
+								<Lock className="w-3.5 h-3.5 text-text-label/40" />
+							</div>
+						</div>
+					</div>
+
+					{/* Action Buttons */}
+					<div className="flex justify-end px-6 py-4 gap-2 border-t border-border-secondary">
+						<Button variant="ghost" size="sm" className="!text-text-label" onClick={() => handleDelete(myGenAssistIdx)}>{t("setting.reset")}</Button>
+						<Button
+							variant="primary"
+							size="sm"
+							onClick={() => handleVerify(myGenAssistIdx)}
+							disabled={loading === myGenAssistIdx}
+						>
+							<span className="text-text-inverse-primary">
+								{loading === myGenAssistIdx ? t("setting.verifying") : t("setting.verify-connection")}
+							</span>
+						</Button>
+					</div>
 				</div>
-			</div>
+			)}
 			{/* Local Model */}
 			<div className="mt-2 bg-surface-secondary rounded-2xl flex flex-col gap-4">
 				<div className="flex items-center justify-between mb-2 px-6 pt-4">

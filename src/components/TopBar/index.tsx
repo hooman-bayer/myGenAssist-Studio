@@ -13,7 +13,6 @@ import {
 	ChevronDown,
 	ChevronLeft,
 	House,
-	Share,
 } from "lucide-react";
 import "./index.css";
 import myGenAssistLogo from "@/assets/mygenassist_logo.svg";
@@ -21,14 +20,11 @@ import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSidebarStore } from "@/store/sidebarStore";
 import useChatStoreAdapter from "@/hooks/useChatStoreAdapter";
-import giftIcon from "@/assets/gift.svg";
-import giftwhiteIcon from "@/assets/gift-white.svg";
 import { getAuthStore } from "@/store/authStore";
 import { useTranslation } from "react-i18next";
-import { proxyFetchGet, fetchPut, fetchDelete, proxyFetchDelete } from "@/api/http";
+import { fetchPut, fetchDelete, proxyFetchDelete } from "@/api/http";
 import { toast } from "sonner";
 import EndNoticeDialog from "@/components/Dialog/EndNotice";
-import { share } from "@/lib/share";
 import { TooltipSimple } from "@/components/ui/tooltip";
  
 function HeaderWin() {
@@ -123,22 +119,6 @@ function HeaderWin() {
 		chatStore.tasks[chatStore.activeTaskId as string]?.summaryTask,
 	]);
 
-	const getReferFriendsLink = async () => {
-		try {
-			const res: any = await proxyFetchGet("/api/user/invite_code");
-			if (res?.invite_code) {
-				const inviteLink = `https://chat.int.bayer.com/signup?invite_code=${res.invite_code}`;
-				await navigator.clipboard.writeText(inviteLink);
-				toast.success(t("layout.invitation-link-copied"));
-			} else {
-				toast.error(t("layout.failed-to-get-invite-code"));
-			}
-		} catch (error) {
-			console.error("Failed to get referral link:", error);
-			toast.error(t("layout.failed-to-get-invitation-link"));
-		}
-	};
-
 	//TODO: Mark ChatStore details as completed
 	const handleEndProject = async () => {
 		const taskId = chatStore.activeTaskId;
@@ -202,10 +182,6 @@ function HeaderWin() {
 			setEndProjectLoading(false);
 			setEndDialogOpen(false);
 		}
-	};
-
-	const handleShare = async (taskId: string) => {
-		share(taskId);
 	};
 
 	return (
@@ -327,19 +303,6 @@ function HeaderWin() {
 								</Button>
 							</TooltipSimple>
 						)}
-						{chatStore.activeTaskId &&
-							chatStore.tasks[chatStore.activeTaskId as string]?.status === 'finished' && (
-							<TooltipSimple content={t("layout.share")} side="bottom" align="end">
-								<Button
-									onClick={() => handleShare(chatStore.activeTaskId as string)}
-									variant="ghost"
-									size="xs"
-									className="no-drag !text-button-fill-information-foreground bg-button-fill-information"
-								>
-									{t("layout.share")}
-								</Button>
-							</TooltipSimple>
-						)}
 						{chatStore.activeTaskId && chatStore.tasks[chatStore.activeTaskId as string] && (
 							<TooltipSimple content={t("layout.report-bug")} side="bottom" align="end">
 								<Button
@@ -352,20 +315,6 @@ function HeaderWin() {
 								</Button>
 							</TooltipSimple>
 						)}
-						<TooltipSimple content={t("layout.refer-friends")} side="bottom" align="end">
-							<Button
-								onClick={getReferFriendsLink}
-								variant="ghost"
-								size="icon"
-								className="no-drag"
-							>
-								<img
-									src={giftIcon}
-									alt="gift-icon"
-									className="w-4 h-4"
-								/>
-							</Button>
-						</TooltipSimple>
 						<TooltipSimple content={t("layout.settings")} side="bottom" align="end">
 							<Button
 								onClick={() => navigate("/history?tab=settings")}
