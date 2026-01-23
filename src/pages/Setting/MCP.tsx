@@ -12,6 +12,7 @@ import MCPConfigDialog from "./components/MCPConfigDialog";
 import MCPAddDialog from "./components/MCPAddDialog";
 import MCPDeleteDialog from "./components/MCPDeleteDialog";
 import SearchEngineConfigDialog from "./components/SearchEngineConfigDialog";
+import MyGenAssistMCPCard from "./components/MyGenAssistMCPCard";
 import { parseArgsToArray, arrayToArgsJson } from "./components/utils";
 import type { MCPUserItem, MCPConfigForm } from "./components/types";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import IntegrationList from "@/components/IntegrationList";
 import { getProxyBaseURL } from "@/lib";
 import { useAuthStore } from "@/store/authStore";
+import { getValidToken } from "@/lib/tokenManager";
 import { useTranslation } from "react-i18next";
 import MCPMarket from "./MCPMarket";
 
@@ -32,7 +34,7 @@ import { Tag as TagComponent } from "@/components/ui/tag";
 export default function SettingMCP() {
 	const navigate = useNavigate();
 	const { checkAgentTool } = useAuthStore();
-	const { modelType } = useAuthStore();
+	const { modelType, token } = useAuthStore();
 	const { t } = useTranslation();
 	const [items, setItems] = useState<MCPUserItem[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -69,6 +71,10 @@ export default function SettingMCP() {
 	const [showMarket, setShowMarket] = useState(false);
 	const [marketKeyword, setMarketKeyword] = useState("");
 	const [showSearchEngineConfig, setShowSearchEngineConfig] = useState(false);
+
+	// myGenAssist MCP state
+	const [mcpEndpoint, setMcpEndpoint] = useState<string>("");
+	const [myGenAssistMCPLoading, setMyGenAssistMCPLoading] = useState(false);
 
 	// add: integrations list
 	const [integrations, setIntegrations] = useState<any[]>([]);
@@ -130,6 +136,25 @@ export default function SettingMCP() {
 			)?.config_value;
 			if (defaultEngine) setDefaultSearchEngine(defaultEngine);
 			else setDefaultSearchEngine("google"); // Default to Google
+		});
+	}, []);
+
+	// Fetch provider endpoint to determine myGenAssist MCP endpoint
+	useEffect(() => {
+		proxyFetchGet("/api/providers").then((res) => {
+			const providers = Array.isArray(res) ? res : res.items || [];
+			const openAIProvider = providers.find(
+				(p: any) => p.provider_name === "openai-compatible-model"
+			);
+			if (openAIProvider?.endpoint_url) {
+				// Convert model endpoint to MCP endpoint
+				// https://dev.chat.int.bayer.com/api/v2 -> https://dev.chat.int.bayer.com/api/v3/mcp
+				const base = openAIProvider.endpoint_url.replace(/\/api\/v\d+$/, "");
+				setMcpEndpoint(`${base}/api/v3/mcp`);
+			} else {
+				// Default to dev endpoint if no provider configured
+				setMcpEndpoint("https://dev.chat.int.bayer.com/api/v3/mcp");
+			}
 		});
 	}, []);
 
@@ -538,6 +563,110 @@ export default function SettingMCP() {
 		}
 	};
 
+	// myGenAssist MCP helpers
+	const myGenAssistMCP = items.find((item) => item.mcp_name === "mygenassist");
+	const isMyGenAssistMCPInstalled = !!myGenAssistMCP;
+	const isMyGenAssistMCPEnabled = myGenAssistMCP?.status === 1;
+
+	// myGenAssist MCP install handler
+	const handleMyGenAssistInstall = async () => {
+		// Refresh token first to ensure it's valid
+		const freshToken = await getValidToken();
+		if (!freshToken || !mcpEndpoint) {
+			toast.error(t("setting.please-configure-model-first"));
+			return;
+		}
+
+		setMyGenAssistMCPLoading(true);
+		try {
+			const config = {
+				mcpServers: {
+					mygenassist: {
+						command: "npx",
+						args: [
+							"-y",
+							"mcp-remote",
+							mcpEndpoint,
+							"--header",
+							"Authorization:${AUTH_HEADER}", // No space after colon (bug workaround)
+						],
+						env: {
+							AUTH_HEADER: `Bearer ${freshToken}`, // Spaces OK in env vars
+							MCP_REMOTE_CONFIG_DIR: "~/.mcp-auth",
+						},
+					},
+				},
+			};
+
+			// Use existing "Add Your Own MCP" flow
+			const res = await proxyFetchPost("/api/mcp/import/local", config);
+			if (!res.detail) {
+				// Also save to Electron local config
+				if (window.ipcRenderer) {
+					await window.ipcRenderer.invoke(
+						"mcp-install",
+						"mygenassist",
+						config.mcpServers.mygenassist
+					);
+				}
+				toast.success(t("setting.mygenassist-mcp-installed"));
+				fetchList();
+			} else {
+				toast.error(t("setting.failed-to-install-mygenassist-mcp"));
+			}
+		} catch (error: any) {
+			toast.error(
+				error.message || t("setting.failed-to-install-mygenassist-mcp")
+			);
+		} finally {
+			setMyGenAssistMCPLoading(false);
+		}
+	};
+
+	// myGenAssist MCP uninstall handler
+	const handleMyGenAssistUninstall = async () => {
+		if (!myGenAssistMCP) return;
+
+		setMyGenAssistMCPLoading(true);
+		try {
+			checkAgentTool(myGenAssistMCP.mcp_name);
+			await proxyFetchDelete(`/api/mcp/users/${myGenAssistMCP.id}`);
+			// Notify main process
+			if (window.ipcRenderer) {
+				await window.ipcRenderer.invoke("mcp-remove", myGenAssistMCP.mcp_key);
+			}
+			toast.success(t("setting.mygenassist-mcp-uninstalled"));
+			fetchList();
+		} catch (error: any) {
+			toast.error(
+				error.message || t("setting.failed-to-uninstall-mygenassist-mcp")
+			);
+		} finally {
+			setMyGenAssistMCPLoading(false);
+		}
+	};
+
+	// myGenAssist MCP toggle handler (re-install with fresh token when enabling)
+	const handleMyGenAssistToggle = async (enabled: boolean) => {
+		if (!myGenAssistMCP) return;
+
+		if (enabled) {
+			// Re-install with fresh token when enabling
+			await handleMyGenAssistInstall();
+		} else {
+			// Just disable without removing
+			setMyGenAssistMCPLoading(true);
+			try {
+				await proxyFetchPut(`/api/mcp/users/${myGenAssistMCP.id}`, {
+					status: 2, // Disabled
+				});
+				fetchList();
+			} finally {
+				setMyGenAssistMCPLoading(false);
+			}
+		}
+	};
+
 	// Generate search engine selection content
 	const generateSearchEngineSelectContent = () => {
 		console.log("Generating search engine select content, configs:", configs);
@@ -652,6 +781,18 @@ export default function SettingMCP() {
 							</div>
 						) : (
 							<>
+								{/* myGenAssist MCP Card - at the top */}
+								<MyGenAssistMCPCard
+									endpoint={mcpEndpoint}
+									token={token}
+									isInstalled={isMyGenAssistMCPInstalled}
+									isEnabled={isMyGenAssistMCPEnabled}
+									isLoading={myGenAssistMCPLoading}
+									onInstall={handleMyGenAssistInstall}
+									onUninstall={handleMyGenAssistUninstall}
+									onToggle={handleMyGenAssistToggle}
+								/>
+
 								<div className="flex-1 w-full">
 									<IntegrationList
 										variant="manage"

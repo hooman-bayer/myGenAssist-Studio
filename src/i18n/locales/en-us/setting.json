@@ -176,6 +176,17 @@
 	"reset-success": "Reset successfully!",
 	"reset-failed": "Reset failed!",
 
+	"mygenassist-mcp": "myGenAssist MCP",
+	"mygenassist-mcp-installed": "myGenAssist MCP installed successfully",
+	"mygenassist-mcp-uninstalled": "myGenAssist MCP uninstalled",
+	"configuration": "Configuration",
+	"sso-token-managed-automatically": "SSO token managed automatically",
+	"endpoint": "Endpoint",
+	"please-configure-model-first": "Please configure the myGenAssist model first",
+	"disabled": "Disabled",
+	"failed-to-install-mygenassist-mcp": "Failed to install myGenAssist MCP",
+	"failed-to-uninstall-mygenassist-mcp": "Failed to uninstall myGenAssist MCP",
+
 	"browser-login": "Browser Login",
 	"browser-login-description": "Open a Chrome browser to log in to your accounts. Your login data will be saved locally in a secure profile.",
 	"open-browser-login": "Open Browser for Login",
