@@ -4,6 +4,7 @@ exports[`AnimatedWelcome Component > Snapshot > matches snapshot for visual regr
 <div>
   <div
     class="flex flex-col items-center gap-2 test-snapshot"
+    data-testid="animated-welcome"
   >
     <div
       class="text-body-lg text-text-heading text-center font-bold"
@@ -53,6 +54,7 @@ exports[`AnimatedWelcome Component > Snapshot > matches snapshot with reduced mo
 <div>
   <div
     class="flex flex-col items-center gap-2 reduced-motion-snapshot"
+    data-testid="animated-welcome"
   >
     <div
       class="text-body-lg text-text-heading text-center font-bold"

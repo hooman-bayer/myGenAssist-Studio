@@ -1078,12 +1078,12 @@ export default function ChatBox(): JSX.Element {
                 <div className="mr-2 flex flex-col items-center gap-2">
                   {[
                     {
-                      label: t('layout.it-ticket-creation'),
-                      message: t('layout.it-ticket-creation-message'),
+                      label: t('layout.compound-search'),
+                      message: t('layout.compound-search-message'),
                     },
                     {
-                      label: t('layout.bank-transfer-csv-analysis'),
-                      message: t('layout.bank-transfer-csv-analysis-message'),
+                      label: t('layout.research-summary'),
+                      message: t('layout.research-summary-message'),
                     },
                     {
                       label: t('layout.find-duplicate-files'),
@@ -1092,7 +1092,7 @@ export default function ChatBox(): JSX.Element {
                   ].map(({ label, message }) => (
                     <div
                       key={label}
-                      className="cursor-pointer px-sm py-xs rounded-md bg-input-bg-default opacity-70 hover:opacity-100 text-xs font-medium leading-none text-button-tertiery-text-default transition-all duration-300"
+                      className="cursor-pointer px-md py-sm rounded-lg bg-input-bg-default opacity-60 hover:opacity-90 text-xs font-normal leading-relaxed text-button-tertiery-text-default transition-opacity duration-200"
                       onClick={() => {
                         setMessage(message);
                       }}

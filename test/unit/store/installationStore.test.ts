@@ -188,21 +188,22 @@ describe('Installation Store', () => {
   describe('Installation Flow Integration', () => {
     it('should handle successful installation flow', async () => {
       TestScenarios.versionUpdate(electronAPI)
-      
+
       const { result } = renderHook(() => useInstallationStore())
-      
+
       // Start installation
       await act(async () => {
         await result.current.performInstallation()
       })
-      
+
       // Wait for the mocked installation to complete
       await vi.waitFor(() => {
         expect(result.current.state).toBe('completed')
       }, { timeout: 1000 })
-      
+
       expect(electronAPI.checkAndInstallDepsOnUpdate).toHaveBeenCalled()
-      expect(mockSetInitState).toHaveBeenCalledWith('done')
+      // Note: setInitState('done') is called by useInstallationSetup hook when backend is ready,
+      // not by the store itself. The store only manages installation state.
     })
 
     it('should handle installation failure', async () => {
@@ -259,7 +260,7 @@ describe('Installation Store', () => {
       
       expect(electronAPI.exportLog).toHaveBeenCalled()
       expect(alertSpy).toHaveBeenCalledWith('Log saved: /mock/path/to/log.txt')
-      expect(window.location.href).toBe('mailto:mygenassist@bayer.com?subject=myGenAssist%20Studio%20Bug%20Report')
+      expect(window.location.href).toBe('https://docs.int.bayer.com/baychatgpt/support')
       
       // Restore
       Object.defineProperty(window, 'location', {

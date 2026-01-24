@@ -39,12 +39,18 @@ describe('useInstallationSetup Hook', () => {
       addLog: vi.fn(),
       setSuccess: vi.fn(),
       setError: vi.fn(),
+      setWaitingBackend: vi.fn(),
+      performInstallation: vi.fn(),
+      setBackendError: vi.fn(),
+      setNeedsBackendRestart: vi.fn(),
+      needsBackendRestart: false,
     }
 
     // Mock auth store
     mockAuthStore = {
       initState: 'done',
       setInitState: vi.fn(),
+      email: 'test@example.com',
     }
 
     // Set up mock implementations
@@ -161,9 +167,21 @@ describe('useInstallationSetup Hook', () => {
       // Get the registered callback
       const completeCallback = electronAPI.onInstallDependenciesComplete.mock.calls[0][0]
       const completeData = { success: true }
-      
+
       act(() => {
         completeCallback(completeData)
+      })
+
+      // setSuccess is NOT called on install complete - it's deferred to backend-ready event
+      // The hook only marks installationCompleted ref as true
+      // setInitState('done') is only called when BOTH installation and backend are ready
+      expect(mockInstallationStore.setSuccess).not.toHaveBeenCalled()
+      expect(mockAuthStore.setInitState).not.toHaveBeenCalledWith('done')
+
+      // Now simulate backend ready - this should trigger setSuccess and setInitState('done')
+      const backendReadyCallback = electronAPI.onBackendReady.mock.calls[0][0]
+      act(() => {
+        backendReadyCallback({ success: true, port: 8000 })
       })
 
       expect(mockInstallationStore.setSuccess).toHaveBeenCalled()
@@ -279,9 +297,19 @@ describe('useInstallationSetup Hook', () => {
         expect(mockInstallationStore.startInstallation).toHaveBeenCalled()
       })
 
-      // Should receive logs and completion
+      // Should receive logs
       await vi.waitFor(() => {
         expect(mockInstallationStore.addLog).toHaveBeenCalled()
+      })
+
+      // Note: setSuccess is NOT called on install complete - it's deferred to backend-ready
+      // simulateUvicornStartup calls simulateInstallationComplete but that doesn't call setSuccess
+      // We need to also trigger backend ready to get setSuccess called
+      act(() => {
+        electronAPI.simulateBackendReady(8000)
+      })
+
+      await vi.waitFor(() => {
         expect(mockInstallationStore.setSuccess).toHaveBeenCalled()
       })
     })

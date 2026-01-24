@@ -14,6 +14,18 @@
 
 import { vi } from "vitest"
 
+// Default mock provider for tests
+const mockProvider = {
+  id: 'mock-provider-1',
+  provider_name: 'openai-compatible-model',
+  model_type: 'claude-sonnet-4.5',
+  api_key: 'test-api-key',
+  endpoint_url: 'https://api.test.com/v1',
+  api_url: 'https://api.test.com/v1',
+  encrypted_config: {},
+  is_default: true,
+}
+
 // Mock API calls for both relative and alias paths
 const mockImplementation = {
   fetchPost: vi.fn((url, data) => {
@@ -31,7 +43,7 @@ const mockImplementation = {
     }
     // Mock provider info
     if (url.includes('/api/providers')) {
-      return Promise.resolve({ items: [] })
+      return Promise.resolve({ items: [mockProvider] })
     }
     return Promise.resolve({})
   }),
@@ -44,9 +56,9 @@ const mockImplementation = {
         api_url: 'https://api.openai.com',
       })
     }
-    // Mock providers
+    // Mock providers - return a mock provider to prevent "No model provider configured" error
     if (url.includes('/api/providers')) {
-      return Promise.resolve({ items: [] })
+      return Promise.resolve({ items: [mockProvider] })
     }
     // Mock privacy settings
     if (url.includes('/api/user/privacy')) {
@@ -68,6 +80,8 @@ const mockImplementation = {
   }),
   uploadFile: vi.fn(),
   fetchDelete: vi.fn(),
+  waitForBackendReady: vi.fn().mockResolvedValue(true),
+  checkBackendHealth: vi.fn().mockResolvedValue(true),
 }
 
 // Mock both relative and alias paths
@@ -75,4 +89,4 @@ vi.mock('../../src/api/http', () => mockImplementation)
 vi.mock('@/api/http', () => mockImplementation)
 
 // Export the mocked functions for use in tests
-export const { proxyFetchGet, proxyFetchPost, fetchPost } = mockImplementation
+export const { proxyFetchGet, proxyFetchPost, fetchPost, waitForBackendReady, checkBackendHealth } = mockImplementation

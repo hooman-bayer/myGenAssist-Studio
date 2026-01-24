@@ -440,6 +440,7 @@ export function createProcessUtilsMock() {
     getBinaryPath: vi.fn(),
     getCachePath: vi.fn(),
     getVenvPath: vi.fn(),
+    getTerminalVenvPath: vi.fn(),
     getVenvsBaseDir: vi.fn(),
     cleanupOldVenvs: vi.fn(),
     isBinaryExists: vi.fn(),
@@ -495,6 +496,10 @@ export function createProcessUtilsMock() {
       
       utilsMock.getVenvPath.mockImplementation((version: string) => {
         return `${mockState.system.homedir}/.mygenassist-studio/venvs/backend-${version}`
+      })
+
+      utilsMock.getTerminalVenvPath.mockImplementation((version: string) => {
+        return `${mockState.system.homedir}/.mygenassist-studio/venvs/terminal-${version}`
       })
       
       utilsMock.getVenvsBaseDir.mockReturnValue(

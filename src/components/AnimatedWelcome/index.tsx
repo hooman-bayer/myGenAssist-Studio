@@ -39,7 +39,7 @@ export function AnimatedWelcome({
   });
 
   return (
-    <div className={`flex flex-col items-center gap-2 ${className}`}>
+    <div data-testid="animated-welcome" className={`flex flex-col items-center gap-2 ${className}`}>
       {/* Time-based greeting with blur reveal */}
       <AnimatePresence mode="wait">
         <motion.div

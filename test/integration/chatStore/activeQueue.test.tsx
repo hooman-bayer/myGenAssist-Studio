@@ -88,9 +88,9 @@ describe("Case 3: Add to the workforce queue", () => {
     mockFetchEventSource.mockImplementation(async (url: string, options: any) => {
       sseCallCount++
       console.log(`SSE Call #${sseCallCount} initiated`)
-      
+
       if (options.onmessage) {
-        // First send the immediate events (confirmed, to_sub_tasks, end)
+        // First send the immediate events (confirmed, to_sub_tasks) - but NOT end yet
         const immediateSequence = createSSESequence([
           {
             event: {
@@ -111,17 +111,10 @@ describe("Case 3: Add to the workforce queue", () => {
               },
             },
             delay: 200
-          },
-          {
-            event: {
-              step: "end", 
-              data: "--- Calculator Task Result ---\nCalculator app completed successfully!"
-            },
-            delay: 300
           }
         ])
         await immediateSequence(options.onmessage)
-        
+
         // Wait for queuedTaskIds to be populated, then send queue-related events
         const checkForTaskIds = () => {
           return new Promise<void>((resolve, reject) => {
@@ -140,11 +133,29 @@ describe("Case 3: Add to the workforce queue", () => {
             pollForIds()
           })
         }
-        
+
         await checkForTaskIds()
-        
-        // Now send the queue-related events with actual task IDs
+
+        // Now send remove_task BEFORE the first task ends (while it's still running)
+        // Then send end, followed by the second task events
         const queueSequence = createSSESequence([
+          {
+            event: {
+              step: 'remove_task',
+              data: {
+                task_id: queuedTaskIds[0], // Remove first task from queue (Build a todo app)
+                project_id: currentProjectId
+              }
+            },
+            delay: 100
+          },
+          {
+            event: {
+              step: "end",
+              data: "--- Calculator Task Result ---\nCalculator app completed successfully!"
+            },
+            delay: 200
+          },
           {
             event: {
               step: 'new_task_state',
@@ -155,16 +166,6 @@ describe("Case 3: Add to the workforce queue", () => {
               }
             },
             delay: 100
-          },
-          {
-            event: {
-              step: 'remove_task',
-              data: {
-                task_id: queuedTaskIds[0], // Remove first task from queue
-                project_id: currentProjectId
-              }
-            },
-            delay: 200
           },
           {
             event: {
@@ -188,7 +189,7 @@ describe("Case 3: Add to the workforce queue", () => {
           },
           {
             event: {
-              step: "end", 
+              step: "end",
               data: "--- Queue Result ---\nCalculator app completed successfully!"
             },
             delay: 300
@@ -268,53 +269,53 @@ describe("Case 3: Add to the workforce queue", () => {
       rerender()
       const { projectStore } = result.current
       const project = projectStore.getProjectById(projectId)
-      
+
       expect(project?.queuedMessages).toHaveLength(2)
       expect(project?.queuedMessages?.[0].content).toBe('Build a todo app')
       expect(project?.queuedMessages?.[1].content).toBe('Create a weather app')
-      
+
       console.log("Queue verified with 2 messages")
     })
 
-    // Step 4: Wait for task completion
+    // Step 4: Wait for remove_task event to clear queue (happens BEFORE first task ends)
+    await waitFor(() => {
+      rerender()
+      const { projectStore } = result.current
+      const project = projectStore.getProjectById(projectId)
+
+      // After remove_task event, first queued message should be removed, leaving 1 message
+      expect(project?.queuedMessages).toHaveLength(1)
+      expect(project?.queuedMessages?.[0].content).toBe('Create a weather app')
+
+      console.log("Queue processed - first message removed")
+    }, { timeout: 4000 });
+
+    // Step 5: Wait for first task completion (end event comes after remove_task)
     await waitFor(() => {
       rerender()
       const { chatStore } = result.current
       const taskId = chatStore.activeTaskId
       const task = chatStore.tasks[taskId]
-      
+
       expect(task.status).toBe('finished')
       console.log("Main task completed")
     }, { timeout: 2000 })
 
-    // Step 5: Wait for new_task_state event to process queue
+    // Step 6: Wait for new_task_state event to process queue
     await waitFor(() => {
       rerender()
       //Get new appended chatStore
       const { chatStore } = result.current
       const taskId = chatStore.activeTaskId
       const task = chatStore.tasks[taskId]
-      
+
       // Look for new_task_state in messages
-      const hasNewTaskState = task.messages.some((m: any) => m.content === 'Build a calculator app 2')      
+      const hasNewTaskState = task.messages.some((m: any) => m.content === 'Build a calculator app 2')
       expect(hasNewTaskState).toBe(true)
       console.log("new_task_state event detected - new chat created")
     }, { timeout: 3000 })
 
-    // Step 6: Wait for remove_task event to clear queue
-    await waitFor(() => {
-      rerender()
-      const { projectStore } = result.current
-      const project = projectStore.getProjectById(projectId)
-      
-      // After remove_task event, first queued message should be removed, leaving 1 message
-      expect(project?.queuedMessages).toHaveLength(1)
-      expect(project?.queuedMessages?.[0].content).toBe('Create a weather app')
-      
-      console.log("Queue processed - first message removed")
-    }, { timeout: 4000 });
-
-    //Waitfor end sse
+    //Waitfor second task end sse
     await waitFor(() => {
       rerender()
       const { chatStore: finalChatStore, projectStore: finalProjectStore } = result.current;
@@ -326,11 +327,11 @@ describe("Case 3: Add to the workforce queue", () => {
     // Step 7: Verify final state
     const { chatStore: finalChatStore, projectStore: finalProjectStore } = result.current
     const finalProject = finalProjectStore.getProjectById(projectId)
-    
+
     // Queue should have 1 remaining message (the second one)
     expect(finalProject?.queuedMessages).toHaveLength(1)
     expect(finalProject?.queuedMessages?.[0].content).toBe('Create a weather app')
-    
+
     // Verify task completed successfully
     const finalTaskId = finalChatStore.activeTaskId
     const finalTask = finalChatStore.tasks[finalTaskId]
@@ -338,7 +339,7 @@ describe("Case 3: Add to the workforce queue", () => {
     //Not to be because its a new chatStore
     expect(finalTask.summaryTask).not.toBe('Calculator App|Build a simple calculator')
     expect(finalTask.summaryTask).toBe('Calculator App|Build a simple calculator 2')
-    
+
     console.log("Test completed - queue management verified: one task processed, one remains")
   })
 

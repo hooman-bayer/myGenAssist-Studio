@@ -44,6 +44,11 @@ export interface MockedElectronAPI {
   onInstallDependenciesComplete: ReturnType<typeof vi.fn>
   removeAllListeners: ReturnType<typeof vi.fn>
   
+  // Backend-related functions
+  onBackendReady: ReturnType<typeof vi.fn>
+  getBackendPort: ReturnType<typeof vi.fn>
+  restartBackend: ReturnType<typeof vi.fn>
+
   // EnvUtil mock functions
   getEnvPath: ReturnType<typeof vi.fn>
   updateEnvBlock: ReturnType<typeof vi.fn>
@@ -61,6 +66,7 @@ export interface MockedElectronAPI {
   simulateEnvCorruption: () => void
   simulateUserEmailChange: (email: string) => void
   simulateMcpConfigMissing: () => void
+  simulateBackendReady: (port?: number) => void
   reset: () => void
 }
 
@@ -79,6 +85,7 @@ export function createElectronAPIMock(): MockedElectronAPI {
   const installStartListeners: Array<() => void> = []
   const installLogListeners: Array<(data: { type: string; data: string }) => void> = []
   const installCompleteListeners: Array<(data: { success: boolean; code?: number; error?: string }) => void> = []
+  const backendReadyListeners: Array<(data: { success: boolean; port: number }) => void> = []
 
   const mockState = {
     venvExists: true,
@@ -180,7 +187,15 @@ export function createElectronAPIMock(): MockedElectronAPI {
       installStartListeners.length = 0
       installLogListeners.length = 0
       installCompleteListeners.length = 0
+      backendReadyListeners.length = 0
     }),
+
+    // Backend-related functions
+    onBackendReady: vi.fn().mockImplementation((callback) => {
+      backendReadyListeners.push(callback)
+    }),
+    getBackendPort: vi.fn().mockResolvedValue(8000),
+    restartBackend: vi.fn().mockResolvedValue({ success: true }),
 
     // EnvUtil mock functions
     getEnvPath: vi.fn().mockImplementation((email: string) => {
@@ -318,6 +333,10 @@ export function createElectronAPIMock(): MockedElectronAPI {
       mockState.mcpRemoteConfigExists = false
     },
 
+    simulateBackendReady: (port: number = 8000) => {
+      backendReadyListeners.forEach(cb => cb({ success: true, port }))
+    },
+
     reset: () => {
       Object.assign(mockState, {
         venvExists: true,
@@ -342,6 +361,7 @@ export function createElectronAPIMock(): MockedElectronAPI {
       installStartListeners.length = 0
       installLogListeners.length = 0
       installCompleteListeners.length = 0
+      backendReadyListeners.length = 0
 
       // Reset all mocks
       electronAPI.checkAndInstallDepsOnUpdate.mockClear()
@@ -351,6 +371,9 @@ export function createElectronAPIMock(): MockedElectronAPI {
       electronAPI.onInstallDependenciesLog.mockClear()
       electronAPI.onInstallDependenciesComplete.mockClear()
       electronAPI.removeAllListeners.mockClear()
+      electronAPI.onBackendReady.mockClear()
+      electronAPI.getBackendPort.mockClear()
+      electronAPI.restartBackend.mockClear()
       electronAPI.getEnvPath.mockClear()
       electronAPI.updateEnvBlock.mockClear()
       electronAPI.removeEnvKey.mockClear()
