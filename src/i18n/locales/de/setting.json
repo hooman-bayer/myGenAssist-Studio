@@ -36,6 +36,7 @@
 	"sso-managed-credentials": "Ihre Anmeldedaten werden automatisch über Bayer SSO verwaltet. Diese Einstellungen sind aus Sicherheitsgründen schreibgeschützt.",
 	"access-token": "Zugriffstoken",
 	"sso-token-placeholder": "Von SSO verwaltet",
+	"sso-session-expired-please-logout-and-login": "SSO-Sitzung abgelaufen. Bitte abmelden und erneut anmelden.",
 	"api-endpoint": "API-Endpunkt",
 	"model": "Modell",
 	"verify-connection": "Verbindung überprüfen",

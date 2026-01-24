@@ -36,6 +36,7 @@
 	"sso-managed-credentials": "認証情報はBayer SSOを通じて自動的に管理されます。セキュリティのため、これらの設定は読み取り専用です。",
 	"access-token": "アクセストークン",
 	"sso-token-placeholder": "SSOで管理",
+	"sso-session-expired-please-logout-and-login": "SSOセッションが期限切れです。ログアウトして再度ログインしてください。",
 	"api-endpoint": "APIエンドポイント",
 	"model": "モデル",
 	"verify-connection": "接続を確認",

@@ -37,6 +37,7 @@
 	"sso-managed-credentials": "您的凭据通过 Bayer SSO 自动管理。出于安全原因，这些设置为只读。",
 	"access-token": "访问令牌",
 	"sso-token-placeholder": "由 SSO 管理",
+	"sso-session-expired-please-logout-and-login": "SSO会话已过期。请注销并重新登录。",
 	"api-endpoint": "API 端点",
 	"model": "模型",
 	"verify-connection": "验证连接",

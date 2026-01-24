@@ -36,6 +36,7 @@
 	"sso-managed-credentials": "Your credentials are automatically managed through Bayer SSO. These settings are read-only for security.",
 	"access-token": "Access Token",
 	"sso-token-placeholder": "Managed by SSO",
+	"sso-session-expired-please-logout-and-login": "SSO session expired. Please logout and login again.",
 	"api-endpoint": "API Endpoint",
 	"model": "Model",
 	"verify-connection": "Verify Connection",

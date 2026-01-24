@@ -36,6 +36,7 @@
 	"sso-managed-credentials": "자격 증명은 Bayer SSO를 통해 자동으로 관리됩니다. 보안을 위해 이 설정은 읽기 전용입니다.",
 	"access-token": "액세스 토큰",
 	"sso-token-placeholder": "SSO로 관리됨",
+	"sso-session-expired-please-logout-and-login": "SSO 세션이 만료되었습니다. 로그아웃 후 다시 로그인해 주세요.",
 	"api-endpoint": "API 엔드포인트",
 	"model": "모델",
 	"verify-connection": "연결 확인",

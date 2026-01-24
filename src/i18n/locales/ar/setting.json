@@ -36,6 +36,7 @@
 	"sso-managed-credentials": "تتم إدارة بيانات اعتمادك تلقائيًا عبر Bayer SSO. هذه الإعدادات للقراءة فقط لأسباب أمنية.",
 	"access-token": "رمز الوصول",
 	"sso-token-placeholder": "تدار بواسطة SSO",
+	"sso-session-expired-please-logout-and-login": "انتهت جلسة SSO. يرجى تسجيل الخروج وتسجيل الدخول مرة أخرى.",
 	"api-endpoint": "نقطة نهاية API",
 	"model": "النموذج",
 	"verify-connection": "التحقق من الاتصال",

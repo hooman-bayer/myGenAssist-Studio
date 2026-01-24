@@ -36,6 +36,7 @@
 	"sso-managed-credentials": "Ваши учётные данные автоматически управляются через Bayer SSO. Эти настройки доступны только для чтения в целях безопасности.",
 	"access-token": "Токен доступа",
 	"sso-token-placeholder": "Управляется SSO",
+	"sso-session-expired-please-logout-and-login": "Сессия SSO истекла. Пожалуйста, выйдите и войдите снова.",
 	"api-endpoint": "API-эндпоинт",
 	"model": "Модель",
 	"verify-connection": "Проверить подключение",

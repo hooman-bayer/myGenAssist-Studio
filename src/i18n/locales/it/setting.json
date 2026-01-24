@@ -36,6 +36,7 @@
 	"sso-managed-credentials": "Le tue credenziali vengono gestite automaticamente tramite Bayer SSO. Queste impostazioni sono di sola lettura per motivi di sicurezza.",
 	"access-token": "Token di accesso",
 	"sso-token-placeholder": "Gestito da SSO",
+	"sso-session-expired-please-logout-and-login": "Sessione SSO scaduta. Effettua il logout e accedi nuovamente.",
 	"api-endpoint": "Endpoint API",
 	"model": "Modello",
 	"verify-connection": "Verifica connessione",

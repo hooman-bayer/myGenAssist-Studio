@@ -37,6 +37,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/store/authStore";
+import { getValidToken } from "@/lib/tokenManager";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
@@ -179,7 +180,28 @@ export default function SettingModels() {
 		}
 	}, [token, items]);
 
-	const handleVerify = async (idx: number) => {
+	// Helper to detect auth errors by message content (since backend returns 400 for all errors)
+	const isAuthError = (error: any): boolean => {
+		const msg = (
+			error?.message ||
+			error?.detail?.message ||
+			error?.detail?.error?.message ||
+			error?.error?.message ||
+			JSON.stringify(error)
+		).toLowerCase();
+
+		return (
+			msg.includes('invalid_api_key') ||
+			msg.includes('incorrect api key') ||
+			msg.includes('unauthorized') ||
+			msg.includes('forbidden') ||
+			msg.includes('401') ||
+			msg.includes('403') ||
+			(msg.includes('token') && (msg.includes('expired') || msg.includes('invalid')))
+		);
+	};
+
+	const handleVerify = async (idx: number, isRetrying: boolean = false) => {
 		const { apiKey, apiHost, externalConfig, model_type, provider_id } =
 			form[idx];
 		let hasError = false;
@@ -244,6 +266,38 @@ export default function SettingModels() {
 			}
 			console.log(res);
 		} catch (e) {
+			// For myGenAssist (OpenAI Compatible), try silent token refresh on auth errors
+			const isMyGenAssist = items[idx]?.id === 'openai-compatible-model';
+
+			if (isMyGenAssist && isAuthError(e) && !isRetrying) {
+				console.log('[Models] Auth error detected, attempting token refresh...');
+				const freshToken = await getValidToken();
+
+				if (freshToken && freshToken !== form[idx].apiKey) {
+					console.log('[Models] Token refreshed, retrying validation...');
+					// Update form with fresh token
+					setForm(f => f.map((fi, i) =>
+						i === idx ? { ...fi, apiKey: freshToken } : fi
+					));
+					// Retry with fresh token (isRetrying=true prevents infinite loop)
+					setLoading(null);
+					return handleVerify(idx, true);
+				}
+
+				// Token refresh failed - show clear message to re-login
+				if (!freshToken) {
+					console.log('[Models] Token refresh failed, prompting re-login');
+					setErrors((prev) => {
+						const next = [...prev];
+						if (!next[idx]) next[idx] = {} as any;
+						next[idx].apiKey = t("setting.sso-session-expired-please-logout-and-login");
+						return next;
+					});
+					return;
+				}
+			}
+
+			// Show error only if refresh didn't help or not applicable
 			console.log(e);
 			// Network/exception case: show inline error
 			setErrors((prev) => {
@@ -281,14 +335,18 @@ export default function SettingModels() {
 			// add: refresh provider list after saving, update form and switch editable status
 			const res = await proxyFetchGet("/api/providers");
 			const providerList = Array.isArray(res) ? res : res.items || [];
+			// Find the saved provider to get its id for handleSwitch (avoids stale state)
+			const savedProvider = providerList.find(
+				(p: any) => p.provider_name === item.id
+			);
 			setForm((f) =>
 				f.map((fi, i) => {
-					const item = items[i];
+					const formItem = items[i];
 					const found = providerList.find(
-						(p: any) => p.provider_name === item.id
+						(p: any) => p.provider_name === formItem.id
 					);
 					if (found) {
-						const isOpenAICompatible = item.id === 'openai-compatible-model';
+						const isOpenAICompatible = formItem.id === 'openai-compatible-model';
 						return {
 							...fi,
 							provider_id: found.id,
@@ -313,7 +371,10 @@ export default function SettingModels() {
 					return fi;
 				})
 			);
-			handleSwitch(idx, true);
+			// Pass provider_id directly to avoid reading stale form state
+			if (savedProvider?.id) {
+				handleSwitch(idx, true, savedProvider.id);
+			}
 		} finally {
 			setLoading(null);
 		}
@@ -468,7 +529,7 @@ export default function SettingModels() {
 		}
 	}, [localEnabled]);
 
-	const handleSwitch = async (idx: number, checked: boolean) => {
+	const handleSwitch = async (idx: number, checked: boolean, providerId?: number) => {
 		if (!checked) {
 			setActiveModelIdx(null);
 			setLocalEnabled(true);
@@ -484,9 +545,12 @@ export default function SettingModels() {
 				closeButton: true,
 			});
 		}
+		// Use passed providerId if available (avoids stale state), otherwise fall back to form state
+		const targetProviderId = providerId ?? form[idx].provider_id;
+		if (!targetProviderId) return; // Guard against undefined
 		try {
 			await proxyFetchPost("/api/provider/prefer", {
-				provider_id: form[idx].provider_id,
+				provider_id: targetProviderId,
 			});
 			setModelType("custom");
 			setActiveModelIdx(idx);
@@ -551,18 +615,20 @@ export default function SettingModels() {
 			if (provider_id) {
 				await proxyFetchDelete(`/api/provider/${provider_id}`);
 			}
-			// reset single form entry to default empty values
+			// reset single form entry to defaults from INIT_PROVODERS
 			setForm((prev) =>
 				prev.map((fi, i) => {
 					if (i !== idx) return fi;
 					const item = items[i];
 					const isOpenAICompatible = item.id === 'openai-compatible-model';
+					// Find default values from INIT_PROVODERS
+					const defaultProvider = INIT_PROVODERS.find(p => p.id === item.id);
 					return {
 						// Use live SSO token for OpenAI Compatible after reset
 						apiKey: isOpenAICompatible ? (token || "") : "",
-						apiHost: "",
+						apiHost: defaultProvider?.apiHost || "",
 						is_valid: false,
-						model_type: "",
+						model_type: defaultProvider?.model_type || "",
 						externalConfig: item.externalConfig
 							? item.externalConfig.map((ec) => ({ ...ec, value: "" }))
 							: undefined,
