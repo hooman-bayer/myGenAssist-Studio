@@ -36,6 +36,17 @@ vi.mock('react-i18next', () => ({
         'chat.bank-transfer-csv-analysis-and-visualization-message': 'Analyze and visualize bank transfer CSV',
         'chat.help-organize-my-desktop-message': 'Please Help Organize My Desktop',
         'chat.no-reply-received-task-continue': 'No reply received, task will continue',
+        // Time-based greeting translations
+        'layout.greeting-morning': 'Good morning',
+        'layout.greeting-afternoon': 'Good afternoon',
+        'layout.greeting-evening': 'Good evening',
+        'layout.greeting-night': 'Hello, night owl',
+        'layout.tagline-morning': 'Coffee & myGenAssist',
+        'layout.tagline-afternoon': "Let's build together",
+        'layout.tagline-evening': "Winding down? Let's wrap up",
+        'layout.tagline-night': 'Late night, bright ideas',
+        'layout.how-can-i-help-you': 'How can I help you?',
+        'layout.welcome-back': 'Welcome back',
       }
       return translations[key] || key
     },

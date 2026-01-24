@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { ChevronDown, ChevronUp, Shield, Server } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -8,22 +7,18 @@ interface MyGenAssistMCPCardProps {
 	endpoint: string;
 	token: string | null;
 	isInstalled: boolean;
-	isEnabled: boolean;
 	isLoading: boolean;
 	onInstall: () => Promise<void>;
 	onUninstall: () => Promise<void>;
-	onToggle: (enabled: boolean) => Promise<void>;
 }
 
 export default function MyGenAssistMCPCard({
 	endpoint,
 	token,
 	isInstalled,
-	isEnabled,
 	isLoading,
 	onInstall,
 	onUninstall,
-	onToggle,
 }: MyGenAssistMCPCardProps) {
 	const { t } = useTranslation();
 	const [expanded, setExpanded] = useState(false);
@@ -76,7 +71,7 @@ export default function MyGenAssistMCPCard({
 							<h2 className="text-body-lg font-bold text-text-heading">
 								{t("setting.mygenassist-mcp")}
 							</h2>
-							{isInstalled && isEnabled && (
+							{isInstalled && (
 								<span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
 									<span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
 									{t("setting.connected")}
@@ -88,19 +83,8 @@ export default function MyGenAssistMCPCard({
 						</p>
 					</div>
 
-					{/* Enable/Disable toggle or Install button */}
-					{isInstalled ? (
-						<div className="flex items-center gap-3">
-							<span className="text-sm text-text-label">
-								{isEnabled ? t("setting.enable") : t("setting.disabled")}
-							</span>
-							<Switch
-								checked={isEnabled}
-								onCheckedChange={onToggle}
-								disabled={isLoading}
-							/>
-						</div>
-					) : (
+					{/* Install button when not installed */}
+					{!isInstalled && (
 						<Button
 							variant="primary"
 							size="sm"

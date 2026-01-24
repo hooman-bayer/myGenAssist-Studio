@@ -64,6 +64,27 @@ export default function Workflow({
 	const workerList = useWorkerList();
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const [containerWidth, setContainerWidth] = useState(0);
+	const [myGenAssistMcpConfig, setMyGenAssistMcpConfig] = useState<any>(null);
+
+	// Load MCP config for myGenAssist agent
+	useEffect(() => {
+		const loadMcpConfig = async () => {
+			if (window.ipcRenderer) {
+				try {
+					const config = await window.ipcRenderer.invoke("mcp-list");
+					if (config?.mcpServers?.mygenassist) {
+						setMyGenAssistMcpConfig({
+							mcpServers: { mygenassist: config.mcpServers.mygenassist }
+						});
+					}
+				} catch (error) {
+					console.error("Failed to load MCP config:", error);
+				}
+			}
+		};
+		loadMcpConfig();
+	}, []);
+
 	const baseWorker: Agent[] = [
 		{
 			tasks: [],
@@ -137,6 +158,22 @@ export default function Workflow({
 			type: "document_agent",
 			log: [],
 			activeWebviewIds: [],
+		},
+		{
+			tasks: [],
+			agent_id: "mygenassist_agent",
+			name: "myGenAssist Agent",
+			tools: myGenAssistMcpConfig ? ["mygenassist"] : [],
+			type: "mygenassist_agent",
+			log: [],
+			activeWebviewIds: [],
+			workerInfo: myGenAssistMcpConfig ? {
+				name: "myGenAssist Agent",
+				description: "Bayer AI Platform assistant with access to enterprise tools",
+				tools: [],
+				mcp_tools: myGenAssistMcpConfig,
+				selectedTools: [{ key: "mygenassist", name: "myGenAssist", isLocal: false }],
+			} : undefined,
 		},
 	];
 

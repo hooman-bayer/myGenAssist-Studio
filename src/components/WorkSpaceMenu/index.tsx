@@ -30,6 +30,7 @@ import { AddWorker } from "@/components/AddWorker";
 import { Badge } from "../ui/badge";
 import { useTranslation } from "react-i18next";
 import useChatStoreAdapter from "@/hooks/useChatStoreAdapter";
+import mygenassistLogo from "@/assets/mygenassist_logo.svg";
 
 export function WorkSpaceMenu() {
 	const { t } = useTranslation();
@@ -38,6 +39,27 @@ export function WorkSpaceMenu() {
 		return <div>Loading...</div>;
 	}
 	const workerList = useWorkerList();
+	const [myGenAssistMcpConfig, setMyGenAssistMcpConfig] = useState<any>(null);
+
+	// Load MCP config for myGenAssist agent
+	useEffect(() => {
+		const loadMcpConfig = async () => {
+			if (window.ipcRenderer) {
+				try {
+					const config = await window.ipcRenderer.invoke("mcp-list");
+					if (config?.mcpServers?.mygenassist) {
+						setMyGenAssistMcpConfig({
+							mcpServers: { mygenassist: config.mcpServers.mygenassist }
+						});
+					}
+				} catch (error) {
+					console.error("Failed to load MCP config:", error);
+				}
+			}
+		};
+		loadMcpConfig();
+	}, []);
+
 	const baseWorker: Agent[] = [
 		{
 			tasks: [],
@@ -78,6 +100,21 @@ export function WorkSpaceMenu() {
 			type: "document_agent",
 			log: [],
 			activeWebviewIds: [],
+		},
+		{
+			tasks: [],
+			agent_id: "mygenassist_agent",
+			name: t("layout.mygenassist-agent"),
+			type: "mygenassist_agent",
+			log: [],
+			activeWebviewIds: [],
+			workerInfo: myGenAssistMcpConfig ? {
+				name: "myGenAssist Agent",
+				description: "Bayer AI Platform assistant with access to enterprise tools",
+				tools: [],
+				mcp_tools: myGenAssistMcpConfig,
+				selectedTools: [{ key: "mygenassist", name: "myGenAssist", isLocal: false }],
+			} : undefined,
 		},
 	];
 	const [agentList, setAgentList] = useState<Agent[]>([]);
@@ -272,6 +309,15 @@ export function WorkSpaceMenu() {
 			borderColor: "border-violet-700",
 			bgColorLight: "bg-purple-50",
 		},
+		mygenassist_agent: {
+			name: t("layout.mygenassist-agent"),
+			icon: <img src={mygenassistLogo} alt="" className="w-4 h-4" />,
+			textColor: "text-teal-700",
+			bgColor: "bg-teal-100",
+			shapeColor: "bg-teal-50",
+			borderColor: "border-teal-300",
+			bgColorLight: "bg-teal-100",
+		},
 	};
 	const agentIconMap = {
 		developer_agent: (
@@ -298,6 +344,9 @@ export function WorkSpaceMenu() {
 			<Bird
 				className={`!h-[10px] !w-[10px] ${agentMap.social_medium_agent.textColor}`}
 			/>
+		),
+		mygenassist_agent: (
+			<img src={mygenassistLogo} alt="" className="w-[10px] h-[10px]" />
 		),
 	};
 

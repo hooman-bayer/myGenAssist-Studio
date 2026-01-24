@@ -103,6 +103,7 @@
   "document-agent": "Agent de Documents",
   "multi-modal-agent": "Agent Multi Modal",
   "social-media-agent": "Agent de Médias Sociaux",
+  "mygenassist-agent": "myGenAssist Agent",
   "export-cancelled": "Export annulé :",
   "log-saved": "journal sauvegardé :",
   "export-error": "erreur d'export :",
@@ -162,5 +163,15 @@
   "days-ago": "jours auparavant",
   "delete-project": "Supprimer le Projet",
   "delete-project-confirmation": "Êtes-vous sûr de vouloir supprimer ce projet et toutes ses tâches ? Cette action ne peut pas être annulée.",
-  "please-select-model": "Veuillez sélectionner un modèle dans Paramètres > Modèles pour continuer."
+  "please-select-model": "Veuillez sélectionner un modèle dans Paramètres > Modèles pour continuer.",
+  "greeting-morning": "Bonjour",
+  "greeting-afternoon": "Bon après-midi",
+  "greeting-evening": "Bonsoir",
+  "greeting-night": "Salut, oiseau de nuit",
+  "tagline-morning": "Café & myGenAssist",
+  "tagline-afternoon": "Construisons ensemble",
+  "tagline-evening": "Fin de journée ? Terminons",
+  "tagline-night": "Tard le soir, idées brillantes",
+  "welcome-back": "Bon retour",
+  "new-project-created": "Nouveau projet créé"
 }

@@ -56,8 +56,15 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => {
       const translations: Record<string, string> = {
-        'layout.welcome-to-eigent': 'Welcome to Eigent',
-        'layout.how-can-i-help-you': 'How can I help you today?',
+        'layout.greeting-morning': 'Good morning',
+        'layout.greeting-afternoon': 'Good afternoon',
+        'layout.greeting-evening': 'Good evening',
+        'layout.greeting-night': 'Hello, night owl',
+        'layout.tagline-morning': 'Coffee & myGenAssist',
+        'layout.tagline-afternoon': 'Let\'s build together',
+        'layout.tagline-evening': 'Winding down? Let\'s wrap up',
+        'layout.tagline-night': 'Late night, bright ideas',
+        'layout.how-can-i-help-you': 'How can I help you?',
         'layout.it-ticket-creation': 'IT Ticket Creation',
         'layout.bank-transfer-csv-analysis': 'Bank Transfer CSV Analysis and Visualization',
         'layout.find-duplicate-files': 'Please Help Organize My Desktop',
@@ -117,6 +124,27 @@ vi.mock('../../../src/components/ChatBox/NoticeCard', () => ({
 
 vi.mock('../../../src/components/ChatBox/TypeCardSkeleton', () => ({
   TypeCardSkeleton: vi.fn(() => <div data-testid="skeleton">Loading...</div>)
+}))
+
+vi.mock('../../../src/components/AnimatedWelcome', () => ({
+  AnimatedWelcome: vi.fn(({ onAnimationComplete }: any) => (
+    <div data-testid="animated-welcome">
+      <span>Good morning</span>
+      <span>How can I help you?</span>
+      {onAnimationComplete && <button onClick={onAnimationComplete}>Animate</button>}
+    </div>
+  ))
+}))
+
+// Also mock the alias path
+vi.mock('@/components/AnimatedWelcome', () => ({
+  AnimatedWelcome: vi.fn(({ onAnimationComplete }: any) => (
+    <div data-testid="animated-welcome">
+      <span>Good morning</span>
+      <span>How can I help you?</span>
+      {onAnimationComplete && <button onClick={onAnimationComplete}>Animate</button>}
+    </div>
+  ))
 }))
 
 vi.mock('../../../src/components/Dialog/Privacy', () => ({
@@ -276,11 +304,9 @@ describe('ChatBox Component', async () => {
   }
 
   describe('Initial Render', () => {
-    it('should render welcome screen when no messages exist', () => {
+    it('should render animated welcome when no messages exist', () => {
       renderChatBox()
-
-      expect(screen.getByText('Welcome to Eigent')).toBeInTheDocument()
-      expect(screen.getByText('How can I help you today?')).toBeInTheDocument()
+      expect(screen.getByTestId('animated-welcome')).toBeInTheDocument()
     })
 
     it('should render bottom box component', () => {

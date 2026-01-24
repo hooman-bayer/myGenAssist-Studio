@@ -82,6 +82,9 @@ function HeaderWin() {
 		//Handles refocusing id & nonduplicate internally
 		projectStore.createProject("new project");
 		navigate("/");
+		toast.success(t("layout.new-project-created"), {
+			duration: 2000,
+		});
 	};
 
 	const activeTaskTitle = useMemo(() => {

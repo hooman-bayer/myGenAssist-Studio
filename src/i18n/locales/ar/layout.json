@@ -103,6 +103,7 @@
   "document-agent": "وكيل المستندات",
   "multi-modal-agent": "وكيل متعدد الوسائط",
   "social-media-agent": "وكيل وسائل التواصل الاجتماعي",
+  "mygenassist-agent": "myGenAssist Agent",
   "export-cancelled": "تم إلغاء التصدير:",
   "log-saved": "تم حفظ السجل:",
   "export-error": "خطأ في التصدير:",
@@ -162,5 +163,15 @@
   "days-ago": "أيام مضت",
   "delete-project": "حذف المشروع",
   "delete-project-confirmation": "هل أنت متأكد من أنك تريد حذف هذا المشروع وجميع مهامه؟ لا يمكن التراجع عن هذا الإجراء.",
-  "please-select-model": "يرجى اختيار نموذج في الإعدادات > النماذج للمتابعة."
+  "please-select-model": "يرجى اختيار نموذج في الإعدادات > النماذج للمتابعة.",
+  "greeting-morning": "صباح الخير",
+  "greeting-afternoon": "مساء الخير",
+  "greeting-evening": "مساء الخير",
+  "greeting-night": "مرحباً، بومة الليل",
+  "tagline-morning": "قهوة و myGenAssist",
+  "tagline-afternoon": "لنبني معاً",
+  "tagline-evening": "نهاية اليوم؟ لننهي العمل",
+  "tagline-night": "ليلة متأخرة، أفكار مضيئة",
+  "welcome-back": "مرحباً بعودتك",
+  "new-project-created": "تم إنشاء مشروع جديد"
 }

@@ -103,6 +103,7 @@
   "document-agent": "Dokument-Agent",
   "multi-modal-agent": "Multi-Modal-Agent",
   "social-media-agent": "Social-Media-Agent",
+  "mygenassist-agent": "myGenAssist Agent",
   "export-cancelled": "Export abgebrochen:",
   "log-saved": "Protokoll gespeichert:",
   "export-error": "Export-Fehler:",
@@ -162,5 +163,15 @@
   "days-ago": "Tage zuvor",
   "delete-project": "Projekt löschen",
   "delete-project-confirmation": "Sind Sie sicher, dass Sie dieses Projekt und alle seine Aufgaben löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-  "please-select-model": "Bitte wählen Sie ein Modell unter Einstellungen > Modelle aus, um fortzufahren."
+  "please-select-model": "Bitte wählen Sie ein Modell unter Einstellungen > Modelle aus, um fortzufahren.",
+  "greeting-morning": "Guten Morgen",
+  "greeting-afternoon": "Guten Tag",
+  "greeting-evening": "Guten Abend",
+  "greeting-night": "Hallo, Nachteule",
+  "tagline-morning": "Kaffee & myGenAssist",
+  "tagline-afternoon": "Lass uns gemeinsam bauen",
+  "tagline-evening": "Feierabend? Lass uns abschließen",
+  "tagline-night": "Späte Nacht, kluge Ideen",
+  "welcome-back": "Willkommen zurück",
+  "new-project-created": "Neues Projekt erstellt"
 }

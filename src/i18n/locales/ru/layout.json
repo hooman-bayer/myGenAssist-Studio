@@ -103,6 +103,7 @@
   "document-agent": "Агент документов",
   "multi-modal-agent": "Мультимодальный агент",
   "social-media-agent": "Агент социальных сетей",
+  "mygenassist-agent": "myGenAssist Агент",
   "export-cancelled": "Экспорт отменен:",
   "log-saved": "журнал сохранен:",
   "export-error": "ошибка экспорта:",
@@ -162,5 +163,15 @@
   "days-ago": "дней назад",
   "delete-project": "Удалить проект",
   "delete-project-confirmation": "Вы уверены, что хотите удалить этот проект и все его задачи? Это действие нельзя отменить.",
-  "please-select-model": "Пожалуйста, выберите модель в Настройки > Модели, чтобы продолжить."
+  "please-select-model": "Пожалуйста, выберите модель в Настройки > Модели, чтобы продолжить.",
+  "greeting-morning": "Доброе утро",
+  "greeting-afternoon": "Добрый день",
+  "greeting-evening": "Добрый вечер",
+  "greeting-night": "Привет, полуночник",
+  "tagline-morning": "Кофе & myGenAssist",
+  "tagline-afternoon": "Создаём вместе",
+  "tagline-evening": "Конец дня? Завершаем",
+  "tagline-night": "Поздняя ночь, яркие идеи",
+  "welcome-back": "С возвращением",
+  "new-project-created": "Новый проект создан"
 }

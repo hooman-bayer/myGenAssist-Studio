@@ -580,7 +580,6 @@ export default function SettingMCP() {
 	// myGenAssist MCP helpers
 	const myGenAssistMCP = items.find((item) => item.mcp_name === "mygenassist");
 	const isMyGenAssistMCPInstalled = !!myGenAssistMCP;
-	const isMyGenAssistMCPEnabled = myGenAssistMCP?.status === 1;
 
 	// myGenAssist MCP install handler
 	const handleMyGenAssistInstall = async () => {
@@ -657,27 +656,6 @@ export default function SettingMCP() {
 			);
 		} finally {
 			setMyGenAssistMCPLoading(false);
-		}
-	};
-
-	// myGenAssist MCP toggle handler (re-install with fresh token when enabling)
-	const handleMyGenAssistToggle = async (enabled: boolean) => {
-		if (!myGenAssistMCP) return;
-
-		if (enabled) {
-			// Re-install with fresh token when enabling
-			await handleMyGenAssistInstall();
-		} else {
-			// Just disable without removing
-			setMyGenAssistMCPLoading(true);
-			try {
-				await proxyFetchPut(`/api/mcp/users/${myGenAssistMCP.id}`, {
-					status: 2, // Disabled
-				});
-				fetchList();
-			} finally {
-				setMyGenAssistMCPLoading(false);
-			}
 		}
 	};
 
@@ -800,11 +778,9 @@ export default function SettingMCP() {
 									endpoint={mcpEndpoint}
 									token={token}
 									isInstalled={isMyGenAssistMCPInstalled}
-									isEnabled={isMyGenAssistMCPEnabled}
 									isLoading={myGenAssistMCPLoading}
 									onInstall={handleMyGenAssistInstall}
 									onUninstall={handleMyGenAssistUninstall}
-									onToggle={handleMyGenAssistToggle}
 								/>
 
 								<div className="flex-1 w-full">

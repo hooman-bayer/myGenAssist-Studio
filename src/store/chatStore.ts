@@ -500,6 +500,21 @@ const chatStore = (initial?: Partial<ChatStore>) => createStore<ChatStore>()(
 				}
 			}
 
+			// Load myGenAssist MCP config if installed
+			let myGenAssistMcpConfig: { mcpServers: { mygenassist: unknown } } | null = null;
+			if (window.ipcRenderer) {
+				try {
+					const mcpList = await window.ipcRenderer.invoke("mcp-list");
+					if (mcpList?.mcpServers?.mygenassist) {
+						myGenAssistMcpConfig = {
+							mcpServers: { mygenassist: mcpList.mcpServers.mygenassist }
+						};
+					}
+				} catch (error) {
+					console.error("Failed to load myGenAssist MCP config:", error);
+				}
+			}
+
 			const addWorkers = workerList.map((worker) => {
 				return {
 					name: worker.workerInfo?.name,
@@ -508,6 +523,16 @@ const chatStore = (initial?: Partial<ChatStore>) => createStore<ChatStore>()(
 					mcp_tools: worker.workerInfo?.mcp_tools,
 				}
 			});
+
+			// Add built-in myGenAssist agent if MCP is installed
+			if (myGenAssistMcpConfig) {
+				addWorkers.push({
+					name: "myGenAssist Agent",
+					description: "Bayer AI Platform assistant with access to enterprise tools",
+					tools: [],
+					mcp_tools: myGenAssistMcpConfig,
+				});
+			}
 
 			// get env path
 			let envPath = ''

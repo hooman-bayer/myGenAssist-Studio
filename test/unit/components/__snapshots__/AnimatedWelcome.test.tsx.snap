@@ -1,0 +1,99 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AnimatedWelcome Component > Snapshot > matches snapshot for visual regression 1`] = `
+<div>
+  <div
+    class="flex flex-col items-center gap-2 test-snapshot"
+  >
+    <div
+      class="text-body-lg text-text-heading text-center font-bold"
+      data-animate="{"opacity":1}"
+      data-initial="{"opacity":0}"
+      data-testid="motion-div"
+      data-transition="{"duration":0.5,"delay":0.2,"ease":[0.4,0,0.2,1]}"
+    >
+      <span
+        data-animate-by="words"
+        data-delay="80"
+        data-testid="blur-text"
+      >
+        Good morning!
+      </span>
+    </div>
+    <div
+      class="text-body-md text-center"
+      data-animate="{"opacity":1,"y":0}"
+      data-initial="{"opacity":0,"y":10}"
+      data-testid="motion-div"
+      data-transition="{"duration":0.5,"delay":0.6,"ease":[0.4,0,0.2,1]}"
+    >
+      <span
+        class="font-medium"
+        data-animation-speed="4"
+        data-colors="["#8AD32A","#FFD700","#FFA500","#8AD32A"]"
+        data-testid="gradient-text"
+      >
+        Rise and shine!
+      </span>
+    </div>
+    <div
+      class="text-body-lg leading-7 text-text-label text-center mt-2"
+      data-animate="{"opacity":1,"filter":"blur(0px)"}"
+      data-initial="{"opacity":0,"filter":"blur(8px)"}"
+      data-testid="motion-div"
+      data-transition="{"duration":0.5,"delay":1,"ease":[0.4,0,0.2,1]}"
+    >
+      How can I help you?
+    </div>
+  </div>
+</div>
+`;
+
+exports[`AnimatedWelcome Component > Snapshot > matches snapshot with reduced motion enabled 1`] = `
+<div>
+  <div
+    class="flex flex-col items-center gap-2 reduced-motion-snapshot"
+  >
+    <div
+      class="text-body-lg text-text-heading text-center font-bold"
+      data-animate="{"opacity":1}"
+      data-initial="{"opacity":0}"
+      data-testid="motion-div"
+      data-transition="{"duration":0,"delay":0,"ease":[0.4,0,0.2,1]}"
+    >
+      <span
+        data-animate-by="words"
+        data-delay="0"
+        data-testid="blur-text"
+      >
+        Good morning!
+      </span>
+    </div>
+    <div
+      class="text-body-md text-center"
+      data-animate="{"opacity":1,"y":0}"
+      data-initial="{"opacity":0,"y":10}"
+      data-testid="motion-div"
+      data-transition="{"duration":0,"delay":0,"ease":[0.4,0,0.2,1]}"
+    >
+      <span
+        class="font-medium"
+        data-animation-speed="4"
+        data-colors="["#8AD32A","#FFD700","#FFA500","#8AD32A"]"
+        data-testid="gradient-text"
+      >
+        Rise and shine!
+      </span>
+    </div>
+    <div
+      class="text-body-lg leading-7 text-text-label text-center mt-2"
+      data-animate="{"opacity":1,"filter":"blur(0px)"}"
+      data-initial="{"opacity":0,"filter":"blur(0px)"}"
+      data-testid="motion-div"
+      data-transition="{"duration":0,"delay":0,"ease":[0.4,0,0.2,1]}"
+    >
+      How can I help you?
+    </div>
+  </div>
+</div>
+`;

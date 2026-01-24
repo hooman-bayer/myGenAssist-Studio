@@ -33,6 +33,8 @@ import MCP from "./Setting/MCP";
 import Browser from "./Dashboard/Browser";
 import WordCarousel from "@/components/ui/WordCarousel";
 import { Sparkle } from "@/components/animate-ui/icons/sparkle";
+import { PersonalizedGreeting } from "@/components/PersonalizedGreeting";
+import { formatWelcomeName } from "@/lib/formatName";
 
 
 
@@ -59,19 +61,6 @@ export default function Home() {
 			setActiveTab(tab);
 		}
 	}, [searchParams]);
-
-	const formatWelcomeName = (raw: string): string => {
-		if (!raw) return "";
-		if (/^[^@]+@gmail\.com$/i.test(raw)) {
-			const local = raw.split("@")[0];
-			const pretty = local.replace(/[._-]+/g, " ").trim();
-			return pretty
-				.split(/\s+/)
-				.map(part => part.charAt(0).toUpperCase() + part.slice(1))
-				.join(" ");
-		}
-		return raw;
-	};
 
 	const welcomeName = formatWelcomeName(displayName);
 
@@ -112,24 +101,12 @@ export default function Home() {
 			cancelText={t("layout.cancel")}
 		/>
 			{/* welcome text */}
-			<div className="flex flex-row w-full pt-16 px-20 bg-gradient-to-b from-transparent to-[#F9F8F6]">
-					<WordCarousel
-						words={[`${t("layout.welcome")}, ${welcomeName} !`]}
-						className="text-heading-xl font-bold tracking-tight"
-						rotateIntervalMs={100}
-						sweepDurationMs={2000}
-						sweepOnce
-						gradient={`linear-gradient(in oklch 90deg,
-							#f9f8f6 0%, var(--colors-blue-300) 30%,
-							var(--colors-emerald-default) 50%, 
-							var(--colors-green-500) 70%,
-							var(--colors-orange-300) 100%)`}
-						ariaLabel="rotating headline"
-					/>
+			<div className="flex flex-row w-full pt-8 pb-2 px-6 sm:px-10 md:px-20 bg-gradient-to-b from-transparent to-[#F9F8F6]">
+				<PersonalizedGreeting name={welcomeName} />
 			</div>
 			{/* Navbar */}
 		<div
-			className={`sticky top-0 z-20 flex flex-col justify-between items-center bg-[#F9F8F6] px-20 pt-10 pb-4 border-border-disabled border-x-0 border-t-0 border-solid`}
+			className={`sticky top-0 z-20 flex flex-col justify-between items-center bg-[#F9F8F6] px-6 sm:px-10 md:px-20 pt-4 pb-4 border-border-disabled border-x-0 border-t-0 border-solid`}
 		>
 				<div className="flex flex-row justify-between items-center w-full mx-auto">
 				<div className="flex items-center gap-2">

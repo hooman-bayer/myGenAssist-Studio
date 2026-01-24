@@ -32,6 +32,7 @@ import { toast } from 'sonner';
 import useChatStoreAdapter from '@/hooks/useChatStoreAdapter';
 import { replayActiveTask } from '@/lib';
 import { PrivacyPolicyDialog } from '@/components/Dialog/PrivacyPolicyDialog';
+import { AnimatedWelcome } from '@/components/AnimatedWelcome';
 
 export default function ChatBox(): JSX.Element {
   const [message, setMessage] = useState<string>('');
@@ -946,13 +947,8 @@ export default function ChatBox(): JSX.Element {
         <div className="w-full h-[calc(100vh-54px)] flex items-center py-2 relative overflow-hidden">
           <div className="absolute inset-0 pointer-events-none"></div>
           <div className=" w-full flex flex-col relative z-10">
-            <div className="flex flex-col items-center gap-1 h-[210px] justify-end">
-              <div className="text-body-lg text-text-heading text-center font-bold">
-                {t('layout.welcome-message')}
-              </div>
-              <div className="text-body-lg leading-7 text-text-label text-center mb-5">
-                {t('layout.how-can-i-help-you')}
-              </div>
+            <div className="flex flex-col items-center gap-1 h-[210px] justify-end mb-5">
+              <AnimatedWelcome />
             </div>
 
             {chatStore.activeTaskId && (

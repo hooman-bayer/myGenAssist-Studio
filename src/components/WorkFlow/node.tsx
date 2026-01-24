@@ -49,6 +49,7 @@ import {
 } from "../ui/popover";
 import { AddWorker } from "@/components/AddWorker";
 import useChatStoreAdapter from "@/hooks/useChatStoreAdapter";
+import mygenassistLogo from "@/assets/mygenassist_logo.svg";
 
 interface NodeProps {
 	id: string;
@@ -327,6 +328,15 @@ export function Node({ id, data }: NodeProps) {
 			borderColor: "border-violet-700",
 			bgColorLight: "bg-purple-50",
 		},
+		mygenassist_agent: {
+			name: "myGenAssist Agent",
+			icon: <img src={mygenassistLogo} alt="" className="w-4 h-4" />,
+			textColor: "text-teal-700",
+			bgColor: "bg-teal-100",
+			shapeColor: "bg-teal-50",
+			borderColor: "border-teal-300",
+			bgColorLight: "bg-teal-100",
+		},
 	};
 
 	const agentToolkits = {
@@ -347,6 +357,7 @@ export function Node({ id, data }: NodeProps) {
 			"# Data Processing ",
 			"# Document Creation ",
 		],
+		mygenassist_agent: ["# Bayer AI Platform ", "# Enterprise Data "],
 	};
 
 	const getTaskId = (taskId: string) => {

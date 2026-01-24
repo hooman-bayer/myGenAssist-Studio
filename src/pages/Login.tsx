@@ -14,7 +14,7 @@
 
 import { useAuthStore } from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import myGenAssistLogo from '@/assets/mygenassist_logo.svg';
 import { LoginBackground } from '@/components/LoginBackground';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,7 @@ import { useTranslation } from 'react-i18next';
 import WindowControls from '@/components/WindowControls';
 import { useAuth } from '@/hooks/useAuth';
 import { PrivacyPolicyDialog } from '@/components/Dialog/PrivacyPolicyDialog';
+import { LoginSuccessOverlay } from '@/components/LoginSuccessOverlay';
 
 export default function Login() {
   const { setModelType, setLocalProxyValue } = useAuthStore();
@@ -39,6 +40,7 @@ export default function Login() {
   const titlebarRef = useRef<HTMLDivElement>(null);
   const [platform, setPlatform] = useState<string>('');
   const [isPrivacyPolicyOpen, setIsPrivacyPolicyOpen] = useState(false);
+  const [showSuccessOverlay, setShowSuccessOverlay] = useState(false);
 
   useEffect(() => {
     const p = window.electronAPI.getPlatform();
@@ -63,15 +65,21 @@ export default function Login() {
     };
   }, []);
 
+  // Handle navigation after success animation completes
+  const handleSuccessComplete = useCallback(() => {
+    navigate('/');
+  }, [navigate]);
+
   // Redirect to main app on successful SSO authentication
   useEffect(() => {
     if (ssoAuthenticated) {
       setModelType('custom');
       const localProxyValue = import.meta.env.VITE_USE_LOCAL_PROXY || null;
       setLocalProxyValue(localProxyValue);
-      navigate('/');
+      // Show success animation instead of immediate navigation
+      setShowSuccessOverlay(true);
     }
-  }, [ssoAuthenticated, navigate, setModelType, setLocalProxyValue]);
+  }, [ssoAuthenticated, setModelType, setLocalProxyValue]);
 
   // Update SSO error message when error changes
   useEffect(() => {
@@ -230,6 +238,12 @@ export default function Login() {
           />
         </div>
       </div>
+
+      {/* Login success animation overlay */}
+      <LoginSuccessOverlay
+        isVisible={showSuccessOverlay}
+        onComplete={handleSuccessComplete}
+      />
     </div>
   );
 }

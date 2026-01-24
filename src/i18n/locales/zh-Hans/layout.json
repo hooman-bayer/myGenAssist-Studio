@@ -106,6 +106,7 @@
   "document-agent": "文档智能体",
   "multi-modal-agent": "多模态智能体",
   "social-media-agent": "社交媒体智能体",
+  "mygenassist-agent": "myGenAssist 智能体",
   "export-cancelled": "导出已取消：",
   "log-saved": "日志已保存：",
   "export-error": "导出错误：",
@@ -164,5 +165,15 @@
   "days-ago": "天前",
   "delete-project": "删除项目",
   "delete-project-confirmation": "您确定要删除此项目及其所有任务吗？此操作无法撤销。",
-  "please-select-model": "请在设置 > 模型中选择一个模型以继续。"
+  "please-select-model": "请在设置 > 模型中选择一个模型以继续。",
+  "greeting-morning": "早上好",
+  "greeting-afternoon": "下午好",
+  "greeting-evening": "晚上好",
+  "greeting-night": "嗨，夜猫子",
+  "tagline-morning": "咖啡 & myGenAssist",
+  "tagline-afternoon": "一起创造",
+  "tagline-evening": "收工了？来收尾吧",
+  "tagline-night": "深夜时分，灵感闪现",
+  "welcome-back": "欢迎回来",
+  "new-project-created": "已创建新项目"
 }

@@ -150,7 +150,8 @@ declare global {
 		| "browser_agent"
 		| "document_agent"
 		| "multi_modal_agent"
-		| "social_medium_agent";
+		| "social_medium_agent"
+		| "mygenassist_agent";
 
 	interface AgentNameMap {
 		developer_agent: "Developer Agent";
@@ -158,8 +159,9 @@ declare global {
 		document_agent: "Document Agent";
 		multi_modal_agent: "Multi Modal Agent";
 		social_medium_agent: "Social Media Agent";
+		mygenassist_agent: "myGenAssist Agent";
 	}
-	type WorkspaceType = 'workflow' | 'developer_agent' | 'browser_agent' | 'document_agent' | 'multi_modal_agent' | 'social_medium_agent' | null;
+	type WorkspaceType = 'workflow' | 'developer_agent' | 'browser_agent' | 'document_agent' | 'multi_modal_agent' | 'social_medium_agent' | 'mygenassist_agent' | null;
 }
 
 
