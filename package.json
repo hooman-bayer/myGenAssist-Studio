@@ -13,6 +13,7 @@
   },
   "type": "module",
   "scripts": {
+    "prepare": "husky",
     "compile-babel": "cd backend && uv run pybabel compile -d lang",
     "clean-cache": "rimraf node_modules/.vite",
     "dev": "npm run clean-cache && vite",
@@ -125,8 +126,10 @@
     "electron": "^33.2.0",
     "electron-builder": "^24.13.3",
     "electron-devtools-installer": "^4.0.0",
+    "husky": "^9.1.7",
     "i18next": "^25.4.2",
     "jsdom": "^26.1.0",
+    "lint-staged": "^16.2.7",
     "postcss": "^8.4.49",
     "postcss-import": "^16.1.0",
     "react": "^18.3.1",
