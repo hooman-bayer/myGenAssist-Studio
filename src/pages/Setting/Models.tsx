@@ -50,7 +50,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useAuthStore, getAuthStore } from "@/store/authStore";
+import { useAuthStore, getAuthStore, logoutAndRedirect } from "@/store/authStore";
 import { getValidToken } from "@/lib/tokenManager";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -305,10 +305,7 @@ export default function SettingModels() {
 					toast.error(t("setting.sso-session-expired-please-logout-and-login"), {
 						action: {
 							label: t("setting.log-out"),
-							onClick: () => {
-								getAuthStore().logout();
-								window.location.href = '#/login';
-							},
+							onClick: () => logoutAndRedirect(),
 						},
 					});
 					setErrors((prev) => {

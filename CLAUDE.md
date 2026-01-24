@@ -185,6 +185,45 @@ The SSO implementation pattern is documented in:
 4. Access token stored securely in Electron
 5. Token attached to API requests
 
+### Session Expiration Handling
+
+When SSO tokens expire and cannot be refreshed:
+- The app automatically clears auth state via `logout()`
+- Users see a toast notification with a "Log out" action button
+- Clicking the button or automatic handling redirects to `/login`
+- Use `logoutAndRedirect()` helper for consistent behavior across the codebase
+
+### SSO Token Lifecycle
+
+The SSO integration handles token expiration gracefully:
+
+1. **Token Validation**: `tokenManager.ts` checks if token is expiring soon (< 5 min)
+2. **Silent Refresh**: Attempts `acquireTokenSilent()` via MSAL
+3. **Refresh Failure**: If MSAL refresh token expired (~24h):
+   - Calls `logout()` to clear auth state
+   - Callers handle UI feedback (toast) and redirect to login
+4. **Helper Function**: Use `logoutAndRedirect()` from authStore for programmatic session expiration
+
+```typescript
+// For programmatic logout + redirect (e.g., in API interceptors)
+import { logoutAndRedirect } from '@/store/authStore';
+logoutAndRedirect();
+
+// For user-initiated logout with custom cleanup
+import { getAuthStore } from '@/store/authStore';
+getAuthStore().logout();
+navigate('/login');
+```
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `src/lib/tokenManager.ts` | Token validation and refresh logic |
+| `src/lib/msal/authInstance.ts` | MSAL configuration and silent token acquisition |
+| `src/store/authStore.ts` | Auth state management and `logoutAndRedirect()` helper |
+| `src/api/http.ts` | HTTP interceptors with auth error handling |
+
 ---
 
 ## API Configuration
@@ -326,6 +365,13 @@ This is a fork with a "thin wrapper" approach:
 - Minimize divergence from upstream Eigent
 - Keep Bayer-specific changes isolated
 - Periodically sync with upstream for bug fixes and features
+
+### Branch Strategy
+
+- **main**: Upstream Eigent open-source branch - kept in sync with https://github.com/eigent-ai/eigent
+- **bayer-main**: Bayer's adapted version with SSO integration and enterprise customizations
+- Periodically merge `main` into `bayer-main` to incorporate upstream fixes and features
+- Keep Bayer-specific changes isolated to minimize merge conflicts
 
 ### Testing
 

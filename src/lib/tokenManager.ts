@@ -9,7 +9,7 @@
  */
 
 import { acquireTokenSilent, getActiveAccount } from '@/lib/msal/authInstance';
-import { getAuthStore } from '@/store/authStore';
+import { getAuthStore, logoutAndRedirect } from '@/store/authStore';
 
 /** Refresh buffer: refresh token if less than 5 minutes remaining */
 const REFRESH_BUFFER_MS = 5 * 60 * 1000;
@@ -78,10 +78,10 @@ async function refreshToken(): Promise<string | null> {
     return freshToken;
   }
 
-  // Token refresh failed - session expired, redirect to login
-  console.warn('[TokenManager] Token refresh failed, session expired. Redirecting to login.');
+  // Token refresh failed - session expired, clear auth state
+  // Note: Callers should handle UI feedback and redirect
+  console.warn('[TokenManager] Token refresh failed, session expired.');
   getAuthStore().logout();
-  window.location.href = '#/login';
   return null;
 }
 

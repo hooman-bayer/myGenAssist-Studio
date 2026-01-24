@@ -13,6 +13,7 @@
 // ========= Copyright 2025-2026 @ Eigent.ai All Rights Reserved. =========
 
 import { getAuthStore } from '@/store/authStore'
+import { logoutAndRedirect } from '@/store/authStore'
 import { getValidToken } from '@/lib/tokenManager'
 import { showCreditsToast } from '@/components/Toast/creditsToast';
 import { showStorageToast } from '@/components/Toast/storageToast';
@@ -76,9 +77,9 @@ async function fetchRequest(
           console.log('[HTTP] Token refreshed, retrying request...')
           return fetchRequest(method, url, data, customHeaders, true)
         }
-        // Refresh failed - redirect to login
-        console.log('[HTTP] Token refresh failed, redirecting to login')
-        window.location.href = '#/login'
+        // Refresh failed - logout and redirect to login
+        console.log('[HTTP] Token refresh failed, logging out and redirecting to login')
+        logoutAndRedirect()
         return
       }
       throw err
@@ -100,9 +101,9 @@ async function fetchRequest(
         console.log('[HTTP] Token refreshed, retrying request...')
         return fetchRequest(method, url, data, customHeaders, true)
       }
-      // Refresh failed - redirect to login
-      console.log('[HTTP] Token refresh failed, redirecting to login')
-      window.location.href = '#/login'
+      // Refresh failed - logout and redirect to login
+      console.log('[HTTP] Token refresh failed, logging out and redirecting to login')
+      logoutAndRedirect()
       return
     }
     throw err

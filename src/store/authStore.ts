@@ -210,6 +210,16 @@ export const useAuthStore = authStore;
 // export non-Hook version for non-components
 export const getAuthStore = () => authStore.getState();
 
+/**
+ * Logs out the user and redirects to login page.
+ * Use this for programmatic session expiration handling.
+ * For user-initiated logout with additional cleanup, call logout() directly.
+ */
+export function logoutAndRedirect(): void {
+  authStore.getState().logout();
+  window.location.href = '#/login';
+}
+
 // constant definition
 const EMPTY_LIST: Agent[] = [];
 
