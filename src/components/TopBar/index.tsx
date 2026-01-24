@@ -25,7 +25,6 @@ import {
 	ChevronLeft,
 	House,
 } from "lucide-react";
-import "./index.css";
 import myGenAssistLogo from "@/assets/mygenassist_logo.svg";
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -176,7 +175,7 @@ function HeaderWin() {
 			{/* left */}
 			<div
 				className={`${
-					platform === "darwin" && isFullscreen ? "w-0" : "w-[70px]"
+					platform === "darwin" ? "w-0" : "w-[70px]"
 				} flex items-center justify-center no-drag`}
 			>
 				{platform !== "darwin" && <span className="text-label-md text-text-heading font-bold">myGenAssist Studio</span>}

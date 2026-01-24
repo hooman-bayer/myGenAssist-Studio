@@ -50,7 +50,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore, getAuthStore } from "@/store/authStore";
 import { getValidToken } from "@/lib/tokenManager";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -301,6 +301,16 @@ export default function SettingModels() {
 				// Token refresh failed - show clear message to re-login
 				if (!freshToken) {
 					console.log('[Models] Token refresh failed, prompting re-login');
+					// Show user-friendly toast with logout action
+					toast.error(t("setting.sso-session-expired-please-logout-and-login"), {
+						action: {
+							label: t("setting.log-out"),
+							onClick: () => {
+								getAuthStore().logout();
+								window.location.href = '#/login';
+							},
+						},
+					});
 					setErrors((prev) => {
 						const next = [...prev];
 						if (!next[idx]) next[idx] = {} as any;
@@ -683,7 +693,7 @@ export default function SettingModels() {
 	const myGenAssistIdx = items.findIndex(item => item.id === 'openai-compatible-model');
 	const myGenAssistForm = myGenAssistIdx >= 0 ? form[myGenAssistIdx] : null;
 	const myGenAssistItem = myGenAssistIdx >= 0 ? items[myGenAssistIdx] : null;
-	const isConfigured = myGenAssistForm?.provider_id !== undefined;
+	const isConfigured = myGenAssistForm?.provider_id !== undefined && !!token;
 	const canSwitch = !!myGenAssistForm?.provider_id;
 
 	return (

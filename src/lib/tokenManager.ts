@@ -78,7 +78,10 @@ async function refreshToken(): Promise<string | null> {
     return freshToken;
   }
 
-  console.warn('[TokenManager] Token refresh failed');
+  // Token refresh failed - session expired, redirect to login
+  console.warn('[TokenManager] Token refresh failed, session expired. Redirecting to login.');
+  getAuthStore().logout();
+  window.location.href = '#/login';
   return null;
 }
 
