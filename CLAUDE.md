@@ -354,6 +354,7 @@ npm run dev
 | `VITE_PROXY_URL` | Local backend URL | `http://localhost:3001` |
 | `VITE_AZURE_CLIENT_ID` | Azure AD app client ID | `620f686c-ab5d-...` |
 | `VITE_AZURE_TENANT_ID` | Azure AD tenant ID | `fcb2b37b-5da0-...` |
+| `VITE_MYGENASSIST_API_BASE` | myGenAssist API base URL | `https://chat.int.bayer.com` |
 
 ---
 

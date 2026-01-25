@@ -12,13 +12,15 @@
 // limitations under the License.
 // ========= Copyright 2025-2026 @ Eigent.ai All Rights Reserved. =========
 
+import { myGenAssistConfig } from "./apiConfig";
+
 const EnvOauthInfoMap = {
 	notion: "NOTION_TOKEN",
 };
 
 export class OAuth {
 	public client_name: string = 'myGenAssist Studio';
-	public client_uri: string = 'https://chat.int.bayer.com/';
+	public client_uri: string = `${myGenAssistConfig.base}/`;
 	public redirect_uris: string[] = [];
 
 	public url: string = '';
@@ -43,7 +45,7 @@ export class OAuth {
 
 		this.url = mcp.url;
 		this.provider = mcp.provider;
-		this.redirect_uris = [`https://chat.int.bayer.com/api/oauth/${this.provider}/callback`];
+		this.redirect_uris = [`${myGenAssistConfig.base}/api/oauth/${this.provider}/callback`];
 		this.authServerUrl = new URL(mcp.url).origin;
 		this.resourcePath = mcp?.resourcePath || this.resourcePath;
 		this.authorizationServerPath = mcp?.authorizationServerPath || this.authorizationServerPath;

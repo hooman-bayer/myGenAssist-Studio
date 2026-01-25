@@ -35,6 +35,7 @@ import SearchInput from "@/components/SearchInput";
 import { useNavigate } from "react-router-dom";
 import IntegrationList from "@/components/IntegrationList";
 import { getProxyBaseURL } from "@/lib";
+import { myGenAssistConfig } from "@/lib/apiConfig";
 import { useAuthStore } from "@/store/authStore";
 import { getValidToken } from "@/lib/tokenManager";
 import { useTranslation } from "react-i18next";
@@ -92,6 +93,27 @@ export default function SettingMCP() {
 
 	// add: integrations list
 	const [integrations, setIntegrations] = useState<any[]>([]);
+
+	// Hidden internal integrations - can be re-enabled by removing from this list
+	// Only myGenAssist MCP is relevant for Bayer users currently
+	const HIDDEN_INTEGRATIONS = [
+		'Lark',
+		'Notion',
+		'X',
+		'X(Twitter)',
+		'WhatsApp',
+		'Reddit',
+		'GitHub',
+		'Github',
+		'Google Calendar',
+		'Gmail',
+		'Google Gmail',
+		'Slack',
+		'LinkedIn',
+		'Discord',
+		'Telegram',
+		'Facebook',
+	];
 	const [refreshKey, setRefreshKey] = useState<number>(0);
 	const [essentialIntegrations, setEssentialIntegrations] = useState<any[]>([
 		{
@@ -166,8 +188,8 @@ export default function SettingMCP() {
 				const base = openAIProvider.endpoint_url.replace(/\/api\/v\d+$/, "");
 				setMcpEndpoint(`${base}/api/v3/mcp`);
 			} else {
-				// Default to dev endpoint if no provider configured
-				setMcpEndpoint("https://dev.chat.int.bayer.com/api/v3/mcp");
+				// Default to configured endpoint if no provider configured
+				setMcpEndpoint(myGenAssistConfig.mcp);
 			}
 		});
 	}, []);
@@ -381,7 +403,9 @@ export default function SettingMCP() {
 
 				setIntegrations(
 					list.filter(
-						(item) => !essentialIntegrations.find((i) => i.key === item.key)
+						(item) =>
+							!essentialIntegrations.find((i) => i.key === item.key) &&
+							!HIDDEN_INTEGRATIONS.includes(item.key)
 					)
 				);
 			}
@@ -783,6 +807,7 @@ export default function SettingMCP() {
 									onUninstall={handleMyGenAssistUninstall}
 								/>
 
+								{/* Hidden: Internal search engine configuration - can be restored by uncommenting
 								<div className="flex-1 w-full">
 									<IntegrationList
 										variant="manage"
@@ -810,6 +835,9 @@ export default function SettingMCP() {
 										}}
 									/>
 								</div>
+								*/}
+								{/* MCP Integrations section - only show if there are visible integrations */}
+								{integrations.length > 0 && (
 								<div className="flex flex-col">
 									<div className="self-stretch inline-flex justify-start items-center gap-2 py-2">
 										<span className="text-text-body text-body-md font-bold">
@@ -842,6 +870,7 @@ export default function SettingMCP() {
 										/>
 									)}
 								</div>
+								)}
 								<div className="flex flex-col">
 									<div className="self-stretch inline-flex justify-start items-center gap-2 py-2">
 										<div className="justify-center text-text-body text-body-md font-bold">

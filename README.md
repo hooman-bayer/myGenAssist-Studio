@@ -54,7 +54,7 @@ npm run dev
 1. Sign in with your Bayer Azure AD credentials
 2. Go to **Settings > Models**
 3. In **OpenAI Compatible** section:
-   - **API Host**: `https://dev.chat.int.bayer.com/api/v2`
+   - **API Host**: Auto-configured based on environment (dev/prod)
    - **API Key**: Auto-filled from SSO token
    - **Model Type**: `claude-sonnet-4.5` (or other available models)
 4. Click **Save** to validate and store
@@ -66,7 +66,7 @@ npm run dev
 | Frontend | React + Vite + Electron | User interface and desktop app |
 | Local Backend | FastAPI + PostgreSQL (Docker) | Provider config storage and API proxy |
 | Authentication | Azure AD SSO (MSAL) | Enterprise single sign-on |
-| Model API | OpenAI-compatible endpoint | `https://dev.chat.int.bayer.com/api/v2` |
+| Model API | OpenAI-compatible endpoint | Configured via `VITE_MYGENASSIST_API_BASE` |
 
 ## Development
 
@@ -96,6 +96,7 @@ npm run storybook
 | `VITE_PROXY_URL` | Local backend URL (`http://localhost:3001`) |
 | `VITE_AZURE_CLIENT_ID` | Azure AD application client ID |
 | `VITE_AZURE_TENANT_ID` | Azure AD tenant ID |
+| `VITE_MYGENASSIST_API_BASE` | myGenAssist API base URL (dev: `https://dev.chat.int.bayer.com`, prod: `https://chat.int.bayer.com`) |
 
 ## Building for Production
 

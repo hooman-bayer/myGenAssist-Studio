@@ -27,6 +27,7 @@ import {
 	Check,
 	Lock,
 	Shield,
+	ExternalLink,
 } from "lucide-react";
 import { INIT_PROVODERS } from "@/lib/llm";
 import { Provider } from "@/types";
@@ -802,7 +803,7 @@ export default function SettingModels() {
 						</div>
 
 						{/* Model */}
-						<div className="relative">
+						<div className="flex flex-col gap-1.5">
 							<Input
 								id={`modelType-${myGenAssistItem.id}`}
 								size="default"
@@ -811,12 +812,29 @@ export default function SettingModels() {
 								note={errors[myGenAssistIdx]?.model_type ?? undefined}
 								placeholder="claude-sonnet-4.5"
 								value={myGenAssistForm.model_type}
-								disabled
-								className="!bg-surface-tertiary !cursor-default"
+								onChange={(e) => {
+									const v = e.target.value;
+									setForm((f) =>
+										f.map((fi, i) =>
+											i === myGenAssistIdx ? { ...fi, model_type: v } : fi
+										)
+									);
+									setErrors((errs) =>
+										errs.map((er, i) =>
+											i === myGenAssistIdx ? { ...er, model_type: "" } : er
+										)
+									);
+								}}
 							/>
-							<div className="absolute right-3 top-[38px] flex items-center">
-								<Lock className="w-3.5 h-3.5 text-text-label/40" />
-							</div>
+							<a
+								href="https://docs.int.bayer.com/baychatgpt/docs/tutorials/ai_model_selection_guide/"
+								target="_blank"
+								rel="noopener noreferrer"
+								className="inline-flex items-center gap-1 text-xs text-text-label hover:text-text-heading transition-colors cursor-pointer ml-0.5"
+							>
+								<span>View available models</span>
+								<ExternalLink className="w-3 h-3" />
+							</a>
 						</div>
 					</div>
 

@@ -48,6 +48,11 @@ export default defineConfig(({ command, mode }) => {
                 external: Object.keys('dependencies' in pkg ? pkg.dependencies : {}),
               },
             },
+            define: {
+              'process.env.MYGENASSIST_API_BASE': JSON.stringify(
+                env.VITE_MYGENASSIST_API_BASE || 'https://chat.int.bayer.com'
+              ),
+            },
           },
         },
         preload: {

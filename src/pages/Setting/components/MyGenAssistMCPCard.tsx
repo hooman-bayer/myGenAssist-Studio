@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, Shield, Server } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { myGenAssistConfig } from "@/lib/apiConfig";
 
 interface MyGenAssistMCPCardProps {
 	endpoint: string;
@@ -47,7 +48,7 @@ export default function MyGenAssistMCPCard({
 					args: [
 						"-y",
 						"mcp-remote",
-						endpoint || "https://dev.chat.int.bayer.com/api/v3/mcp",
+						endpoint || myGenAssistConfig.mcp,
 						"--header",
 						"Authorization:${AUTH_HEADER}",
 					],

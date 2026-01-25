@@ -24,6 +24,8 @@ interface ImportMetaEnv {
   readonly VITE_AZURE_AUTHORITY: string
   readonly VITE_AZURE_AUDIENCE: string
   readonly VITE_AZURE_REDIRECT_URI: string
+  // myGenAssist API Configuration
+  readonly VITE_MYGENASSIST_API_BASE: string
 }
 
 interface ImportMeta {

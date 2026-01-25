@@ -36,6 +36,17 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
+// Mock apiConfig
+vi.mock('@/lib/apiConfig', () => ({
+  myGenAssistConfig: {
+    base: 'https://dev.chat.int.bayer.com',
+    apiV2: 'https://dev.chat.int.bayer.com/api/v2',
+    apiV3: 'https://dev.chat.int.bayer.com/api/v3',
+    mcp: 'https://dev.chat.int.bayer.com/api/v3/mcp',
+    isDev: true,
+  },
+}));
+
 describe('MyGenAssistMCPCard', () => {
   const defaultProps = {
     endpoint: 'https://dev.chat.int.bayer.com/api/v3/mcp',
