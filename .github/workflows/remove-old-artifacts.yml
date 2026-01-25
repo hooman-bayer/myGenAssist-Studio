@@ -6,7 +6,7 @@ on:
     - cron: '0 1 * * *'
   push:
     branches:
-      - master
+      - bayer-main
 
 jobs:
   remove-old-artifacts:

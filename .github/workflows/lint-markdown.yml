@@ -9,7 +9,7 @@ name: Lint Markdown
 on:
   pull_request:
     branches:
-      - main
+      - bayer-main
     paths:
       - '**.md'
 
